@@ -1,0 +1,69 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \input{cur_header}
+
+% \documentclass[sigconf, anonymous=false, natbib=false]{acmart}
+\documentclass[acmsmall,screen,review,anonymous,nonacm, natbib=false]{acmart}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{macros}      % kjee boilerplates
+\input{proj-macros}  % paper specific macros.
+\input{acronyms}  % acronyms
+
+\usepackage{pygmentex}
+\usepackage{codestyle}
+\usepackage{listings}
+\usepackage{float}
+
+% \usepackage[noadjust]{cite}
+% \renewcommand{\citepunct}{,\penalty\citepunctpenalty\,}
+% \renewcommand{\citedash}{--}% optionally
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+% \usepackage[mincrossrefs=99,style=ieee]{biblatex}
+\usepackage[mincrossrefs=99,datamodel=acmdatamodel,style=numeric-comp,sorting=none]{biblatex}
+
+\addbibresource{refs/kjee.bib}
+\addbibresource{refs/formalcfi.bib}
+
+\usepackage{makecell}
+\usepackage{svg}
+
+\usepackage{tabularray}
+\UseTblrLibrary{booktabs}
+
+\graphicspath{{figs/}}
+
+
+\begin{document}
+
+\def\papertitle{Formally Verified CFI}
+
+\title{\papertitle}
+
+\newlength\listingnumberwidth
+\setlength\listingnumberwidth{\widthof{00} + 2em}
+
+\input{sections/abstract}
+
+\maketitle
+\author{}
+
+\input{sections/introduction}
+\input{sections/background}
+\input{sections/eval}
+\input{sections/related}
+\input{sections/discussion}
+\input{sections/conclusion}
+
+\printbibheading{}
+\printbibliography[heading=none]
+
+\balance{}
+
+\input{sections/appendix}
+
+\end{document}

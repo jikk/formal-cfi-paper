@@ -1,0 +1,31 @@
+%! root=./main.tex
+
+\def\pname{{\textsc{ArmCFI}}\xspace}
+\def\pweb{{\pname web service}\xspace}
+
+\usepackage{fp}
+\usepackage{svg}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Commenting
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newif\ifbiblatex
+\biblatextrue
+
+\newif\ifcomments{}
+\commentsfalse{}
+
+\ifcomments{}
+\usepackage{todonotes}
+	\newcommand{\kjee}[1]{\noindent\textcolor{red}{[KJEE: #1]}}
+	\newcommand{\wc}[1]{}
+	\newcommand{\mxz}[1]{\noindent\textcolor{green}{[Max: #1]}}
+\else
+	\newcommand{\kjee}[1]{}
+	\newcommand{\wc}[1]{}
+	\newcommand{\mxz}[1]{}
+\fi
+
+\newcommand{\move}[2]{\textcolor{purple}{[{\bf MOVE: #1}:] #2}}
+
+\def\fileless{fileless~\xspace}

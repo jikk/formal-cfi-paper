@@ -1,0 +1,104 @@
+Glatex/figures/*.pdf
+*.class
+.DS_Store
+paper/main.pdf
+paper/main.out
+formalcfi.pdf
+
+# 250MB file is too big to be pushed
+figs/source/data_2025spring/bytecode_errors.csv
+
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+#*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Emacs Files #
+###############
+*~
+#*#
+.#*
+
+# Latex Related #
+#################
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.log
+main.pdf
+*.ps
+
+# Javamop Files
+###############
+*.rvm
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+main.pdf
+main.out
+rev.tex
+.latexrun.db
+.vscode
+latex.out/
+*.fdb_latexmk
+*.fls
+
+*.bcf
+*.run.xml
+
+__latexindent_temp.tex
+
+
+# acmarts (auto-generated files form ACM template)
+acmart.glo
+acmart.gls
+acmart.hd
+acmart.idx
+acmart.ilg
+acmart.ind
+acmart.out
+acmart.pdf
+acmart.tgz
+acmart.toc
+
+*.txt
+tmp.tex
+main.snippets
+main.bbl-SAVE-ERROR
