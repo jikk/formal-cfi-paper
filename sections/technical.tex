@@ -19,13 +19,13 @@
 
 The key theorem states that the rewriter's output is safe per rewritten instruction block.
 All traces that start at the beginning of a block exit to a safe destination.
-Safe destinations are either the start of a block corresponding to policy-permitted instruction or the safety-abort address.
+Safe destinations are either the start of a block corresponding to the policy-permitted instruction or the safety-abort address.
 
 \subsection{Symbolic Execution of Quantified Programs}
 
 Proving some instruction blocks are safe requires reasoning about their destination address and its relationship to the table returned by the rewriter.
 The destination address is computed from the table through a sequence of instructions, and the proof requires reasoning about those instructions despite the absence of a concrete program to analyze.
-It turns out that for symbolic execution, it is sufficient to know that the block is in the same memory address the trace is executing from, exactly our assumptions.
+It turns out that for symbolic execution, it is sufficient to know that the block is in the same memory address that the trace is executing from, exactly our assumptions.
 
 Steps for symbolic execution:
 
