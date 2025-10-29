@@ -1,0 +1,72 @@
+%! root=./main.tex
+\section{Technical}
+
+% A distillation of the SafeDest_rewrite_inst we are currently working on.
+% The original theorem is more complicated, stating that the trace may have a prefix
+% before the part that started in the block. This draft is simpler, instead stating that
+% the trace began at a block. Another difference is that this omits the hypotheses that the 
+% table and block are maintained in memory as the IRM block is executed.
+%
+
+\begin{equation}\begin{aligned}
+    & \forall t\, tbl\, m\, \,i\, \,pol, \,\,rewrite\_inst\, i\, pol\, =\, (b,\,tbl) \\
+    & \land\: starts\_with\_memory \,\,t\,\,m  \\
+    & \land\: starts\_in\_block \,\,t\,\,b \\
+    & \land\: table\_in\_memory \,\,tbl\,\,m \\ 
+    & \land\: block\_in\_memory \,\,b\,\,m \\
+    & \implies safely\_exits\_block \,\,t\,\,b
+\end{aligned}\end{equation}
+
+The key theorem states that the rewriter's output is safe per rewritten instruction block.
+All traces that start at the beginning of a block exit to a safe destination.
+Safe destinations are either the start of a block corresponding to policy-permitted instruction or the safety-abort address.
+
+\subsection{Symbolic Execution of Quantified Programs}
+
+Proving some instruction blocks are safe requires reasoning about their destination address and its relationship to the table returned by the rewriter.
+The destination address is computed from the table through a sequence of instructions, and the proof requires reasoning about those instructions despite the absence of a concrete program to analyze.
+It turns out that for symbolic execution, it is sufficient to know that the block is in the same memory address the trace is executing from, exactly our assumptions.
+
+Steps for symbolic execution:
+
+\begin{enumerate}
+    \item prepXP - prepare the XP hypothesis to get it in normal form. Original hyp: \texttt{exec\_prog p (((Addr a', s') :: t1) ++ t0)}; new hyp: \texttt{exec\_prog p
+    ((Addr a', s') :: t ++ [(Addr (Z.to\_N (i2i' i) * 4 + 4 * 0), s1)])}
+    \item rireduceRI - reduce the rewriter output hypothesis to a concrete list of assembly instruction expressions, this note currently covers both rireduceRI and rireduceSplit.
+    \begin{itemize}
+        \item Original hyp: \texttt{  rewrite\_pc
+    (ARM\_data\_r op Z14 S (unused\_reg 15 15 15) (unused\_reg 15 15 15) imm5
+       type (unused\_reg 15 15 15)) (unused\_reg 15 15 15) tc 
+    (pol i) i2i' cond i ti ai = Some (irm', table, tc')};
+        \item     new hyp: \texttt{  arm\_assemble\_all
+    [ARM\_B (invert\_cond cond) (Z.pos (Pos.of\_succ\_nat 13) - Z1);
+     STR (unused\_reg 15 15 15) SP Z\_4;
+     MOVW (unused\_reg 15 15 15) (Z.land (Z4 * i + Z8) Z0xffff);
+     MOVT (unused\_reg 15 15 15) (Z.land (Z.shiftr (Z4 * i + Z8) Z16) Z0xffff);
+     ARM\_data\_r op Z14 S (unused\_reg 15 15 15) (unused\_reg 15 15 15) imm5
+       type (unused\_reg 15 15 15);
+     UBFX (unused\_reg 15 15 15) (unused\_reg 15 15 15) (z2 - Z2) z0;
+     LSL (unused\_reg 15 15 15) (unused\_reg 15 15 15) Z2;
+     ARM\_data\_i ARM\_ADD Z14 0 (unused\_reg 15 15 15) 
+       (unused\_reg 15 15 15)
+       (Z.lor (Z.shiftl Z4 Z8) (Z.land (Z.shiftr (Z4 * z1) Z24) Z0xff));
+     ARM\_data\_i ARM\_ADD Z14 0 (unused\_reg 15 15 15) 
+       (unused\_reg 15 15 15)
+       (Z.lor (Z.shiftl Z8 Z8) (Z.land (Z.shiftr (Z4 * z1) Z16) Z0xff));
+     ARM\_data\_i ARM\_ADD Z14 0 (unused\_reg 15 15 15) 
+       (unused\_reg 15 15 15)
+       (Z.lor (Z.shiftl Z12 Z8) (Z.land (Z.shiftr (Z4 * z1) Z8) Z0xff));
+     ARM\_data\_i ARM\_ADD Z14 0 (unused\_reg 15 15 15) 
+       (unused\_reg 15 15 15) (Z.land (Z4 * z1) Z0xff);
+     LDR (unused\_reg 15 15 15) (unused\_reg 15 15 15) 0;
+     STR (unused\_reg 15 15 15) SP Z\_8; LDR (unused\_reg 15 15 15) SP Z\_4;
+     LDR PC SP Z\_8] = Some irm'}
+    \end{itemize}
+
+    \item calc\_irm'\_len - calculate the length of the block computed in the previous step, rirediceRI. This is used to prove contradictions and safety in certain proof cases.
+    \item eval\_first\_inst - Given the first instruction of a trace originating somewhere in the block, symbolically execute it. This prevents executing it twice - once for the case where the intervening trace is empty, once for the case where it is not. Does not take arguments, finds the correct hypothesis in context using some brittle assumptions.
+    \item XP\_cases - destructs the exec\_prog assumption based on whether the intervening trace is empty or not. Presently admits the simple case where it is empty and we step directly to an instruction also in the block.
+    \item unify\_CS - unifies the instruction execution evaluated in eval\_first\_inst with the step assertions from case analysis in XP\_cases
+    \item reformat\_XP - reformats the exec\_prog trace to be in the \texttt{4 * index} format eval\_first\_inst expects.
+    \item solve\_cond\_skip - solves the case where the block of a conditional instruction is skipped over and the trace keeps going.
+\end{enumerate}
