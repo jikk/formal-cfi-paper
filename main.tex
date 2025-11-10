@@ -16,10 +16,14 @@
 \usepackage{codestyle}
 \usepackage{listings}
 \usepackage{float}
+\usepackage{minted}
+\usepackage{trfrac}
+\usepackage{ulem}
 
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage[mincrossrefs=99,datamodel=acmdatamodel,style=numeric-comp,sorting=none]{biblatex}
+\setlength{\ULdepth}{1.2pt}
 
 \addbibresource{refs/kjee.bib}
 \addbibresource{refs/formalcfi.bib}
@@ -31,6 +35,20 @@
 \UseTblrLibrary{booktabs}
 
 \usepackage{amsmath}
+
+\providecommand\downmapsto{\mathrel{\mathpalette\mydownmapsto\relax}}
+\makeatletter
+\newcommand\mydownmapsto[2]{\vcenter{\m@th\hbox{%
+  \rotatebox[origin=c]{-90}{%
+    $#1\mkern-1mu\mapstochar\mkern2mu$%
+    \rotatebox[origin=c]{90}{$#1\downarrow$}%
+  }%
+}}}
+\makeatother
+\newcommand\fallthru{\downmapsto}
+
+\newcommand\ofwidth[1]{\kern.7pt_{\fboxsep=1pt\boxed{\kern-.5pt\scalebox{.7}{$#1$}\kern-.5pt}}}
+\newcommand\memwidth[1]{\ofwidth{8(1\ll#1)}}
 
 \graphicspath{{figs/}}
 
@@ -50,6 +68,7 @@
 
 \input{sections/introduction}
 \input{sections/background}
+\input{sections/system_overview}
 \input{sections/technical}
 \input{sections/eval}
 \input{sections/related}

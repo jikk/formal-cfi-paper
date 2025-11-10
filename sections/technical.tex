@@ -65,7 +65,7 @@ Steps for symbolic execution:
 
     \item calc\_irm'\_len - calculate the length of the block computed in the previous step, rirediceRI. This is used to prove contradictions and safety in certain proof cases.
     \item eval\_first\_inst - Given the first instruction of a trace originating somewhere in the block, symbolically execute it. This prevents executing it twice - once for the case where the intervening trace is empty, once for the case where it is not. Does not take arguments, finds the correct hypothesis in context using some brittle assumptions.
-    \item XP\_cases - destructs the exec\_prog assumption based on whether the intervening trace is empty or not. Presently admits the simple case where it is empty and we step directly to an instruction also in the block.
+    \item XP\_cases - destructs the exec\_prog assumption based on whether the intervening trace is empty or not. Presently admits the simple case where it is empty, and we step directly to an instruction also in the block.
     \item unify\_CS - unifies the instruction execution evaluated in eval\_first\_inst with the step assertions from case analysis in XP\_cases
     \item reformat\_XP - reformats the exec\_prog trace to be in the \texttt{4 * index} format eval\_first\_inst expects.
     \item solve\_cond\_skip - solves the case where the block of a conditional instruction is skipped over and the trace keeps going.

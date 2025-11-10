@@ -1,4 +1,31 @@
 %! root=./main.tex
 \section{Related Works}
 
-There has been a growing body of research on user behavior in the context of reversing and decompiling native binaries. We also review related work on native binary decompilation, as well as a separate line of research focused on the decompilation of \hdl binaries.
+CCS'20 survey on efficacy of CFI:
+https://dl-acm-org.libproxy.utdallas.edu/doi/pdf/10.1145/3372297.3417867
+* Real boundaries differ from claimed boundaries due to implementation or algorithmic errors
+* Five of seven common mistakes were in the implementation stage
+    * unexpected optimization
+    * corner-cases: inlined assembly, dynamic shared objects (DSO)
+    * logic bugs in implementation
+    * mismatched specification, e.g., QEMU bug in ARM PA emulation, not setting the NX bit
+    * adding unintended permissible jump targets (xend bytes in TSX-based CFI)
+* Mentioned binary-compatible CFI:  Opaque CFI [ 37 ], CCFIR [ 72 ], binCFI [ 75] and CFIMon 
+* Mentioned theoretically-only safe CFI:  SafeDispatch [ 28 ] and PARTS [ 34 ]
+* CScan tool very limited: relies on source-level analysis, only tests each ICT guard code once
+* Mention false positives, maybe we can mention we can analyze the implementation and prove it precludes false positives
+* Analyzed 56 CFI solution evaluation methods, found three methods:
+    1) theoretical evaluation
+    2) experimental verification
+    3) quantitative analysis
+
+Franz'17 survey on CFI:
+https://dl.acm.org/doi/pdf/10.1145/3054924
+* common security metric AIR is approximate and leaves holes for attackers
+* aside: Carlini et al Control Flow Bending show even with the most precise CFG and a shadowstack attacks may still be possible
+
+ARM BTI binary rewriter:
+10.1109/TIFS.2025.3580342
+* does not even try to make binary safe, just make it harder to attack
+* binary analysis, incremental rewriting, runtime monitor for distinguishing attacks from ?
+
