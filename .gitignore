@@ -4,6 +4,8 @@ Glatex/figures/*.pdf
 paper/main.pdf
 paper/main.out
 formalcfi.pdf
+_minted
+
 
 # 250MB file is too big to be pushed
 figs/source/data_2025spring/bytecode_errors.csv
