@@ -100,6 +100,7 @@ Qed.
      {c,\sigma\vdash\mathsf{let}~v\coloneqq e_1~\mathsf{in}~e_2\Downarrow n\ofwidth{w_2}}\text{(ELet)} \quad
 \frac{0\leq n < 2^w}{c,\sigma\vdash *_w\Downarrow n\ofwidth{w}}\text{(EUnk)} \\
 %
+\\
 \frac{}{c,\sigma\vdash\cdot\Downarrow_\fallthru c,\sigma}\text{(XNop)} \qquad
 \frac{c,\sigma\vdash e\Downarrow n\ofwidth{w}}{c,\sigma\vdash v\coloneqq e\Downarrow_\fallthru c[v\coloneqq w],\sigma[v\coloneqq n]}\text{(XMove)} \qquad
 \frac{c,\sigma\vdash{}e\Downarrow{}a\ofwidth{w}}{c,\sigma\vdash\mathtt{jmp}\ e\Downarrow_a c,\sigma}\text{(XJmp)} \\
@@ -108,12 +109,13 @@ Qed.
 \frac{c,\sigma\vdash{}s_1\Downarrow_\fallthru c_2,\sigma_2\quad{}c_2,\sigma_2\vdash{}q_2\Downarrow_\chi c',\sigma'}{c,\sigma\vdash{}s_1;s_2\Downarrow_\chi c',\sigma'}\text{(XSeq2)} \\
 \frac{c,\sigma\vdash{}e\Downarrow{}n_w\quad{}c,\sigma\vdash{}s_{n\ne 0}\Downarrow_\chi{}c',\sigma'}{c,\sigma\vdash e\:?\:s_\mathsf{T}:s_\mathsf{F}\Downarrow_\chi c',\sigma'}\text{(XIf)} \qquad
 \frac{c,\sigma\vdash{}e\Downarrow{}n_w\quad{}c,\sigma\vdash{}s\,;\stackrel{n}{\cdots}\,;s\Downarrow_\chi c',\sigma'}{c,\sigma\vdash{}s^e\Downarrow_\chi c',\sigma'}\text{(XRep)} \\
+\\[3pt]
 \frac{}{c\vdash p\leadsto\langle\chi,\sigma\rangle}\text{(PStart)} \qquad
 \frac{c,\sigma\vdash p{\kern.5pt}\sigma{\kern.2pt}a\Downarrow_\chi c',\sigma' \quad
       c\vdash p\leadsto\langle a,\sigma\rangle::\tau}
      {c\vdash p\leadsto\langle\mathsf{exitof}(\chi,a,p\sigma),\sigma'\rangle::\langle a,\sigma\rangle::\tau}\text{(PStep)}
 \end{gather*}
-    \caption{Picin\ae{} semantics: expression evaluation (E*), statement execution (X*), program-trace modeling (P*).}
+    \caption{Picin\ae{} semantics: expression evaluation (E\textasteriskcentered), statement execution (X\textasteriskcentered), program-trace modeling (P\textasteriskcentered).}
     \label{fig:pil_semantics}
 \end{figure}
 
