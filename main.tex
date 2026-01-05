@@ -1,3 +1,5 @@
+% CAV cfp: https://conferences.i-cav.org/2026/cfp/
+% Max 18 pages.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \input{cur_header}
 \documentclass[acmsmall,screen,review,anonymous,nonacm, natbib=false]{acmart}
@@ -25,6 +27,7 @@
 
 \addbibresource{refs/kjee.bib}
 \addbibresource{refs/formalcfi.bib}
+\addbibresource{refs/bufm.bib}
 
 \usepackage{makecell}
 \usepackage{svg}
@@ -46,7 +49,13 @@
 \newcommand\fallthru{\downmapsto}
 
 \newcommand\ofwidth[1]{\kern.7pt_{\fboxsep=1pt\boxed{\kern-.5pt\scalebox{.7}{$#1$}\kern-.5pt}}}
-\newcommand\memwidth[1]{\ofwidth{8(1\ll#1)}}
+% memwidthexp allows using a consistent expression in the boxed \ofwidth of expressions and in
+% the `: t' of typing statements.
+\newcommand\memwidthexp[1]{8(1\ll#1)} 
+\newcommand\memwidth[1]{\ofwidth{\memwidthexp{#1}}}
+
+\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
+\newcommand{\review}[1]{\textcolor{orange}{#1}}
 
 \graphicspath{{figs/}}
 
@@ -59,7 +68,7 @@
 \newlength\listingnumberwidth
 \setlength\listingnumberwidth{\widthof{00} + 2em}
 
-We'll see. If I think so. This is. More. \input{sections/abstract}
+\input{sections/abstract}
 
 \maketitle
 \author{}

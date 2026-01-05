@@ -1,0 +1,168 @@
+@STRING{proc = " Proceedings "}
+@STRING{conf = " Conference "}
+@STRING{sym = " Symposium "}
+@STRING{trans = " Transactions "}
+@STRING{j = " Journal "}
+@STRING{work = " Workshop "}
+@STRING{int = " International "}
+@STRING{of = " of "}
+@STRING{the = " the "}
+@STRING{on = " on "}
+@STRING{for = " for "}
+@STRING{at = " at "}
+@STRING{ofthe = of # the}
+
+#PREAMBLE{ "\newcommand\cnum[1]{\ignorespaces}" }
+@PREAMBLE{ "\newcommand\cnum[1]{#1}" }
+#PREAMBLE{ "\newcommand\nym[1]{\unskip}" }
+@PREAMBLE{ "\newcommand\nym[1]{(#1)}" }
+
+% https://ssrg.ece.vt.edu/papers/ccs24.pdf
+@INPROCEEDINGS{formally_verified_lifting,
+  author = "Freek Verbeek and Joshua A. Bockenek and Zhoulai Fu and Binoy Ravindran",
+  title = "Formally Verified Lifting of {C}-compiled {x86-64} Binaries",
+  booktitle = proc # ofthe # "\cnum{43rd} ACM SIGPLAN" # conf # on # "Programming Language Design and Implementation \nym{PLDI}",
+  pages = "934--949",
+  year = 2022,
+}
+
+@inproceedings{islaris,
+  author       = {Michael Sammler and Angus Hammond and Rodolphe Lepigre and Brian Campbell and Jean Pichon{-}Pharabod and Derek Dreyer and Deepak Garg and Peter Sewell},
+  editor       = {Ranjit Jhala and Isil Dillig},
+  title        = {Islaris: verification of machine code against authoritative {ISA}
+                  semantics},
+  booktitle    = {{PLDI} '22: \cnum{43rd} {ACM} {SIGPLAN} International Conference on Programming
+                  Language Design and Implementation, San Diego, CA, USA, June 13 -
+                  17, 2022},
+  pages        = {825--840},
+  publisher    = {{ACM}},
+  year         = {2022},
+  url          = {https://doi.org/10.1145/3519939.3523434},
+  doi          = {10.1145/3519939.3523434},
+  timestamp    = {Tue, 14 Oct 2025 19:38:48 +0200},
+  biburl       = {https://dblp.org/rec/conf/pldi/SammlerHL0PD0S22.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@misc{verified_pointers,
+      title={Formally Verified Binary-level Pointer Analysis}, 
+      author={Freek Verbeek and Ali Shokri and Daniel Engel and Binoy Ravindran},
+      year={2025},
+      eprint={2501.17766},
+      archivePrefix={arXiv},
+      primaryClass={cs.SE},
+      url={https://arxiv.org/abs/2501.17766}, 
+}
+
+@article{isla,
+  author       = {Alasdair Armstrong and
+                  Brian Campbell and
+                  Ben Simner and
+                  Christopher Pulte and
+                  Peter Sewell},
+  title        = {Isla: integrating full-scale {ISA} semantics and axiomatic concurrency
+                  models (extended version)},
+  journal      = {Formal Methods Syst. Des.},
+  volume       = {63},
+  number       = {1},
+  pages        = {110--133},
+  year         = {2024},
+  url          = {https://doi.org/10.1007/s10703-023-00409-y},
+  doi          = {10.1007/S10703-023-00409-Y},
+  timestamp    = {Tue, 14 Oct 2025 19:44:04 +0200},
+  biburl       = {https://dblp.org/rec/journals/fmsd/ArmstrongCSPS24.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{isabil,
+  author       = {Matt Griffin and
+                  Brijesh Dongol and
+                  Azalea Raad},
+  editor       = {Jonathan Aldrich and
+                  Alexandra Silva},
+  title        = {IsaBIL: {A} Framework for Verifying (In)correctness of Binaries in
+                  Isabelle/HOL},
+  booktitle    = {39th European Conference on Object-Oriented Programming, {ECOOP} 2025,
+                  June 30 to July 2, 2025, Bergen, Norway},
+  series       = {LIPIcs},
+  volume       = {333},
+  pages        = {14:1--14:30},
+  publisher    = {Schloss Dagstuhl - Leibniz-Zentrum f{\"{u}}r Informatik},
+  year         = {2025},
+  url          = {https://doi.org/10.4230/LIPIcs.ECOOP.2025.14},
+  doi          = {10.4230/LIPICS.ECOOP.2025.14},
+  timestamp    = {Thu, 26 Jun 2025 17:05:54 +0200},
+  biburl       = {https://dblp.org/rec/conf/ecoop/GriffinDR25.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{trabin,
+title = {TrABin: Trustworthy analyses of binaries},
+journal = {Science of Computer Programming},
+volume = {174},
+pages = {72-89},
+year = {2019},
+issn = {0167-6423},
+doi = {https://doi.org/10.1016/j.scico.2019.01.001},
+url = {https://www.sciencedirect.com/science/article/pii/S0167642318301667},
+author = {Andreas Lindner and Roberto Guanciale and Roberto Metere},
+keywords = {Binary analysis, Formal verification, Proof producing analysis, Theorem proving},
+}
+
+@InProceedings{hoare_style_logic_unstructured,
+  author="Lundberg, Didrik and Guanciale, Roberto and Lindner, Andreas and Dam, Mads",
+  editor       = {Frank S. de Boer and                  Antonio Cerone},
+  title        = {Hoare-Style Logic for Unstructured Programs},
+  booktitle    = {Software Engineering and Formal Methods - 18th International Conference,
+                  {SEFM} 2020, Amsterdam, The Netherlands, September 14-18, 2020, Proceedings},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {12310},
+  pages        = {193--213},
+  publisher    = {Springer},
+  year         = {2020},
+  url          = {https://doi.org/10.1007/978-3-030-58768-0\_11},
+  doi          = {10.1007/978-3-030-58768-0\_11},
+  timestamp    = {Sat, 19 Sep 2020 13:19:35 +0200},
+  biburl       = {https://dblp.org/rec/conf/sefm/LundbergGLD20.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{goto_semantics_and_deduction,
+  author       = {Arie de Bruin},
+  title        = {Goto Statements: Semantics and Deduction Systems},
+  journal      = {Acta Informatica},
+  volume       = {15},
+  pages        = {385--424},
+  year         = {1981},
+  url          = {https://doi.org/10.1007/BF00264536},
+  doi          = {10.1007/BF00264536},
+  timestamp    = {Sun, 21 Jun 2020 17:38:20 +0200},
+  biburl       = {https://dblp.org/rec/journals/acta/Bruin81.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+
+@inproceedings{relational_realistic,
+  author       = {Denis Mazzucato and
+                  Abdalrhman Mohamed and
+                  Juneyoung Lee and
+                  Clark W. Barrett and
+                  Jim Grundy and
+                  John Harrison and
+                  Corina S. Pasareanu},
+  editor       = {Ruzica Piskac and
+                  Zvonimir Rakamaric},
+  title        = {Relational Hoare Logic for Realistically Modelled Machine Code},
+  booktitle    = {Computer Aided Verification - 37th International Conference, {CAV}
+                  2025, Zagreb, Croatia, July 23-25, 2025, Proceedings, Part {I}},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {15931},
+  pages        = {389--413},
+  publisher    = {Springer},
+  year         = {2025},
+  url          = {https://doi.org/10.1007/978-3-031-98668-0_19},
+  doi          = {10.1007/978-3-031-98668-0_19},
+  timestamp    = {Sun, 02 Nov 2025 12:33:32 +0100},
+}
+

@@ -26,28 +26,101 @@ Picin\ae{} assumes single-threaded uninterrupted execution and no superscalar no
 The semantics of the core language are trusted, but come with guarantees of type safety.
 The lifters, both internal and external, are assumed to model the effects of the instructions on real hardware, and the translation to PIL from external lifters is also trusted.
 
+\subsection{Verification Example}
 
+Figures~\ref{fig:strcmp_asm_invs} and~\ref{fig:strcmp_proof} illustrate the key pieces of proving the partial correctness of concrete binary code for libc's strcmp function targeting i386.
+Strcmp lexicographically compares two strings passed in as null-terminated string pointers $s_1$ and $s_2$.
+Figure~\ref{fig:strcmp_asm_invs} shows the addressed assembly code on the left, taken from a libc shared library; the right shows the invariant set specified by the user with $\mathit{mem}$, $\mathit{ecx}$, etc., as shorthand for the value in the corresponding cpu element at the time the invariant is reached.
+The entry invariant is simply $\top$, making the base-case of the coinductive proof trivial but providing no additional information about traces, specifically their cpu states, that continue from this address.
+The invariant at $0x88$ is a \emph{loop invariant}, the user must place an invariant in each loop to satisfy the requirement that execution always reaches a next invariant, otherwise an infinite loop would prevent completion of the partial correctness proof.
+The invariant at $0x96$ and $0xa4$ is the \emph{postcondition}, an invariant placed at the exit points of the function that captures the semantics of the function.
+This postcondition states that the $k$-length prefix of $s_1$ and $s_2$ are equal and the returned value in $\mathit{eax}$ corresponds to the comparison between the $k^{th}$ character of each string.
+The lifted representation of the function and the exit function are omitted from this presentation.
 
-\subsection{Verification Example [shreya]}
+Astute readers will notice that memory $\mathit{mem}$ is used in the loop and postcondition invariants because we lose all information when we reason about the traces continuing from the entry with invariant $\top$.
+Thus $\mathit{mem}$ may be any arbitrary memory---there's no guarantee that the memory and the strings passed into the memory are the same.
+But the contract of \texttt{strcmp} requires it to compare the original strings, so how does this proof reconcile this requirement with the information loss in $\top$?
+% In the proof case from the entry invariant to the loop invariant we are not guaranteed that the memory is the same as it was in the entry, because the invariant $\top$ does not preserve that information.
+% All that is known is that \emph{somehow} the trace reached address $0x80$.
+
+This proof is actually an example of proof composition.
+A smaller, automated theorem, not shown, proves that the memory when the cpu enters \texttt{strcmp} is the same throughout each step until it exits.
+The partial correctness proof then uses this fact to reintroduce into the proof that the memory starting at each invariant is the same as the memory at entry,
+allowing the user to omit this detail, otherwise necessary for a reasonable postcondition, from all invariants.
+
+The proof script in Figure~\ref{fig:strcmp_proof} depicts strcmp's proof of partial correctness.
+Line~\ref{l:proveinvs} begins by applying the co-inductive theorem, splitting the partial correctness proof into a base case and an inductive case.
+Line~\ref{l:basecase} solves the base case using Rocq's automation tactic \texttt{easy}.
+Line~\ref{l:inductivecase} begins the inductive case by applying the memory preservation theorem, proving that the memory starting at any invariant is the same as the base memory upon entry, then uses the \texttt{destruct\_inv} automation to split the case further into the non-exit invariants specified in the invariant set.
+Namely, it is split into two cases: one in which the trace begins at the entry invariant and proceeds to the loop invariant, and another that starts at the loop invariant and proceeds to the exits or back to the loop invariant.
+The first case, Line~\ref{l:strcmp_entry_loop}, steps the trace forward twice using Picin\ae{}'s \texttt{step}, taking on average 0.6 seconds per instruction, then proves the loop invariant is correct upon its first encounter, that is, iteration 0.
+The script uses \texttt{psimpl}, Picin\ae{}'s simplifier, in combination with Rocq's native linear integer arithmetic solver \texttt{lia} to easily dispatch this goal.
+The second case, Line~\ref{l:strcmp_loop}, begins at the loop invariant, immediately destructing it to, among other things, surface the values of registers \texttt{ecx} and \texttt{edx}.
+The \texttt{step} tactic uses these values to simplify expressions as it symbolically executes instructions.
+After repeated steps advance each possible execution path to an invariant, the script concludes by proving each invariant in turn---the loop's $k^{th}$ iteration, and the two postconditions.
+
+\begin{figure}
+\scriptsize
+\begin{subfigure}{0.45\textwidth}
+    \begin{minted}{gas}
+ 0x80: movl 0x4(%esp), %ecx
+ 0x84: movl 0x8(%esp), %edx
+ 0x88: movb (%ecx), %al
+ 0x8a: cmpb (%edx), %al
+ 0x8c: jne 0x9
+ 0x8e: incl %ecx
+ 0x8f: incl %edx
+ 0x90: testb %al, %al
+ 0x92: jne -0xc
+ 0x94: xorl %eax, %eax
+ 0x96: retl
+ 0x97: movl $0x1, %eax
+ 0x9c: movl $0xffffffff, %ecx
+ 0xa1: cmovbl %ecx, %eax
+ 0xa4: retl
+    \end{minted}
+    \end{subfigure}
+\hfil
+    \begin{subfigure}{0.54\textwidth}
+    \centering
+    \newcommand{\mycircplus}{\circ\kern{-7.5pt}{\scriptsize+}}
+    \newcommand{\qeq}{\mathrel{?\mkern-7mu=}}
+\begin{align*}
+\text{Addr}& \qquad& &\text{Invariant} \\
+\\
+0x80& \qquad& \top &\\
+\\
+0x88& \qquad& \exists k, &\mathit{ecx} = s_1+ k\land \mathit{edx}=s_2+ k \\
+   & & & \land mem_{s_1}[0..k] = mem_{s_2}[0..k] \\
+    \\
+0x96&, \qquad& \exists k,& mem_{s_1}[0..k] = mem_{s_2}[0..k]\\
+0xa4& \qquad& & \land (\mathit{eax}=0\rightarrow mem[s_1+k] = 0) \\
+ & & & \land ((eax \qeq 0) = (mem[s_1+k] \qeq mem[s_2+k])) \\
+ % & & \land ((mem_{s_1}[k] \qeq mem_{s_2}[k]) = (eax \qeq 0)) \\
+\end{align*}
+    \end{subfigure}
+    \caption{Assembly (left) and invariant set (right) for i386 strcmp.\\\todo{format the assembly code.}}
+    \label{fig:strcmp_asm_invs}
+\end{figure}
 
 \begin{figure}
 \begin{minted}[fontsize=\footnotesize,linenos,numbersep=4pt,escapeinside=@@]{Coq}
 Proof.
   apply prove_invs. (* begin co-induction *)@\label{l:proveinvs}@
-  + step. exists 0. psimpl. hammer. (* base case *)@\label{l:basecase}@
-  + destruct_inv 32 PRE. (* inductive case *)@\label{l:inductivecase}@
-    destruct PRE as (i & ILEN & MEM & A0 & A1 & Strlen & Cycles). (* loop start *)
-    repeat step.@\label{l:step}@
-    - exists (1 + i). repeat split; auto; lia. (* iterate loop *)@\label{l:loopback}@
-      hammer.
-    - (* exit loop *)@\label{l:loopexit}@
-      ... (* some reasoning about password length (omitted) *)
-      hammer.
+  + easy. (* base case: @$\top$@ *)@\label{l:basecase}@
+  + apply strcmp_preserves_memory. @\label{l:inductivecase}@
+    destruct_inv 32 PRE. (* inductive case *)
+    - step. step. exists 0. psimpl. repeat (lia || split). (* entry -> loop *)@\label{l:strcmp_entry_loop}@
+    - destruct PRE as (k & ECX & EDX & SEQ).@\label{l:strcmp_loop}@
+      repeat step.
+      * exists (k+1). ... (* loop -> loop *)
+      * ... (* loop -> exit 0x96 *)
+      * ... (* loop -> exit 0xa4 *)
 Qed.
 \end{minted}
 \vspace{-16pt}
     \caption{Proof of timing safety for patched password checker}
-    \label{fig:passwordCheck_proof}
+    \label{fig:strcmp_proof}
 \end{figure}
 
 \section{System Implementation}
@@ -115,13 +188,50 @@ Qed.
       c\vdash p\leadsto\langle a,\sigma\rangle::\tau}
      {c\vdash p\leadsto\langle\mathsf{exitof}(\chi,a,p\sigma),\sigma'\rangle::\langle a,\sigma\rangle::\tau}\text{(PStep)}
 \end{gather*}
-    \caption{Picin\ae{} semantics: expression evaluation (E\textasteriskcentered), statement execution (X\textasteriskcentered), program-trace modeling (P\textasteriskcentered).}
+    \caption{Picin\ae{} semantics: expression evaluation (E\textasteriskcentered), statement execution (X\textasteriskcentered), program-trace modeling (P\textasteriskcentered).\\
+    \review{Kevin, is the output bitwidth of binop expressions intentionally simplified? Technically it should be an expression using the binop and w to allow for expressions such as LT which output 1 bit.\\
+    Also, the figure omits ite expressions. Just wanted to double check this is intentional.}}
     \label{fig:pil_semantics}
 \end{figure}
 
+\begin{figure}
+\footnotesize
+\begin{gather*}
+\frac{c\ v =w}{c\vdash\sigma(v):w}\text{(TVar)}\qquad
+\frac{n<2^w}{c\vdash n \ofwidth{w}:w}\text{(TWord)}\qquad
+\frac{\mathit{l}\le2^w\quad c\vdash e_1:\memwidthexp{w}\quad c\vdash e_2:w}
+    {c\vdash  e_1[e_2]_l:8l}\text{(TLoad)}\\
+\frac{l\le2^w\quad c\vdash e_1:\memwidthexp{w}\quad c\vdash e_2:w\quad c\vdash e_3:8l}
+    {c\vdash e_1[e_2\coloneqq_w e_3] : \memwidthexp{w}}\text{(TStore)}\quad
+\frac{c\vdash e_1:w\quad c\vdash e_2:w}
+    {c\vdash e_1\circledcirc e_2:\mathit{widthof}\ \circledcirc\ w}\text{(TBinOp)}\quad
+% \frac{c\vdash e:w}{c\vdash \circledcirc e:w}\text{TUnOp} \quad
+\frac{c\vdash e:w\quad w'\le w}{c\vdash (e:w') : w'}\text{TCast}\\
+\frac{c\vdash e_1:w_1\quad c[v{\coloneqq}w_1]\vdash e_2:w_2}{c\vdash\mathsf{let}~v\coloneqq e_1~\mathsf{in}~e_2 : w_2}\text{(TLet)}\qquad
+\frac{}{c\vdash *_w:w}\text{(TUnk)}\qquad
+\frac{c\vdash e_1:w \quad c\vdash e_2:w' \quad c\vdash e_3:w'}{c\vdash (e_1\ ?\ e_2:e_3):w'}\text{(TIte)}\\
+\frac{c\vdash e_1:w\quad n_1<w}{c\vdash e[n_1..n_2] :1+n_1-n_2}\text{(TExtract)}\qquad
+\frac{c\vdash e_1:w_1\quad c\vdash e_2:w_2}{c\vdash e_1\circ e_2:w_1+w_2}\text{(TConcat)}\\
+\end{gather*}
+\begin{gather*}
+\frac{c' \subseteq c}{c_0,c\vdash \cdot : c'}\text{(TNop)}\qquad
+\frac{c_0\ v\uparrow \lor c_0\ v = w\quad c\vdash e:w \quad c' \subseteq c[v\coloneq w]}
+    {c_0,c\vdash v\coloneq e : c'}\text{(TMov)}\qquad
+\frac{c\vdash e:w \quad c' \subseteq c}{c_0,c\vdash \mathtt{jmp}\ e:c'}\text{(TJmp)}\\
+\frac{c'\subseteq c}{c_0,c\vdash \mathtt{exn}\ i:c'}\text{(TExn)}\qquad
+\frac{c_0,c\vdash:q_1:c_1\quad c_0,c_1\vdash q_2:c_2 \quad c'\subseteq c}{c_0,c\vdash q_1;q_2:c'}\text{(TSeq)}\\
+\frac{c\vdash e:1 \quad c_0,c\vdash q_1:c_2 \quad c_0,c\vdash q_2:c_2 \quad c'\subseteq c}
+    {c_0,c\vdash e\:?q_1:q_2:c'}\text{(TIf)}\qquad
+\frac{c\vdash e:w \quad c'\subseteq c \quad c_0,c'\vdash q:c' \quad c''\subseteq c'}
+    {c_0,c\vdash q^e : c''}\text{(TRep)}
+\end{gather*}
+    \caption{Picin\ae{} static semantics.\\
+    \review{Kevin: (1) I drafted these static semantics in case we want it, but I anticipate saving it for the journal paper. (2) When I merge the two gather* environments I get ``LaTeX Error: Too many math alphabets used in version normal.'' What?}}
+    \label{fig:placeholder}
+\end{figure}
 Figures~\ref{fig:IL} and~\ref{fig:pil_semantics} show PIL syntax and semantics, respectively.
-Programs are functions that map a cpu state $\sigma$ and virtual address $a$ to an IL \emph{statement} $s$ that models the semantics of the machine instruction located at $a$.
-When modeling a von Neumann architecture, $p$ derives $s$ from the memory state in $\sigma$ (e.g., by decoding the bytes at $a$ into an assembly instruction whose semantics are lifted to $s$);
+Programs are functions that map a cpu state $\sigma$ and virtual address $a$ to an IL \emph{statement} $s$ that models the semantics of the machine instruction located at $a$ and its size $\mathit{sz}$ in bytes.
+When modeling a von Neumann architecture, $p$ derives the $s$-$\mathit{sz}$ pair from the memory state in $\sigma$ (e.g., by decoding the bytes at $a$ into an assembly instruction whose semantics are lifted to $s$);
 when modeling a Harvard architecture, $p$ ignores $\sigma$.
 Statements $s$ affect the cpu state $\sigma$ via no-operation ($\cdot$), destructive updates ($\coloneqq$) of machine state elements $v$ (e.g., registers and memory), jumps ($\mathtt{jmp}$), hardware exceptions ($\mathtt{exn}$), sequences ($;$), conditionals (${?}$), and finite repetitions ($s^e$).
 Finite repetitions model individual instructions whose internal semantics contain a bounded micro-loop (e.g., the \texttt{rep} instruction prefix on Intel ISAs).
@@ -129,14 +239,16 @@ Expressions include state element reads ($v$), unsigned binary numbers $n$ of bi
 Non-determinism models side-effects that the ISA specifies are unpredictable or undefined.
 For example, the Intel x86-64 ISA specifies that the \texttt{xor} instruction has an undefined effect upon the cpu's 1-bit arithmetic flag, which the IL models as assignment $\mathtt{AF}\:{\coloneqq}\:*_1$.
 
-Statements and expressions evaluate within a \emph{context} $c$ that maps cpu state elements $v$ to their bit widths $w$.
+Statements and expressions evaluate within a \emph{context} $c$, a partial function from cpu state elements $v$ to their bit widths $w$.
+Cpu states include \emph{abstract} elements, elements used to represent microarchitectural computations but do not affect the state of the cpu. %, a common practice in binary analyzers and disassemblers.
+% Abstract elements have no bit width until they are assigned a value in a move statement.
 Memory is modeled as a single state element of bit width $8(1\ll w_0)$, where $w_0$ is the bit width of the virtual address space (e.g., $w_0=64$ on 64-bit architectures).
-A separate static semantics (not shown) ensures that all assignments $v\coloneqq e$ in well-typed statements $s$ preserve the ISA-defined bit width $c(v)$ of all ISA state elements $v$.
-Assignments to temporary (non-real) IL variables $v$ are dynamically typed, and may assign values of arbitrary width.
+A separate static semantics (not shown) ensures that each assignment $v\coloneqq e$ in a well-typed statements $s$ preserves the ISA-defined bit width of $v$ if it has one.
+This guarantees that abstract elements are assigned to before they are used, thus ensuring that they do not accidentally represent stateful values that outlive an instruction's execution, and that they are used consistently within the statement.
 This arrangement is designed to model the operational semantics of modern ISA lifter languages, such as Ghidra P-Code and BAP BIL, in a form expressible in Rocq.
 
 Programs $p$ exhibit \emph{traces} $\tau$, which list cpu states paired with \emph{exits} $\chi$ (\textit{viz.}, the current virtual address $a$ or hardware exception number ${\uparrow}i$).
-ISA-specific function $\mathsf{exitof}$ computes the next virtual address reached by machine instructions that fall through (i.e., when $\chi={\fallthru}$).
+The $\mathsf{exitof}$ function computes the next virtual address reached by machine instructions that fall through (i.e., when $\chi={\fallthru}$).
 The program-trace relation $p\leadsto\tau$ is non-deterministic:
 For any given $p$, relation $p\leadsto\tau$ is satisfied by all traces $\tau$ that constitute valid execution sequences admitted by the ISA specification.
 Partial correctness theorems therefore typically have the form $\forall\tau,(c\vdash p\leadsto\tau)\rightarrow P(\tau)$, which asserts that every trace $\tau$ realizable by program $p$ on ISA $c$ satisfies proposition $P$.
@@ -144,18 +256,19 @@ Partial correctness theorems therefore typically have the form $\forall\tau,(c\v
 Partial correctness proofs about concrete binary code are structured using \emph{invariant sets}, partial functions from traces to propositions they must satisfy, and exit functions bounding the subroutine, boolean valued functions over traces.
 Proofs proceed by coinductive reasoning.
 To prove all traces through a subroutine $p$ satisfy some postcondition it suffices to show 1) all traces entering $p$ satisfy the first invariant they meet (the base case) and 2) every trace beginning at and satisfying an invariant eventually reaches and satisfies another invariant.
-This enables reasoning about programs with non-terminating executions.
+% This enables reasoning about programs with non-terminating executions.
+This enables modular reasoning about programs without the overhead of proving termination.
 
 Figure~\ref{fig:nextinv'} shows the next invariant rules used to construct partial correctness proofs.
 Along with the PIL semantics this forms the core TCB for Picin\ae{}'s guarantees of binary programs.
 Together these rules say that all reachable executions of $p$ extending trace $\tau$ reach and satisfy an invariant from the invariant set $Invs$.
 The boolean $b$ controls whether the proposition may consider an invariant for $\tau$ as the next invariant, i.e.,
 when it is false the trace must take at least one step before reaching and satisfying the next invariant.
-This prevents the degenerate case in coinductive arguments where the trace starts at an invariant and trivially reaches and satisfies it without executing the program.
+This prevents the invalid case where the trace starts at an invariant and trivially reaches and satisfies the ``next'' invariant without executing the program.
 %: starting at a true invariant we execute \emph{at least} one instruction and reach and satisfy an invariant.
 
-The first rule \texttt{NIHere} states the next invariant obligation is satisfied if the trace has effectively reached and satisfied an invariant.
-There is an invariant present, it is provable, and this is not a degenerate case or the program has effectively exited, signifying the invariant is a postcondition.
+The first rule \texttt{NIHere} states the next invariant obligation is satisfied if the trace has effectively reached and satisfied an invariant:
+$\tau$ is assigned an invariant, it is provable, and the proof is allowed to use it ($b$ is true or the $\tau$ has exited the program, signifying a postconditiong).
 The second rule \texttt{NIStep} allows the user to prove trace $\tau$ reaches and satisfies a next invariant if all traces extended by symbolically executing the instruction at the head of $\tau$ reach and satisfy an invariant.
 The validity of this proposition relies on considering all possible traces $\tau'$ which extend $\tau$.
 Symbolically executing instructions may result in multiple states for one of two reasons: 1) underspecified cpu states allow two or more branches of an instruction to be valid and 2)~non-deterministic expressions may result in diverging states or control flow.
@@ -194,15 +307,15 @@ Symbolically executing instructions may result in multiple states for one of two
     \begin{equation}
         \mathtt{satisfies\_all}\coloneq
         c\vdash{}p\leadsto\tau\ \Rightarrow\ 
-        \lnot tl\ \tau \Uparrow_{p,xp}\ \Rightarrow\ 
+        \lnot (tl\ \tau \Uparrow_{p,xp})tg\ \Rightarrow\ 
         \forall{}b,\ p,xp,b\vdash\tau\leadsto{}Invs
     \end{equation}
     \caption{Picin\ae{}'s satisfies\_all definition.}
     \label{fig:satisfies_all}
 \end{figure}
 
-Picin\ae{}'s \emph{satisfies\_all} definition shown in Figure~\ref{fig:satisfies_all} abstracts trace executability, \emph{boundedness}, or confinement of the trace prefixes within the exit points, and invariant satisfaction.
-Theorem statements are typically expressed as an implication from conditions of $\tau$ at the time it entered the target subroutine to a satisfies\_all statement about the program, invariant set, exit points and $\tau$.
+Picin\ae{}'s \emph{satisfies\_all} definition, shown in Figure~\ref{fig:satisfies_all}, abstracts trace executability, \emph{boundedness}, or confinement of the trace prefixes within the exit points, and invariant satisfaction.
+Theorem statements are expressed as an implication from conditions of $\tau$ at the time it entered the target subroutine to a $\mathsf{satisfies\_all}$ statement about the program, invariant set, exit points and $\tau$.
 Executability and boundedness restrict traces to those observable on real hardware and enable pruning unreachable traces using the \texttt{NIHere} and \texttt{NIStep} rules.
 
 
@@ -211,20 +324,45 @@ Executability and boundedness restrict traces to those observable on real hardwa
 % Mention
 %   * reachability guarantees
 %   * how step works
-Picin\ae{}'s symbolic executor handles reasoning about the resulting states and obligations from executing the instruction in a concrete program.
-It defines a functional interpreter for the PIL statements and stores and verifies that it is correct with respect to the operational semantics.
+Picin\ae{}'s reflective tactic $\mathit{step}$ handles reasoning about the resulting states and obligations from executing the instruction in a concrete program.
+It wraps a functional interpreter mapping PIL statements and architectural stores to a list of variables with known values, an exit, and a list of memory accesses propositions implied by the valid execution of the instruction.
+The interpreter is proved correct with respect to the semantics presented in Figure~\ref{fig:pil_semantics}.
+The step tactic uses the proof of correctness to convert the $\tau\stackrel{p}{\rightarrow}\tau'$ obligation in \texttt{NIStep} of Figure~\ref{fig:nextinv'} into a computation and, along with some more tactic-automation, computes it to exhaustively enumerate all reachable states, thus grounding the universal quantification of $\tau'$.
 
+The theory library in part defines and proves properties of PIL, including well-typedness of statements and their confluence.
+It comprises number-theoretic results, abstractions and theory of binary-level data structures such as strings and linked lists, and logical properties of Picin\ae{}'s representations and abstractions that have been useful in binary-level formal verification.
+\todo{What else do we want to say about theory?}
 
+One of the challenges faced with deductive verification of binary code is that expressions quickly grow too large to read and become cumbersome to manipulate.
+Picin\ae{}'s simplifier \emph{psimpl} addresses this issue for expressions yielded by the symbolic interpreter, including store updates and reads, modular and bitwise arithmetic, and bit extraction.
+%Psimpl is another reflexive tactic, it reduces expressions resulting from symbolic interpretation by turning the reduction into a computation with a certificate of correctness.
+Psimpl is a reflexive tactic, effecting simplifications via computation certified with a proof of correctness.
+The simplifier is a three-stage pipeline that overcomes both theoretical challenges of rewriting logics and the implementation idiosyncrasies of the Rocq proof assistant.
+The first stage overcomes the computation engine's aggressive unfolding of definitions, even ones marked as opaque.
+Psimpl first turns expressions into simplifier abstract syntax trees (SAST's), a deep embedding of Rocq's terms into a data structure whose semantics depend on a mapping from inductive symbols to the Rocq functions they signify.
+This transforms the expression into one whose computation content is abstracted into a semantics, so $\mathsf{vm\_compute}$ only evaluates the function reducing the SAST, it never sees the computation functions it would reduce, such as $\mathsf{add}$ and $\mathsf{getmem}$.
 
+% Greatly simplified treatment, does not cover the metavariables. More information on line 204 of the simplifier.v file.
+The second stage simplifies the SAST using a postorder traversal.
+The most important reduction is the elimination of modulo operations.
+This depends on propogating upper and lower bounds of expressions during a traversal, simplifying modulo operations when the upper bound of the expression is less than the modulus.
+Other simplifications include eliminating redundant update operations on stores, interpreting store lookups, and reducing arithmetic expressions, e.g., reducing $x+y-y'$ to $x$ when $y$ and $y'$ are provably equal.
+After the simplifications the third stage transforms the SAST back into a Picin\ae{} expression.
 
-The theory library in part defines and proves properties of PIL, including well-typedness of statements and their confluence. What do I want to say here?
+Picin\ae{} facilitates modular reasoning about programs by supporting call-return semantics.
+Once proved,the partial correctness proof of a callee can be applied inside of the proof of a caller to skip re-proving the callee providing sufficient conditions are met.
+First, the callee invariants must imply any collocated caller invariants.
+Second, the callee must not exit other than by reaching the return site, i.e., it must not raise a hardware exception or jump to a non-code address.
+Third, the callee's invariants must be functions of the cpu state, i.e. they must be \emph{prefix-closed}~\cite{enforceable_security_policies}.
+Picin\ae{} provides infrastructure for defining invariant sets and exits such that these conditions are guaranteed to be met for non-overlapping code fragments.
 
+Picin\ae{} treats indirect calls and jumps like all other instructions.
+Specifically, as a $\texttt{jmp}\ e$ statement, with $e$ a non-constant expression.
 
+but the address being an expression rather than a constant complicates how the next instruction to execute is computed.
+If the indirect call is to a function with an axiomatized partial correctness property, e.g., a function pointer to a comparator, then the function-call machinery can dispatch the function without the prover needing to define code in its section of memory.
+In other cases the prover must specify what bytes are in memory or what that memory address decodes to.
+This, in fact, is the basis for reasoning about binary transformations over arbitrary binary code.
 
-
-
-\textcolor{red}{Introduce step and psimpl}
-
-\textcolor{red}{say something about calls and returns}
 
 % lifter based on a decompiler such as Ghidra~\cite{ghidra2019blackhat} or BAP~\cite{bap}.

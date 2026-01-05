@@ -24,7 +24,8 @@ As a hallmark example, \emph{binary control-flow integrity} (CFI) algorithms~\te
 The output of the CFI transform is a self-monitoring, self-securing binary that requires no additional sandboxing.
 CFI security is a core technology for enforcing many critical software security policies, including process isolation, software fault isolation, stack integrity, mobile code security, and code-reuse attack detection and defense~\textcolor{red}{[citations throughout this list]}.
 
-Although prior efforts have verified idealized binary CFI \emph{algorithms} for abstract ISA models of varying detail~\textcolor{red}{[citations]}, no formally verified binary CFI \emph{implementation} for a real, mainstream ISA has yet been realized.
+Although prior efforts have verified idealized binary CFI \emph{algorithms} for abstract ISA models of varying detail~\textcolor{red}{[citations]}, % no formally verified binary CFI \emph{implementation} for a real, mainstream ISA has yet been realized.
+none have yet verified a binary CFI \emph{implementation} for a real mainstream ISA.
 This has left open the dangerous possibility that binary CFI implementations might not match the algorithms on which their designs are informally based.
 In practice, such implementations have many subtle details that are prone to error, including accurate decoding of all reachable instructions in potentially malicious or malformed binaries, correct identification of all possible indirect control-flow transfer operations, complete mediation of all such operations, and careful rebasing and relinking of all code fragments displaced by guard code introduced during the rewriting process.
 A full proof of safety for a binary CFI implementation must therefore consider all (arbitrary) input byte sequences that constitute executable code on the ISA, and prove that all possible executions of the implementation's output byte sequence satisfy the control-flow policy.

@@ -1,31 +1,51 @@
 %! root=./main.tex
 \section{Related Works}
 
-CCS'20 survey on efficacy of CFI:
-https://dl-acm-org.libproxy.utdallas.edu/doi/pdf/10.1145/3372297.3417867
-* Real boundaries differ from claimed boundaries due to implementation or algorithmic errors
-* Five of seven common mistakes were in the implementation stage
-    * unexpected optimization
-    * corner-cases: inlined assembly, dynamic shared objects (DSO)
-    * logic bugs in implementation
-    * mismatched specification, e.g., QEMU bug in ARM PA emulation, not setting the NX bit
-    * adding unintended permissible jump targets (xend bytes in TSX-based CFI)
-* Mentioned binary-compatible CFI:  Opaque CFI [ 37 ], CCFIR [ 72 ], binCFI [ 75] and CFIMon 
-* Mentioned theoretically-only safe CFI:  SafeDispatch [ 28 ] and PARTS [ 34 ]
-* CScan tool very limited: relies on source-level analysis, only tests each ICT guard code once
-* Mention false positives, maybe we can mention we can analyze the implementation and prove it precludes false positives
-* Analyzed 56 CFI solution evaluation methods, found three methods:
-    1) theoretical evaluation
-    2) experimental verification
-    3) quantitative analysis
+CFI is a very active field of research with many new publications each year, each supporting the correctness of their work using one or more of three approaches~\cite{cracks_in_shields}: theoretical verification, experimental verification or quantitative analysis.
+% A 2020 survey~\cite{cracks_in_shields} of 50 CFI solutions found they each evaluated their methods using one of three approaches: theoretical verification, experimental verification or quantitative analysis.
+Theoretical verification comprises informal analyses of the CFI solution (e.g., \texttt{SAFEDISPATCH}~\cite{safedispatch}),
+experimental verification includes applying the CFI technique to vulnerability test-suites (e.g., RIPE~\cite{suite_ripe} or RecIPE~\cite{suite_recipe}) or other software with known vulnerabilities (e.g., CVEs),
+and quantitative analysis involves measuring a static property of programs before and after treatment, such as number of code gadgets or average indirect target reduction (AIR)~\cite{bincfi}.
+% \todo{Our review of X more CFI solutions since 2020 reveals each of their evaluations lie within one of these categories.}
+In contrast, we evaluated the security of our CFI \emph{implementation} by \emph{formally} verifying it, thus eliminating the possibility of errors in implementation, which account for 5 of 7 common causes of error in CFI~\cite{cracks_in_shields}.
+% The survey also found that 5 of 7 common mistakes that invalidate CFI security occur in the implementation stage.
+% Formal verification eliminates 4 of 5 implementation mistakes, indeed the verification aids in bug discovery.
+% The implementation error that formal verification cannot handle is unexpected optimizations in the compiler.
+% Our implementation passes through the Rocq OCaml extractor and the OCaml compiler, bugs in these processes are out of scope of the security proof.
 
-Franz'17 survey on CFI:
-https://dl.acm.org/doi/pdf/10.1145/3054924
-* common security metric AIR is approximate and leaves holes for attackers
-* aside: Carlini et al Control Flow Bending show even with the most precise CFG and a shadowstack attacks may still be possible
+% There have been many proposed binary-rewriting solutions to CFI since it was first introduced in 2005.
+% Recent projects include Opaque CFI~\cite{opaque_cfi}, CCFIR~\cite{ccfir}, binCFI~\cite{binCFI} and CFIMon~cite{cfimon}.
 
-ARM BTI binary rewriter:
-10.1109/TIFS.2025.3580342
-* does not even try to make binary safe, just make it harder to attack
-* binary analysis, incremental rewriting, runtime monitor for distinguishing attacks from ?
+\todo{What other aspects of CFI do we want to cover? Do we want to go into the strategies employed by other binary rewriters? Do we want to discuss source-dependent solutions at all?}
 
+% CCS'20 survey on efficacy of CFI:
+% https://dl-acm-org.libproxy.utdallas.edu/doi/pdf/10.1145/3372297.3417867
+% * Real boundaries differ from claimed boundaries due to implementation or algorithmic errors
+% * Five of seven common mistakes were in the implementation stage
+%     * unexpected optimization
+%     * corner-cases: inlined assembly, dynamic shared objects (DSO)
+%     * logic bugs in implementation
+%     * mismatched specification, e.g., QEMU bug in ARM PA emulation, not setting the NX bit
+%     * adding unintended permissible jump targets (xend bytes in TSX-based CFI)
+% * Mentioned binary-compatible CFI:  Opaque CFI [ 37 ], CCFIR [ 72 ], binCFI [ 75] and CFIMon 
+% * Mentioned theoretically-only safe CFI:  SafeDispatch [ 28 ] and PARTS [ 34 ]
+% * CScan tool very limited: relies on source-level analysis, only tests each ICT guard code once
+% * Mention false positives, maybe we can mention we can analyze the implementation and prove it precludes false positives
+% * Analyzed 56 CFI solution evaluation methods, found three methods:
+%     1) theoretical evaluation
+%     2) experimental verification
+%     3) quantitative analysis
+
+Bottom-up formal methods, which analyze binary and assembly level code, has received increasing attention recently.
+Most projects have created general purpose binary analysis frameworks, but some have tailored solutions to specific problems, such as certified decompilation~\cite{formally_verified_lifting} and binary pointer analysis~\cite{verified_pointers}.
+Islaris~\cite{islaris} reasons about concrete program traces using the Isla symbolic interpreter to create trusted traces from the target architecture's Sail specification.
+IsaBIL~\cite{isabil} translates BAP~\cite{bap} decompilations into its Isabelle/HOL embedding to reason about concrete program executions.
+Most recently, a team published a relational logic in HOL Light and used it to prove program equivalence and correctness~\cite{relational_realistic}.
+Of these, only the last is capable of quantifying over programs, as we have done, because it uses a decode function to interpret bytes from memory.
+% \cite{trabin}
+
+
+% 2022: Islaris
+% 2025: IsaBIL
+% 2019: TrABin - HoL4 certified transpiler + wp generator and prover; 3k loc for model and semantics
+% 
