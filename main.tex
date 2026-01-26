@@ -2,7 +2,7 @@
 % Max 18 pages.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \input{cur_header}
-\documentclass[acmsmall,screen,review,anonymous,nonacm, natbib=false]{acmart}
+\documentclass[runningheads,orivec]{llncs}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
@@ -19,6 +19,7 @@
 \usepackage{minted}
 \usepackage{trfrac}
 \usepackage{ulem}
+\usepackage{lipsum}
 
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
@@ -36,6 +37,10 @@
 \UseTblrLibrary{booktabs}
 
 \usepackage{amsmath}
+
+\providecommand\texorpdfstring[2]{#1}  % Provide a backup definition in case hyperref not loaded.
+
+\newcommand\Picinae{\texorpdfstring{{\sffamily Picin\ae}}{Picinae}}
 
 \providecommand\downmapsto{\mathrel{\mathpalette\mydownmapsto\relax}}
 \makeatletter
@@ -56,22 +61,24 @@
 
 \newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
 \newcommand{\review}[1]{\textcolor{orange}{#1}}
+\newcommand{\lorem}[1]{\textcolor{orange}{\lipsum[#1]}}
 
 \graphicspath{{figs/}}
 
-\begin{document}
-
 \def\papertitle{Formal Verification of a Realistic Binary Rewriter}
+\author{}
+\institute{}
 
 \title{\papertitle}
 
 \newlength\listingnumberwidth
 \setlength\listingnumberwidth{\widthof{00} + 2em}
 
-\input{sections/abstract}
+\begin{document}
 
 \maketitle
-\author{}
+
+\input{sections/abstract}
 
 \input{sections/introduction}
 \input{sections/background}
@@ -79,7 +86,7 @@
 \input{sections/technical}
 \input{sections/eval}
 \input{sections/related}
-\input{sections/discussion}
+% \input{sections/discussion}
 \input{sections/conclusion}
 
 \printbibheading{}

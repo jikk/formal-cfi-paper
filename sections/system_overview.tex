@@ -1,9 +1,12 @@
 \section{System Overview}
+
+\textcolor{red}{[KWH Comment)] I don't like this figure. First, it looks aesthetically clunky. We should create something more professional-looking here (e.g., shadowed boxes, a theme-driven color palette, consistent font sizes, etc.). Second, the flow is confusing because it looks like the external lifter goes to the internal lifter goes directly to the proof. I understand why you're depicting it that way, but it's unexpected and jarring to a newcomer. We don't want anything jarring at this point in the paper. The external and internal lifters should have separate arrows that both lead into the Picinae IL. That should flow into the Symbolic Evaluator (not ``executor''), not into Theory.  Splitting between the two makes it look like they're alternatives to each other (which obviously isn't what we want to say).  Symbolic evaluation should flow into ISA Model, but that should then flow into some kind of central box perhaps labeled ``Proof Generation''.  That central box should have satellite boxes feeding into it with a variety of labels like: Binary Arithmetic Theory, (Co-)Inductive Theory of Traces, Memory Safety Theory, etc.  We don't need to list everything Picinae has; we just need the ones to which we'd like to refer in this paper when explaining how things work.  The final output from Proof Generation should be Proof.v, probably outside the Rocq system box entirely.}
+
 \begin{figure}
     \centering
-    \includegraphics[width=1.0\textwidth]{figs/picinae_arch_overview.png}  
+    \includegraphics[width=1.0\textwidth]{figs/Picinae_overview.drawio.pdf}  
     \vspace{-20pt}
-    \caption{Picin\ae{} system}
+    \caption{\Picinae{} system}
     \label{fig:system_overview}
 \end{figure}
 
@@ -119,7 +122,7 @@ Proof.
 Qed.
 \end{minted}
 \vspace{-16pt}
-    \caption{Proof of timing safety for patched password checker}
+    \caption{Proof of partial correctness for i386 strcmp.}
     \label{fig:strcmp_proof}
 \end{figure}
 
@@ -190,45 +193,47 @@ Qed.
 \end{gather*}
     \caption{Picin\ae{} semantics: expression evaluation (E\textasteriskcentered), statement execution (X\textasteriskcentered), program-trace modeling (P\textasteriskcentered).\\
     \review{Kevin, is the output bitwidth of binop expressions intentionally simplified? Technically it should be an expression using the binop and w to allow for expressions such as LT which output 1 bit.\\
-    Also, the figure omits ite expressions. Just wanted to double check this is intentional.}}
+    Also, the figure omits ite expressions. Just wanted to double check this is intentional.}
+    \textcolor{red}{[KWH response: Yes, I intentionally simplified it because those missing features could be easily simulated with things we already show (e.g., ECast to get 1-bit ops).]}}
     \label{fig:pil_semantics}
 \end{figure}
 
-\begin{figure}
-\footnotesize
-\begin{gather*}
-\frac{c\ v =w}{c\vdash\sigma(v):w}\text{(TVar)}\qquad
-\frac{n<2^w}{c\vdash n \ofwidth{w}:w}\text{(TWord)}\qquad
-\frac{\mathit{l}\le2^w\quad c\vdash e_1:\memwidthexp{w}\quad c\vdash e_2:w}
-    {c\vdash  e_1[e_2]_l:8l}\text{(TLoad)}\\
-\frac{l\le2^w\quad c\vdash e_1:\memwidthexp{w}\quad c\vdash e_2:w\quad c\vdash e_3:8l}
-    {c\vdash e_1[e_2\coloneqq_w e_3] : \memwidthexp{w}}\text{(TStore)}\quad
-\frac{c\vdash e_1:w\quad c\vdash e_2:w}
-    {c\vdash e_1\circledcirc e_2:\mathit{widthof}\ \circledcirc\ w}\text{(TBinOp)}\quad
-% \frac{c\vdash e:w}{c\vdash \circledcirc e:w}\text{TUnOp} \quad
-\frac{c\vdash e:w\quad w'\le w}{c\vdash (e:w') : w'}\text{TCast}\\
-\frac{c\vdash e_1:w_1\quad c[v{\coloneqq}w_1]\vdash e_2:w_2}{c\vdash\mathsf{let}~v\coloneqq e_1~\mathsf{in}~e_2 : w_2}\text{(TLet)}\qquad
-\frac{}{c\vdash *_w:w}\text{(TUnk)}\qquad
-\frac{c\vdash e_1:w \quad c\vdash e_2:w' \quad c\vdash e_3:w'}{c\vdash (e_1\ ?\ e_2:e_3):w'}\text{(TIte)}\\
-\frac{c\vdash e_1:w\quad n_1<w}{c\vdash e[n_1..n_2] :1+n_1-n_2}\text{(TExtract)}\qquad
-\frac{c\vdash e_1:w_1\quad c\vdash e_2:w_2}{c\vdash e_1\circ e_2:w_1+w_2}\text{(TConcat)}\\
-\end{gather*}
-\begin{gather*}
-\frac{c' \subseteq c}{c_0,c\vdash \cdot : c'}\text{(TNop)}\qquad
-\frac{c_0\ v\uparrow \lor c_0\ v = w\quad c\vdash e:w \quad c' \subseteq c[v\coloneq w]}
-    {c_0,c\vdash v\coloneq e : c'}\text{(TMov)}\qquad
-\frac{c\vdash e:w \quad c' \subseteq c}{c_0,c\vdash \mathtt{jmp}\ e:c'}\text{(TJmp)}\\
-\frac{c'\subseteq c}{c_0,c\vdash \mathtt{exn}\ i:c'}\text{(TExn)}\qquad
-\frac{c_0,c\vdash:q_1:c_1\quad c_0,c_1\vdash q_2:c_2 \quad c'\subseteq c}{c_0,c\vdash q_1;q_2:c'}\text{(TSeq)}\\
-\frac{c\vdash e:1 \quad c_0,c\vdash q_1:c_2 \quad c_0,c\vdash q_2:c_2 \quad c'\subseteq c}
-    {c_0,c\vdash e\:?q_1:q_2:c'}\text{(TIf)}\qquad
-\frac{c\vdash e:w \quad c'\subseteq c \quad c_0,c'\vdash q:c' \quad c''\subseteq c'}
-    {c_0,c\vdash q^e : c''}\text{(TRep)}
-\end{gather*}
-    \caption{Picin\ae{} static semantics.\\
-    \review{Kevin: (1) I drafted these static semantics in case we want it, but I anticipate saving it for the journal paper. (2) When I merge the two gather* environments I get ``LaTeX Error: Too many math alphabets used in version normal.'' What?}}
-    \label{fig:placeholder}
-\end{figure}
+% \begin{figure}
+% \footnotesize
+% \begin{gather*}
+% \frac{c\ v =w}{c\vdash\sigma(v):w}\text{(TVar)}\qquad
+% \frac{n<2^w}{c\vdash n \ofwidth{w}:w}\text{(TWord)}\qquad
+% \frac{\mathit{l}\le2^w\quad c\vdash e_1:\memwidthexp{w}\quad c\vdash e_2:w}
+%     {c\vdash  e_1[e_2]_l:8l}\text{(TLoad)}\\
+% \frac{l\le2^w\quad c\vdash e_1:\memwidthexp{w}\quad c\vdash e_2:w\quad c\vdash e_3:8l}
+%     {c\vdash e_1[e_2\coloneqq_w e_3] : \memwidthexp{w}}\text{(TStore)}\quad
+% \frac{c\vdash e_1:w\quad c\vdash e_2:w}
+%     {c\vdash e_1\circledcirc e_2:\mathit{widthof}\ \circledcirc\ w}\text{(TBinOp)}\quad
+% % \frac{c\vdash e:w}{c\vdash \circledcirc e:w}\text{TUnOp} \quad
+% \frac{c\vdash e:w\quad w'\le w}{c\vdash (e:w') : w'}\text{TCast}\\
+% \frac{c\vdash e_1:w_1\quad c[v{\coloneqq}w_1]\vdash e_2:w_2}{c\vdash\mathsf{let}~v\coloneqq e_1~\mathsf{in}~e_2 : w_2}\text{(TLet)}\qquad
+% \frac{}{c\vdash *_w:w}\text{(TUnk)}\qquad
+% \frac{c\vdash e_1:w \quad c\vdash e_2:w' \quad c\vdash e_3:w'}{c\vdash (e_1\ ?\ e_2:e_3):w'}\text{(TIte)}\\
+% \frac{c\vdash e_1:w\quad n_1<w}{c\vdash e[n_1..n_2] :1+n_1-n_2}\text{(TExtract)}\qquad
+% \frac{c\vdash e_1:w_1\quad c\vdash e_2:w_2}{c\vdash e_1\circ e_2:w_1+w_2}\text{(TConcat)}\\
+% \end{gather*}
+% \begin{gather*}
+% \frac{c' \subseteq c}{c_0,c\vdash \cdot : c'}\text{(TNop)}\qquad
+% \frac{c_0\ v\uparrow \lor c_0\ v = w\quad c\vdash e:w \quad c' \subseteq c[v\coloneq w]}
+%     {c_0,c\vdash v\coloneq e : c'}\text{(TMov)}\qquad
+% \frac{c\vdash e:w \quad c' \subseteq c}{c_0,c\vdash \mathtt{jmp}\ e:c'}\text{(TJmp)}\\
+% \frac{c'\subseteq c}{c_0,c\vdash \mathtt{exn}\ i:c'}\text{(TExn)}\qquad
+% \frac{c_0,c\vdash:q_1:c_1\quad c_0,c_1\vdash q_2:c_2 \quad c'\subseteq c}{c_0,c\vdash q_1;q_2:c'}\text{(TSeq)}\\
+% \frac{c\vdash e:1 \quad c_0,c\vdash q_1:c_2 \quad c_0,c\vdash q_2:c_2 \quad c'\subseteq c}
+%     {c_0,c\vdash e\:?q_1:q_2:c'}\text{(TIf)}\qquad
+% \frac{c\vdash e:w \quad c'\subseteq c \quad c_0,c'\vdash q:c' \quad c''\subseteq c'}
+%     {c_0,c\vdash q^e : c''}\text{(TRep)}
+% \end{gather*}
+%     \caption{Picin\ae{} static semantics.\\
+%     \review{Kevin: (1) I drafted these static semantics in case we want it, but I anticipate saving it for the journal paper. (2) When I merge the two gather* environments I get ``LaTeX Error: Too many math alphabets used in version normal.'' What?}}
+%     \label{fig:placeholder}
+% \end{figure}
+
 Figures~\ref{fig:IL} and~\ref{fig:pil_semantics} show PIL syntax and semantics, respectively.
 Programs are functions that map a cpu state $\sigma$ and virtual address $a$ to an IL \emph{statement} $s$ that models the semantics of the machine instruction located at $a$ and its size $\mathit{sz}$ in bytes.
 When modeling a von Neumann architecture, $p$ derives the $s$-$\mathit{sz}$ pair from the memory state in $\sigma$ (e.g., by decoding the bytes at $a$ into an assembly instruction whose semantics are lifted to $s$);

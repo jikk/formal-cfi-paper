@@ -1,7 +1,7 @@
 %! root=./main.tex
-\section{Related Works}
+\section{Related Work}
 
-CFI is a very active field of research with many new publications each year, each supporting the correctness of their work using one or more of three approaches~\cite{cracks_in_shields}: theoretical verification, experimental verification or quantitative analysis.
+CFI enforcement is a very active field of research with many new publications each year, each supporting the correctness of their work using one or more of three approaches~\cite{cracks_in_shields}: theoretical verification, experimental verification or quantitative analysis.
 % A 2020 survey~\cite{cracks_in_shields} of 50 CFI solutions found they each evaluated their methods using one of three approaches: theoretical verification, experimental verification or quantitative analysis.
 Theoretical verification comprises informal analyses of the CFI solution (e.g., \texttt{SAFEDISPATCH}~\cite{safedispatch}),
 experimental verification includes applying the CFI technique to vulnerability test-suites (e.g., RIPE~\cite{suite_ripe} or RecIPE~\cite{suite_recipe}) or other software with known vulnerabilities (e.g., CVEs),
@@ -15,6 +15,9 @@ In contrast, we evaluated the security of our CFI \emph{implementation} by \emph
 
 % There have been many proposed binary-rewriting solutions to CFI since it was first introduced in 2005.
 % Recent projects include Opaque CFI~\cite{opaque_cfi}, CCFIR~\cite{ccfir}, binCFI~\cite{binCFI} and CFIMon~cite{cfimon}.
+
+Recent work has started to explore the problem of machine-verifying underconstrained-code properties by examining relational properties of \emph{concrete} programs with statically known code~\cite{relational_realistic}.
+\todo{Follow this with an analysis of the form, ``This accomplishes (good things) but cannot achieve (our achievements).''}
 
 \todo{What other aspects of CFI do we want to cover? Do we want to go into the strategies employed by other binary rewriters? Do we want to discuss source-dependent solutions at all?}
 
@@ -36,11 +39,12 @@ In contrast, we evaluated the security of our CFI \emph{implementation} by \emph
 %     2) experimental verification
 %     3) quantitative analysis
 
-Bottom-up formal methods, which analyze binary and assembly level code, has received increasing attention recently.
+% Bottom-up formal methods, which analyze binary and assembly level code, has received increasing attention recently.
+Formal verification of low-level code has received increasing attention recently.
 Most projects have created general purpose binary analysis frameworks, but some have tailored solutions to specific problems, such as certified decompilation~\cite{formally_verified_lifting} and binary pointer analysis~\cite{verified_pointers}.
 Islaris~\cite{islaris} reasons about concrete program traces using the Isla symbolic interpreter to create trusted traces from the target architecture's Sail specification.
 IsaBIL~\cite{isabil} translates BAP~\cite{bap} decompilations into its Isabelle/HOL embedding to reason about concrete program executions.
-Most recently, a team published a relational logic in HOL Light and used it to prove program equivalence and correctness~\cite{relational_realistic}.
+Most recently, a team published a relational Hoare logic in HOL Light and used it to prove program equivalence and correctness~\cite{relational_realistic}.
 Of these, only the last is capable of quantifying over programs, as we have done, because it uses a decode function to interpret bytes from memory.
 % \cite{trabin}
 
