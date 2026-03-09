@@ -12,13 +12,12 @@
 \input{acronyms}  % acronyms
 
 \usepackage{pygmentex}
+\usepackage{minted}
 \usepackage{codestyle}
 \usepackage{listings}
 \usepackage{float}
-\usepackage{minted}
 \usepackage{trfrac}
 \usepackage{ulem}
-\usepackage{lipsum}
 
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
@@ -60,11 +59,10 @@
 
 \newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
 \newcommand{\review}[1]{\textcolor{orange}{#1}}
-\newcommand{\lorem}[1]{\textcolor{orange}{\lipsum[#1]}}
 
 \graphicspath{{figs/}}
 
-\def\papertitle{Formal Verification of a Realistic Binary Rewriter}
+\def\papertitle{Machine-Check Control Flow Integrity}
 \author{}
 
 \title{\papertitle}
@@ -81,11 +79,12 @@
 \input{sections/introduction}
 \input{sections/background}
 \input{sections/system_overview}
+\input{sections/cfi}
 \input{sections/technical}
 \input{sections/eval}
 \input{sections/related}
-% \input{sections/discussion}
-\input{sections/conclusion}
+\input{sections/disc}
+\input{sections/conc}
 
 \printbibheading{}
 \printbibliography[heading=none]
