@@ -1,8 +1,7 @@
 % CAV cfp: https://conferences.i-cav.org/2026/cfp/
 % Max 18 pages.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \input{cur_header}
-\documentclass[runningheads,orivec]{llncs}
+\documentclass[sigconf, anonymous=false, natbib=false]{acmart}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
@@ -56,7 +55,7 @@
 \newcommand\ofwidth[1]{\kern.7pt_{\fboxsep=1pt\boxed{\kern-.5pt\scalebox{.7}{$#1$}\kern-.5pt}}}
 % memwidthexp allows using a consistent expression in the boxed \ofwidth of expressions and in
 % the `: t' of typing statements.
-\newcommand\memwidthexp[1]{8(1\ll#1)} 
+\newcommand\memwidthexp[1]{8(1\ll#1)}
 \newcommand\memwidth[1]{\ofwidth{\memwidthexp{#1}}}
 
 \newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
