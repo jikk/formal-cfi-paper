@@ -50,7 +50,7 @@ Thus, to prove that a CFI rewriter is correct, it suffices to show that all code
 We show that our CFI rewriter implementation is correct by a proof that follows this inductive structure.
 % The proof of correctness for our realistic CFI rewriter implementation follows this inductive structure.
 
-\section{Case Study: Provably Safe CFI Implementation}
+\section{A Verified Binary CFI Rewriter}
 
 We have implemented a CFI rewriter in Gallina using the aforementioned case-analytical structure.
 The rewriter accepts an ARMv7 binary program and a control-flow policy as input and produces a rewritten binary with IRMs that enforce the policy.
@@ -97,8 +97,7 @@ For each dynamic branch site, the rewriter:
     \centering
     % drawio file link:
     % https://drive.google.com/file/d/1BRexH1KjlPXB-1lNX2qnoN52LuUoykd4/view
-    \includegraphics[width=1.0\textwidth]{figs/CFI_hashtable.drawio.pdf}  
-    \vspace{-10pt}
+    \includegraphics[width=0.85\textwidth]{figs/CFI_hashtable.drawio.pdf}  
     \caption{Example Hash Table Entry}
     \label{fig:cfi_hash_table}
 \end{figure}
