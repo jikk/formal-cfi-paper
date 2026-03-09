@@ -75,8 +75,9 @@ In this paper we address this long-standing challenge through the design and imp
 It supports modeling both von Neumann and Harvard architectures, including difficult ISA features like misaligned instructions on Intel, conditional instruction prefixes on ARM, undefined and non-deterministic effects, memory access permissions, self-modifying code, hardware exceptions, indirect calls and returns, mixed endianness on ARM, instructions with internal microcode loops, and multi-ISA integrated systems.
 These capabilities are leveraged to prove that a realistic binary CFI implementation for a mainstream ISA (ARM7) safely hardens arbitrary binaries (including rejecting unsafe or malformed binaries that it cannot secure).
 Specifically, we present the following contributions:
-\begin{itemize}
-    \item the \Picinae{} framework, which facilitates machine-checked proofs of correctness for binary programs and binary transformations;
-    \item a dependently-typed, co-inductive foundation for proving correctness properties of algorithms that manipulate machine code; and
-    \item a case study demonstrating the first machine-checked proof of soundness for a binary CFI rewriter implementation targeting ARM7 microprocessor code.
+\begin{itemize} [topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
+    \item The \emph{first} binary-agnostic formal verification framework the most significant/foundational binary inline monitor security solution, \cfi.
+    % \item the \Picinae{} framework, which facilitates machine-checked proofs of correctness for binary programs and binary transformations;
+    % \item a dependently-typed, co-inductive foundation for proving correctness properties of algorithms that manipulate machine code; and
+    % \item a case study demonstrating the first machine-checked proof of soundness for a binary CFI rewriter implementation targeting ARM7 microprocessor code.
 \end{itemize}

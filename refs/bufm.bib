@@ -18,378 +18,378 @@
 @PREAMBLE{ "\newcommand\nym[1]{(#1)}" }
 
 % https://ssrg.ece.vt.edu/papers/ccs24.pdf
-@INPROCEEDINGS{formally_verified_lifting,
-  author = "Freek Verbeek and Joshua A. Bockenek and Zhoulai Fu and Binoy Ravindran",
-  title = "Formally Verified Lifting of {C}-compiled {x86-64} Binaries",
-  booktitle = proc # ofthe # "\cnum{43rd} ACM SIGPLAN" # conf # on # "Programming Language Design and Implementation \nym{PLDI}",
-  pages = "934--949",
-  year = 2022,
+@inproceedings{formally_verified_lifting,
+    author    = {Freek Verbeek and Joshua A. Bockenek and Zhoulai Fu and Binoy Ravindran},
+    title     = {Formally Verified Lifting of {C}-compiled {x86-64} Binaries},
+    booktitle = proc # ofthe # {\cnum{43rd} ACM SIGPLAN} # conf # on # {Programming Language Design and Implementation \nym{PLDI}},
+    pages     = {934--949},
+    year      = 2022
 }
 
 @inproceedings{islaris,
-  author       = {Michael Sammler and Angus Hammond and Rodolphe Lepigre and Brian Campbell and Jean Pichon{-}Pharabod and Derek Dreyer and Deepak Garg and Peter Sewell},
-  editor       = {Ranjit Jhala and Isil Dillig},
-  title        = {Islaris: verification of machine code against authoritative {ISA}
-                  semantics},
-  booktitle    = {{PLDI} '22: \cnum{43rd} {ACM} {SIGPLAN} International Conference on Programming
-                  Language Design and Implementation, San Diego, CA, USA, June 13 -
-                  17, 2022},
-  pages        = {825--840},
-  publisher    = {{ACM}},
-  year         = {2022},
-  url          = {https://doi.org/10.1145/3519939.3523434},
-  doi          = {10.1145/3519939.3523434},
-  timestamp    = {Tue, 14 Oct 2025 19:38:48 +0200},
-  biburl       = {https://dblp.org/rec/conf/pldi/SammlerHL0PD0S22.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
+    author    = {Michael Sammler and Angus Hammond and Rodolphe Lepigre and Brian Campbell and Jean Pichon{-}Pharabod and Derek Dreyer and Deepak Garg and Peter Sewell},
+    editor    = {Ranjit Jhala and Isil Dillig},
+    title     = {Islaris: verification of machine code against authoritative {ISA}
+                 semantics},
+    booktitle = {{PLDI} '22: \cnum{43rd} {ACM} {SIGPLAN} International Conference on Programming
+                 Language Design and Implementation, San Diego, CA, USA, June 13 -
+                 17, 2022},
+    pages     = {825--840},
+    publisher = {{ACM}},
+    year      = {2022},
+    url       = {https://doi.org/10.1145/3519939.3523434},
+    doi       = {10.1145/3519939.3523434},
+    timestamp = {Tue, 14 Oct 2025 19:38:48 +0200},
+    biburl    = {https://dblp.org/rec/conf/pldi/SammlerHL0PD0S22.bib},
+    bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
 @misc{verified_pointers,
-      title={Formally Verified Binary-level Pointer Analysis}, 
-      author={Freek Verbeek and Ali Shokri and Daniel Engel and Binoy Ravindran},
-      year={2025},
-      eprint={2501.17766},
-      archivePrefix={arXiv},
-      primaryClass={cs.SE},
-      url={https://arxiv.org/abs/2501.17766}, 
+    title         = {Formally Verified Binary-level Pointer Analysis},
+    author        = {Freek Verbeek and Ali Shokri and Daniel Engel and Binoy Ravindran},
+    year          = {2025},
+    eprint        = {2501.17766},
+    archiveprefix = {arXiv},
+    primaryclass  = {cs.SE},
+    url           = {https://arxiv.org/abs/2501.17766}
 }
 
 @article{isla,
-  author       = {Alasdair Armstrong and
-                  Brian Campbell and
-                  Ben Simner and
-                  Christopher Pulte and
-                  Peter Sewell},
-  title        = {Isla: integrating full-scale {ISA} semantics and axiomatic concurrency
-                  models (extended version)},
-  journal      = {Formal Methods Syst. Des.},
-  volume       = {63},
-  number       = {1},
-  pages        = {110--133},
-  year         = {2024},
-  url          = {https://doi.org/10.1007/s10703-023-00409-y},
-  doi          = {10.1007/S10703-023-00409-Y},
-  timestamp    = {Tue, 14 Oct 2025 19:44:04 +0200},
-  biburl       = {https://dblp.org/rec/journals/fmsd/ArmstrongCSPS24.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
+    author    = {Alasdair Armstrong and
+                 Brian Campbell and
+                 Ben Simner and
+                 Christopher Pulte and
+                 Peter Sewell},
+    title     = {Isla: integrating full-scale {ISA} semantics and axiomatic concurrency
+                 models (extended version)},
+    journal   = {Formal Methods Syst. Des.},
+    volume    = {63},
+    number    = {1},
+    pages     = {110--133},
+    year      = {2024},
+    url       = {https://doi.org/10.1007/s10703-023-00409-y},
+    doi       = {10.1007/S10703-023-00409-Y},
+    timestamp = {Tue, 14 Oct 2025 19:44:04 +0200},
+    biburl    = {https://dblp.org/rec/journals/fmsd/ArmstrongCSPS24.bib},
+    bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
 @inproceedings{isabil,
-  author       = {Matt Griffin and
-                  Brijesh Dongol and
-                  Azalea Raad},
-  editor       = {Jonathan Aldrich and
-                  Alexandra Silva},
-  title        = {IsaBIL: {A} Framework for Verifying (In)correctness of Binaries in
-                  Isabelle/HOL},
-  booktitle    = {39th European Conference on Object-Oriented Programming, {ECOOP} 2025,
-                  June 30 to July 2, 2025, Bergen, Norway},
-  series       = {LIPIcs},
-  volume       = {333},
-  pages        = {14:1--14:30},
-  publisher    = {Schloss Dagstuhl - Leibniz-Zentrum f{\"{u}}r Informatik},
-  year         = {2025},
-  url          = {https://doi.org/10.4230/LIPIcs.ECOOP.2025.14},
-  doi          = {10.4230/LIPICS.ECOOP.2025.14},
-  timestamp    = {Thu, 26 Jun 2025 17:05:54 +0200},
-  biburl       = {https://dblp.org/rec/conf/ecoop/GriffinDR25.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
+    author    = {Matt Griffin and
+                 Brijesh Dongol and
+                 Azalea Raad},
+    editor    = {Jonathan Aldrich and
+                 Alexandra Silva},
+    title     = {IsaBIL: {A} Framework for Verifying (In)correctness of Binaries in
+                 Isabelle/HOL},
+    booktitle = {39th European Conference on Object-Oriented Programming, {ECOOP} 2025,
+                 June 30 to July 2, 2025, Bergen, Norway},
+    series    = {LIPIcs},
+    volume    = {333},
+    pages     = {14:1--14:30},
+    publisher = {Schloss Dagstuhl - Leibniz-Zentrum f{\"{u}}r Informatik},
+    year      = {2025},
+    url       = {https://doi.org/10.4230/LIPIcs.ECOOP.2025.14},
+    doi       = {10.4230/LIPICS.ECOOP.2025.14},
+    timestamp = {Thu, 26 Jun 2025 17:05:54 +0200},
+    biburl    = {https://dblp.org/rec/conf/ecoop/GriffinDR25.bib},
+    bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
 @article{trabin,
-title = {TrABin: Trustworthy analyses of binaries},
-journal = {Science of Computer Programming},
-volume = {174},
-pages = {72-89},
-year = {2019},
-issn = {0167-6423},
-doi = {https://doi.org/10.1016/j.scico.2019.01.001},
-url = {https://www.sciencedirect.com/science/article/pii/S0167642318301667},
-author = {Andreas Lindner and Roberto Guanciale and Roberto Metere},
-keywords = {Binary analysis, Formal verification, Proof producing analysis, Theorem proving},
+    title    = {TrABin: Trustworthy analyses of binaries},
+    journal  = {Science of Computer Programming},
+    volume   = {174},
+    pages    = {72-89},
+    year     = {2019},
+    issn     = {0167-6423},
+    doi      = {https://doi.org/10.1016/j.scico.2019.01.001},
+    url      = {https://www.sciencedirect.com/science/article/pii/S0167642318301667},
+    author   = {Andreas Lindner and Roberto Guanciale and Roberto Metere},
+    keywords = {Binary analysis, Formal verification, Proof producing analysis, Theorem proving}
 }
 
-@InProceedings{hoare_style_logic_unstructured,
-  author="Lundberg, Didrik and Guanciale, Roberto and Lindner, Andreas and Dam, Mads",
-  editor       = {Frank S. de Boer and                  Antonio Cerone},
-  title        = {Hoare-Style Logic for Unstructured Programs},
-  booktitle    = {Software Engineering and Formal Methods - 18th International Conference,
-                  {SEFM} 2020, Amsterdam, The Netherlands, September 14-18, 2020, Proceedings},
-  series       = {Lecture Notes in Computer Science},
-  volume       = {12310},
-  pages        = {193--213},
-  publisher    = {Springer},
-  year         = {2020},
-  url          = {https://doi.org/10.1007/978-3-030-58768-0\_11},
-  doi          = {10.1007/978-3-030-58768-0\_11},
-  timestamp    = {Sat, 19 Sep 2020 13:19:35 +0200},
-  biburl       = {https://dblp.org/rec/conf/sefm/LundbergGLD20.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
+@inproceedings{hoare_style_logic_unstructured,
+    author    = {Lundberg, Didrik and Guanciale, Roberto and Lindner, Andreas and Dam, Mads},
+    editor    = {Frank S. de Boer and                  Antonio Cerone},
+    title     = {Hoare-Style Logic for Unstructured Programs},
+    booktitle = {Software Engineering and Formal Methods - 18th International Conference,
+                 {SEFM} 2020, Amsterdam, The Netherlands, September 14-18, 2020, Proceedings},
+    series    = {Lecture Notes in Computer Science},
+    volume    = {12310},
+    pages     = {193--213},
+    publisher = {Springer},
+    year      = {2020},
+    url       = {https://doi.org/10.1007/978-3-030-58768-0\_11},
+    doi       = {10.1007/978-3-030-58768-0\_11},
+    timestamp = {Sat, 19 Sep 2020 13:19:35 +0200},
+    biburl    = {https://dblp.org/rec/conf/sefm/LundbergGLD20.bib},
+    bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
 @article{goto_semantics_and_deduction,
-  author       = {Arie de Bruin},
-  title        = {Goto Statements: Semantics and Deduction Systems},
-  journal      = {Acta Informatica},
-  volume       = {15},
-  pages        = {385--424},
-  year         = {1981},
-  url          = {https://doi.org/10.1007/BF00264536},
-  doi          = {10.1007/BF00264536},
-  timestamp    = {Sun, 21 Jun 2020 17:38:20 +0200},
-  biburl       = {https://dblp.org/rec/journals/acta/Bruin81.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
+    author    = {Arie de Bruin},
+    title     = {Goto Statements: Semantics and Deduction Systems},
+    journal   = {Acta Informatica},
+    volume    = {15},
+    pages     = {385--424},
+    year      = {1981},
+    url       = {https://doi.org/10.1007/BF00264536},
+    doi       = {10.1007/BF00264536},
+    timestamp = {Sun, 21 Jun 2020 17:38:20 +0200},
+    biburl    = {https://dblp.org/rec/journals/acta/Bruin81.bib},
+    bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
 
 
 @inproceedings{relational_realistic,
-  author       = {Denis Mazzucato and
-                  Abdalrhman Mohamed and
-                  Juneyoung Lee and
-                  Clark W. Barrett and
-                  Jim Grundy and
-                  John Harrison and
-                  Corina S. Pasareanu},
-  editor       = {Ruzica Piskac and
-                  Zvonimir Rakamaric},
-  title        = {Relational Hoare Logic for Realistically Modelled Machine Code},
-  booktitle    = {Computer Aided Verification - 37th International Conference, {CAV}
-                  2025, Zagreb, Croatia, July 23-25, 2025, Proceedings, Part {I}},
-  series       = {Lecture Notes in Computer Science},
-  volume       = {15931},
-  pages        = {389--413},
-  publisher    = {Springer},
-  year         = {2025},
-  url          = {https://doi.org/10.1007/978-3-031-98668-0_19},
-  doi          = {10.1007/978-3-031-98668-0_19},
-  timestamp    = {Sun, 02 Nov 2025 12:33:32 +0100},
+    author    = {Denis Mazzucato and
+                 Abdalrhman Mohamed and
+                 Juneyoung Lee and
+                 Clark W. Barrett and
+                 Jim Grundy and
+                 John Harrison and
+                 Corina S. Pasareanu},
+    editor    = {Ruzica Piskac and
+                 Zvonimir Rakamaric},
+    title     = {Relational Hoare Logic for Realistically Modelled Machine Code},
+    booktitle = {Computer Aided Verification - 37th International Conference, {CAV}
+                 2025, Zagreb, Croatia, July 23-25, 2025, Proceedings, Part {I}},
+    series    = {Lecture Notes in Computer Science},
+    volume    = {15931},
+    pages     = {389--413},
+    publisher = {Springer},
+    year      = {2025},
+    url       = {https://doi.org/10.1007/978-3-031-98668-0_19},
+    doi       = {10.1007/978-3-031-98668-0_19},
+    timestamp = {Sun, 02 Nov 2025 12:33:32 +0100}
 }
 
 
 
 @inproceedings{myreen08,
-  author       = {Magnus O. Myreen and
-                  Michael J. C. Gordon and
-                  Konrad Slind},
-  editor       = {Alessandro Cimatti and
-                  Robert B. Jones},
-  title        = {Machine-Code Verification for Multiple Architectures - An Application
-                  of Decompilation into Logic},
-  booktitle    = {Formal Methods in Computer-Aided Design, {FMCAD} 2008, Portland, Oregon,
-                  USA, 17-20 November 2008},
-  pages        = {1--8},
-  publisher    = {{IEEE}},
-  year         = {2008},
-  url          = {https://doi.org/10.1109/FMCAD.2008.ECP.24},
-  doi          = {10.1109/FMCAD.2008.ECP.24},
-  timestamp    = {Wed, 16 Oct 2019 14:14:56 +0200},
-  biburl       = {https://dblp.org/rec/conf/fmcad/MyreenGS08.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
+    author    = {Magnus O. Myreen and
+                 Michael J. C. Gordon and
+                 Konrad Slind},
+    editor    = {Alessandro Cimatti and
+                 Robert B. Jones},
+    title     = {Machine-Code Verification for Multiple Architectures - An Application
+                 of Decompilation into Logic},
+    booktitle = {Formal Methods in Computer-Aided Design, {FMCAD} 2008, Portland, Oregon,
+                 USA, 17-20 November 2008},
+    pages     = {1--8},
+    publisher = {{IEEE}},
+    year      = {2008},
+    url       = {https://doi.org/10.1109/FMCAD.2008.ECP.24},
+    doi       = {10.1109/FMCAD.2008.ECP.24},
+    timestamp = {Wed, 16 Oct 2019 14:14:56 +0200},
+    biburl    = {https://dblp.org/rec/conf/fmcad/MyreenGS08.bib},
+    bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
-@InProceedings{bjorn14,
-author="Bartels, Bj{\"o}rn
-and J{\"a}hnig, Nils",
-editor="Badger, Julia M.
-and Rozier, Kristin Yvonne",
-url="https://doi.org/10.1007/978-3-319-06200-6_8",
-title="Mechanized, Compositional Verification of Low-Level Code",
-booktitle="NASA Formal Methods",
-year="2014",
-publisher="Springer International Publishing",
-address="Cham",
-pages="98--112",
-isbn="978-3-319-06200-6"
+@inproceedings{bjorn14,
+    author    = {Bartels, Bj{\"o}rn
+                 and J{\"a}hnig, Nils},
+    editor    = {Badger, Julia M.
+                 and Rozier, Kristin Yvonne},
+    url       = {https://doi.org/10.1007/978-3-319-06200-6_8},
+    title     = {Mechanized, Compositional Verification of Low-Level Code},
+    booktitle = {NASA Formal Methods},
+    year      = {2014},
+    publisher = {Springer International Publishing},
+    address   = {Cham},
+    pages     = {98--112},
+    isbn      = {978-3-319-06200-6}
 }
 
 @article{abadi_cfi,
-  title={Control-flow integrity principles, implementations, and applications},
-  author={Abadi, Mart{\'\i}n and Budiu, Mihai and Erlingsson, Ulfar and Ligatti, Jay},
-  journal={ACM Transactions on Information and System Security (TISSEC)},
-  volume={13},
-  number={1},
-  pages={1--40},
-  year={2009},
-  publisher={ACM New York, NY, USA}
+    title     = {Control-flow integrity principles, implementations, and applications},
+    author    = {Abadi, Mart{\'\i}n and Budiu, Mihai and Erlingsson, Ulfar and Ligatti, Jay},
+    journal   = {ACM Transactions on Information and System Security (TISSEC)},
+    volume    = {13},
+    number    = {1},
+    pages     = {1--40},
+    year      = {2009},
+    publisher = {ACM New York, NY, USA}
 }
 
 @inproceedings{typearmor,
-  title={A tough call: Mitigating advanced code-reuse attacks at the binary level},
-  author={Van Der Veen, Victor and G{\"o}ktas, Enes and Contag, Moritz and Pawoloski, Andre and Chen, Xi and Rawat, Sanjay and Bos, Herbert and Holz, Thorsten and Athanasopoulos, Elias and Giuffrida, Cristiano},
-  booktitle={2016 IEEE Symposium on Security and Privacy (SP)},
-  pages={934--953},
-  year={2016},
-  organization={IEEE}
+    title        = {A tough call: Mitigating advanced code-reuse attacks at the binary level},
+    author       = {Van Der Veen, Victor and G{\"o}ktas, Enes and Contag, Moritz and Pawoloski, Andre and Chen, Xi and Rawat, Sanjay and Bos, Herbert and Holz, Thorsten and Athanasopoulos, Elias and Giuffrida, Cristiano},
+    booktitle    = {2016 IEEE Symposium on Security and Privacy (SP)},
+    pages        = {934--953},
+    year         = {2016},
+    organization = {IEEE}
 }
 
 @inproceedings{object_flow_integrity,
-  title={Object flow integrity},
-  author={Wang, Wenhao and Xu, Xiaoyang and Hamlen, Kevin W},
-  booktitle={Proceedings of the 2017 ACM SIGSAC Conference on Computer and Communications Security},
-  pages={1909--1924},
-  year={2017}
+    title     = {Object flow integrity},
+    author    = {Wang, Wenhao and Xu, Xiaoyang and Hamlen, Kevin W},
+    booktitle = {Proceedings of the 2017 ACM SIGSAC Conference on Computer and Communications Security},
+    pages     = {1909--1924},
+    year      = {2017}
 }
 
 @inproceedings{fineibt,
-  title={Fineibt: Fine-grain control-flow enforcement with indirect branch tracking},
-  author={Gaidis, Alexander J and Moreira, Joao and Sun, Ke and Milburn, Alyssa and Atlidakis, Vaggelis and Kemerlis, Vasileios P},
-  booktitle={Proceedings of the 26th International Symposium on Research in Attacks, Intrusions and Defenses},
-  pages={527--546},
-  year={2023}
+    title     = {Fineibt: Fine-grain control-flow enforcement with indirect branch tracking},
+    author    = {Gaidis, Alexander J and Moreira, Joao and Sun, Ke and Milburn, Alyssa and Atlidakis, Vaggelis and Kemerlis, Vasileios P},
+    booktitle = {Proceedings of the 26th International Symposium on Research in Attacks, Intrusions and Defenses},
+    pages     = {527--546},
+    year      = {2023}
 }
 
 @inproceedings{renewablejitcfi,
-  title={Renewable Just-In-Time Control-Flow Integrity},
-  author={Bauman, Erick and Duan, Jun and Hamlen, Kevin W and Lin, Zhiqiang},
-  booktitle={Proceedings of the 26th International Symposium on Research in Attacks, Intrusions and Defenses},
-  pages={580--594},
-  year={2023}
+    title     = {Renewable Just-In-Time Control-Flow Integrity},
+    author    = {Bauman, Erick and Duan, Jun and Hamlen, Kevin W and Lin, Zhiqiang},
+    booktitle = {Proceedings of the 26th International Symposium on Research in Attacks, Intrusions and Defenses},
+    pages     = {580--594},
+    year      = {2023}
 }
 
 @inproceedings{eccut,
-  title={Boosting Practical Control-Flow Integrity with Complete Field Sensitivity and Origin Awareness},
-  author={Xiang, Hao and Cheng, Zehui and Li, Jinku and Ma, Jianfeng and Lu, Kangjie},
-  booktitle={Proceedings of the 2024 on ACM SIGSAC Conference on Computer and Communications Security},
-  pages={4524--4538},
-  year={2024}
+    title     = {Boosting Practical Control-Flow Integrity with Complete Field Sensitivity and Origin Awareness},
+    author    = {Xiang, Hao and Cheng, Zehui and Li, Jinku and Ma, Jianfeng and Lu, Kangjie},
+    booktitle = {Proceedings of the 2024 on ACM SIGSAC Conference on Computer and Communications Security},
+    pages     = {4524--4538},
+    year      = {2024}
 }
 
 @article{resource_constrained_cfi,
-  title={Control-Flow Integrity for Resource-Constrained Devices},
-  author={Roascio, Gianluca and Maunero, Nicol{\`o} and Costa, Gabriele},
-  journal={Computers \& Security},
-  pages={104730},
-  year={2025},
-  publisher={Elsevier}
+    title     = {Control-Flow Integrity for Resource-Constrained Devices},
+    author    = {Roascio, Gianluca and Maunero, Nicol{\`o} and Costa, Gabriele},
+    journal   = {Computers \& Security},
+    pages     = {104730},
+    year      = {2025},
+    publisher = {Elsevier}
 }
 
 @inproceedings{fixingfineibt,
-  title={System register hijacking: Compromising kernel integrity by turning system registers against the system},
-  author={Miller, Jennifer and Ghandat, Manas and Zeng, Kyle and Chen, Hongkai and Benchikh, Abdelouahab Habs and Bao, Tiffany and Wang, Ruoyu and Doup{\'e}, Adam and Shoshitaishvili, Yan},
-  booktitle={34th USENIX Security Symposium (USENIX Security 25)},
-  pages={7427--7446},
-  year={2025}
+    title     = {System register hijacking: Compromising kernel integrity by turning system registers against the system},
+    author    = {Miller, Jennifer and Ghandat, Manas and Zeng, Kyle and Chen, Hongkai and Benchikh, Abdelouahab Habs and Bao, Tiffany and Wang, Ruoyu and Doup{\'e}, Adam and Shoshitaishvili, Yan},
+    booktitle = {34th USENIX Security Symposium (USENIX Security 25)},
+    pages     = {7427--7446},
+    year      = {2025}
 }
 
 % Certifying compilers
 %{lustre_compiler,certi_crypto_comp,certicoq_wasm,compcerto,rocq_compilers_alacarte,design_impl_certifying_compiler,certified_choreographies}
 @inproceedings{lustre_compiler,
-author = {Bourke, Timothy and Brun, L\'{e}lio and Dagand, Pierre-\'{E}variste and Leroy, Xavier and Pouzet, Marc and Rieg, Lionel},
-title = {A formally verified compiler for Lustre},
-year = {2017},
-isbn = {9781450349888},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-url = {https://doi.org/10.1145/3062341.3062358},
-doi = {10.1145/3062341.3062358},
-booktitle = {Proceedings of the 38th ACM SIGPLAN Conference on Programming Language Design and Implementation},
-pages = {586–601},
-numpages = {16},
-keywords = {Verified Compilation, Synchronous Languages (Lustre), Interactive Theorem Proving (Coq)},
-location = {Barcelona, Spain},
-series = {PLDI 2017}
+    author    = {Bourke, Timothy and Brun, L\'{e}lio and Dagand, Pierre-\'{E}variste and Leroy, Xavier and Pouzet, Marc and Rieg, Lionel},
+    title     = {A formally verified compiler for Lustre},
+    year      = {2017},
+    isbn      = {9781450349888},
+    publisher = {Association for Computing Machinery},
+    address   = {New York, NY, USA},
+    url       = {https://doi.org/10.1145/3062341.3062358},
+    doi       = {10.1145/3062341.3062358},
+    booktitle = {Proceedings of the 38th ACM SIGPLAN Conference on Programming Language Design and Implementation},
+    pages     = {586–601},
+    numpages  = {16},
+    keywords  = {Verified Compilation, Synchronous Languages (Lustre), Interactive Theorem Proving (Coq)},
+    location  = {Barcelona, Spain},
+    series    = {PLDI 2017}
 }
 
-@InProceedings{certi_crypto_comp,
-author="Almeida, Jos{\'e} Bacelar
-and Barbosa, Manuel
-and Barthe, Gilles
-and Laporte, Vincent
-and Oliveira, Tiago",
-editor="Bhargavan, Karthikeyan
-and Oswald, Elisabeth
-and Prabhakaran, Manoj",
-title="Certified Compilation for Cryptography: Extended x86 Instructions and Constant-Time Verification",
-booktitle="Progress in Cryptology --  INDOCRYPT 2020",
-year="2020",
-publisher="Springer International Publishing",
-address="Cham",
-pages="107--127",
-isbn="978-3-030-65277-7"
+@inproceedings{certi_crypto_comp,
+    author    = {Almeida, Jos{\'e} Bacelar
+                 and Barbosa, Manuel
+                 and Barthe, Gilles
+                 and Laporte, Vincent
+                 and Oliveira, Tiago},
+    editor    = {Bhargavan, Karthikeyan
+                 and Oswald, Elisabeth
+                 and Prabhakaran, Manoj},
+    title     = {Certified Compilation for Cryptography: Extended x86 Instructions and Constant-Time Verification},
+    booktitle = {Progress in Cryptology --  INDOCRYPT 2020},
+    year      = {2020},
+    publisher = {Springer International Publishing},
+    address   = {Cham},
+    pages     = {107--127},
+    isbn      = {978-3-030-65277-7}
 }
 
 @inproceedings{certicoq_wasm,
-author = {Meier, Wolfgang and Jensen, Martin and Pichon-Pharabod, Jean and Spitters, Bas},
-title = {CertiCoq-Wasm: A Verified WebAssembly Backend for CertiCoq},
-year = {2025},
-isbn = {9798400713477},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-url = {https://doi.org/10.1145/3703595.3705879},
-doi = {10.1145/3703595.3705879},
-booktitle = {Proceedings of the 14th ACM SIGPLAN International Conference on Certified Programs and Proofs},
-pages = {127–139},
-numpages = {13},
-keywords = {Compilers, Formal software verification},
-location = {Denver, CO, USA},
-series = {CPP '25}
+    author    = {Meier, Wolfgang and Jensen, Martin and Pichon-Pharabod, Jean and Spitters, Bas},
+    title     = {CertiCoq-Wasm: A Verified WebAssembly Backend for CertiCoq},
+    year      = {2025},
+    isbn      = {9798400713477},
+    publisher = {Association for Computing Machinery},
+    address   = {New York, NY, USA},
+    url       = {https://doi.org/10.1145/3703595.3705879},
+    doi       = {10.1145/3703595.3705879},
+    booktitle = {Proceedings of the 14th ACM SIGPLAN International Conference on Certified Programs and Proofs},
+    pages     = {127–139},
+    numpages  = {13},
+    keywords  = {Compilers, Formal software verification},
+    location  = {Denver, CO, USA},
+    series    = {CPP '25}
 }
 
 @inproceedings{compcerto,
-author = {Koenig, J\'{e}r\'{e}mie and Shao, Zhong},
-title = {CompCertO: compiling certified open C components},
-year = {2021},
-isbn = {9781450383912},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-url = {https://doi.org/10.1145/3453483.3454097},
-doi = {10.1145/3453483.3454097},
-booktitle = {Proceedings of the 42nd ACM SIGPLAN International Conference on Programming Language Design and Implementation},
-pages = {1095–1109},
-numpages = {15},
-keywords = {Compositional Compiler Correctness, Game Semantics, Language Interface, Simulation Convention},
-location = {Virtual, Canada},
-series = {PLDI 2021}
+    author    = {Koenig, J\'{e}r\'{e}mie and Shao, Zhong},
+    title     = {CompCertO: compiling certified open C components},
+    year      = {2021},
+    isbn      = {9781450383912},
+    publisher = {Association for Computing Machinery},
+    address   = {New York, NY, USA},
+    url       = {https://doi.org/10.1145/3453483.3454097},
+    doi       = {10.1145/3453483.3454097},
+    booktitle = {Proceedings of the 42nd ACM SIGPLAN International Conference on Programming Language Design and Implementation},
+    pages     = {1095–1109},
+    numpages  = {15},
+    keywords  = {Compositional Compiler Correctness, Game Semantics, Language Interface, Simulation Convention},
+    location  = {Virtual, Canada},
+    series    = {PLDI 2021}
 }
 
 @article{rocq_compilers_alacarte,
-author = {Ebresafe, Oghenevwogaga and Zhao, Ian and Jin, Ende and Bright, Arthur and Jian, Charles and Zhang, Yizhou},
-title = {Certified Compilers \`{a} la Carte},
-year = {2025},
-issue_date = {June 2025},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-volume = {9},
-number = {PLDI},
-url = {https://doi.org/10.1145/3729261},
-doi = {10.1145/3729261},
-journal = {Proc. ACM Program. Lang.},
-month = jun,
-articleno = {162},
-numpages = {24},
-keywords = {CompCert, Rocq, Rocqet, compiler verification, dependent type theory, expression problem, extensibility, family polymorphism, late binding, mixins, modularity, reuse, theorem proving}
+    author     = {Ebresafe, Oghenevwogaga and Zhao, Ian and Jin, Ende and Bright, Arthur and Jian, Charles and Zhang, Yizhou},
+    title      = {Certified Compilers \`{a} la Carte},
+    year       = {2025},
+    issue_date = {June 2025},
+    publisher  = {Association for Computing Machinery},
+    address    = {New York, NY, USA},
+    volume     = {9},
+    number     = {PLDI},
+    url        = {https://doi.org/10.1145/3729261},
+    doi        = {10.1145/3729261},
+    journal    = {Proc. ACM Program. Lang.},
+    month      = jun,
+    articleno  = {162},
+    numpages   = {24},
+    keywords   = {CompCert, Rocq, Rocqet, compiler verification, dependent type theory, expression problem, extensibility, family polymorphism, late binding, mixins, modularity, reuse, theorem proving}
 }
 
 @article{design_impl_certifying_compiler,
-author = {Necula, George C. and Lee, Peter},
-title = {The design and implementation of a certifying compiler},
-year = {1998},
-issue_date = {May 1998},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-volume = {33},
-number = {5},
-issn = {0362-1340},
-url = {https://doi.org/10.1145/277652.277752},
-doi = {10.1145/277652.277752},
-journal = {SIGPLAN Not.},
-month = may,
-pages = {333–344},
-numpages = {12}
+    author     = {Necula, George C. and Lee, Peter},
+    title      = {The design and implementation of a certifying compiler},
+    year       = {1998},
+    issue_date = {May 1998},
+    publisher  = {Association for Computing Machinery},
+    address    = {New York, NY, USA},
+    volume     = {33},
+    number     = {5},
+    issn       = {0362-1340},
+    url        = {https://doi.org/10.1145/277652.277752},
+    doi        = {10.1145/277652.277752},
+    journal    = {SIGPLAN Not.},
+    month      = may,
+    pages      = {333–344},
+    numpages   = {12}
 }
 
-@InProceedings{certified_choreographies,
-author="Cruz-Filipe, Lu{\'i}s
-and Lugovi{\'{c}}, Lovro
-and Montesi, Fabrizio",
-editor="Huisman, Marieke
-and Ravara, Ant{\'o}nio",
-title="Certified Compilation of Choreographies with hacc",
-booktitle="Formal Techniques for Distributed Objects, Components, and Systems",
-year="2023",
-publisher="Springer Nature Switzerland",
-address="Cham",
-pages="29--36",
-isbn="978-3-031-35355-0"
+@inproceedings{certified_choreographies,
+    author    = {Cruz-Filipe, Lu{\'i}s
+                 and Lugovi{\'{c}}, Lovro
+                 and Montesi, Fabrizio},
+    editor    = {Huisman, Marieke
+                 and Ravara, Ant{\'o}nio},
+    title     = {Certified Compilation of Choreographies with hacc},
+    booktitle = {Formal Techniques for Distributed Objects, Components, and Systems},
+    year      = {2023},
+    publisher = {Springer Nature Switzerland},
+    address   = {Cham},
+    pages     = {29--36},
+    isbn      = {978-3-031-35355-0}
 }
