@@ -24,7 +24,7 @@ The rewritten instruction uses the updated immediate offset to reach the intende
 For conditional branches, we preserve the original condition code while updating only the target offset.
 This ensures that the dynamic control flow behavior matches the original program while satisfying the CFI policy.
 
-\paragraph{Dynamic Branches} (e.g., indirect jumps, returns, and jump tables) pose the primary challenge for CFI enforcement, as their targets are computed at runtime.
+\paragraph{Dynamic Branches} (\eg indirect jumps, returns, and jump tables) pose the primary challenge for CFI enforcement, as their targets are computed at runtime.
 Our rewriter instruments these instructions with table-lookup IRMs that validate destinations before transferring control.
 
 \paragraph{Invalid instructions} in the original binary could potentially be exploited to bypass CFI checks.
