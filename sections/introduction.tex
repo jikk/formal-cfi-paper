@@ -3,6 +3,39 @@
 
 % NOTE (@kjee): 1 page + 1/3 ~ 2/3 pages with about 3 contribution bullets.
 
+* \cfi has been the cornerstone defense against various attacks launching control hijacking attacks targeting critical infrastructures.
+  - While effectiveness in guarding control-sensitive memory regions against broader range of attacks launched by powerful and dedicated attackers, \cfi implements low-overhead (near-native) runtime overhead \wc{efficient} security defense.
+  - Hence, \cfi has generated a significant body of research and has been widely adopted and deployed in production environments. \kjee{Even hardware-assisted solutions.}
+
+* Despite its solid/promising/confirmed conceptual and theoretical foundations \wc{— which provide a reliable basis for protecting critical computing segments pervasive across various social and economic contexts in an efficient and effective manner —} the core security and safety questions regarding its actual implementations and real-world deployment are rarely asked and/or properly answered.
+
+* A typical pain-point/loophole/challenges of general software development process still applies to the \cfi implementation
+* As we have seen thus far beyond (not only for the) the case of \cfi and for the case of , manifesting a paper design (conceptual software design) into working, deployable software is not at all a trivial effort.
+  - It generally requires significant development cost and many person-hours; Without any doubts, software development and implementation effort is an expensive and pain-staking task.
+  - Even after implementation of a software prototype,  deployable to production, a long-lasting and tedious process of testing and patching remains necessary.
+  - Several past incidents only have testified that software components with sound, verified designs can be implemented into prototypes bearing many bugs — some of them exploitable vulnerabilities with critical/deadly consequences — discovered only in later stages of testing.
+  - Worse, some (few of them) vulnerabilities survive even comprehensive and rigorous process of testing, only to be discovered later with consequential impact.
+    - Assurance via testing is fundamentally limited.
+
+\kjee{we may want mention/state here that formal verification is an alternative to the solution; not necessarily going in deeper with complaints.}
+
+* Such drawbacks/loopholes/limitations is considered to be more deadly/consequential/catastrophic for the case of security solutions as it critically undermines the trusted computing basis.
+  - therefore we would like to say that the security assurance of the security defense solutions such as \cfi is utterly critical not only for its basic design but also for the software development and implementation processes.
+  - however, we are yet to see proper solution to such problem.
+
+* This fundamental gap between conceptual design and real-world software implementation \wc{artifact} is especially critical for security defense software: it gives users a false sense of assurance — making them less vigilant — while simultaneously introducing critical backdoors that allow an adversary to bypass defenses and compromise their target. \kjee{The SolarWinds case testified that exploitable vulnerabilities in security-sensitive infrastructure software are particularly deadly and consequential.}
+  - The community's response to this critical blindspot has been largely limited to dynamic software testing. Despite significant efforts — \eg fuzzing, symbolic execution, and model checking — these approaches only improve coverage and reduce the likelihood of finding exploitable vulnerabilities; they are fundamentally limited in providing the level of assurance the community requires.
+
+  \kjee{I want to come up with a proper phrasing of such phenomena.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Now FM story begins; FM to the rescue.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+- A family of formal verification (machine check) approaches can be consider to be a solution/an answer.
+
+
+
+
 {%
     % we want to motivate the reader so that they agree that formal verification of an implementation of binary rewriting is the best way forward
     % we need to convince them that people have tried the workarounds and that they just don't provide the same level of assurance that we will
