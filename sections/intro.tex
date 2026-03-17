@@ -2,19 +2,28 @@
 \section{Introduction}
 
 % NOTE (@kjee): 1 page + 1/3 ~ 2/3 pages with about 3 contribution bullets.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CFI is the king of modern security defense.
+%   - safety and security of CFI implementation is crucial, but largely overlooked.
+%   - bugs in security defenses are more deadly and critical.
+% Software testing is only viable option available.
+%   - inherent verification gap due to incomplete test coverage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-* \cfi has become a cornerstone defense against control hijacking attacks, generating a significant body of research and achieving wide deployment in production environments, including hardware-assisted implementations, thanks to its near-native runtime overhead.
+\cfi has become a cornerstone defense against control hijacking attacks, generating a significant body of research and achieving wide deployment in production environments, including hardware-assisted implementations, thanks to its near-native runtime overhead.
+Yet, despite its well-established theoretical foundations, the security questions surrounding its real-world implementations remain rarely asked and even more rarely answered.
 
-* Yet, despite its well-established theoretical foundations, the security questions surrounding its real-world implementations remain rarely asked and even more rarely answered.
+This phenomenon is not unique~\wc{limited} to \cfi:
+\wc{Such phenomenon is common across general software development process:} % NOTE (@kjee): this phrasing might be  better.
+translating a sound conceptual~\wc{theoretical, paper-only} design into correct, deployable software is inherently difficult and expensive process. History repeatedly evidenced that even rigorously designed systems can yield implementations riddled with bugs, some of them critical vulnerabilities surfacing only after deployment. Testing helps, but it is fundamentally limited in the coverage it can provide.
 
-* This is not unique to \cfi: translating a sound paper design into correct, deployable software is inherently difficult and expensive. History has repeatedly shown that even well-verified designs can yield implementations riddled with bugs, some of them critical vulnerabilities surfacing only after deployment. Testing helps, but it is fundamentally limited in the assurance it can provide.
+These limitations are especially consequential~\wc{deadly, critical} for security software, where implementation flaws do not merely degrade functionality. They undermine the trusted computing base entirely, giving users a false sense of protection \wc{and safety} while quietly introducing~\wc{leading to have} exploitable backdoors.
+\optional{% NOTE(@kjee): we may want to mention real/serious incident in the past.
+  The SolarWinds incident stands as a stark reminder of how devastating such vulnerabilities can be in security-sensitive infrastructure.
+}
 
-% \kjee{We may want to note here that formal verification is a promising alternative.}
-
-* These limitations are especially consequential for security software, where implementation flaws do not merely degrade functionality. They undermine the trusted computing base entirely, giving users a false sense of protection while quietly introducing exploitable backdoors. The SolarWinds incident stands as a stark reminder of how devastating such vulnerabilities can be in security-sensitive infrastructure.
-
-* The community's response has been largely confined to dynamic testing techniques such as fuzzing, symbolic execution, and model checking. Despite considerable effort, these approaches cannot provide the strong correctness guarantees that security-critical software demands, leaving a critical assurance gap that remains, to date, unaddressed.
-  % TODO (@kjee): We'd better come up with a proper phrasing of such phenomena ---
+Despite such urgency and significance, the community's response has been largely confined to dynamic testing techniques such as fuzzing, symbolic execution, and model checking. However, these approaches cannot provide the strong correctness guarantees that security-critical software demands, \wc{given the increasingly growing our society's dependencies to the digitalized cyber infrastructures,} leaving a critical assurance gap that remains, to date, unaddressed.
+  % TODO (@kjee): We'd better come up with a proper phrasing of such phenomena - e.g., ``the verification gap due to testing coverage incompleteness''
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Now FM story begins; FM to the rescue.
