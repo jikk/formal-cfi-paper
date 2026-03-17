@@ -57,79 +57,85 @@
 
 
 {%
-    % we want to motivate the reader so that they agree that formal verification of an implementation of binary rewriting is the best way forward
-    % we need to convince them that people have tried the workarounds and that they just don't provide the same level of assurance that we will
+  % we want to motivate the reader so that they agree that formal verification of an implementation of binary rewriting is the best way forward
+  % we need to convince them that people have tried the workarounds and that they just don't provide the same level of assurance that we will
 
-    Development of mission-critical software systems, such as secure OSes, VMs, hypervisors, and runtime systems intended for deployment in adversarial environments, demands exceptionally high assurance development tools and procedures to meet strict safety, security, and correctness standards.
-    Machine-checked formal verification has emerged as a hallmark approach for achieving the requisite guarantees for such systems,
-    with success stories such as CompCert~\cite{compcert}, seL4~\cite{sel4}, and CakeML~\cite{cakeml} demonstrating the efficacy of such \emph{formal methods} (FM) for obtaining real-world, high-assurance systems in practice.
-    These successes rely on mature theorem proving environments such as Rocq~\cite{rocq} and Isabelle/HOL, which have enabled rigorous, machine-checked reasoning about source-level semantics and compiler correctness.
+  Development of mission-critical software systems, such as secure OSes, VMs, hypervisors, and runtime systems intended for deployment in adversarial environments, demands exceptionally high-assurance development tools and procedures to meet strict safety, security, and correctness standards.
+  Machine-checked formal verification has emerged as a hallmark approach for achieving the requisite guarantees for such systems,
+  with success stories such as CompCert~\cite{compcert}, seL4~\cite{sel4}, and CakeML~\cite{cakeml} demonstrating the efficacy of such \emph{formal methods} (FM) for obtaining real-world, high-assurance systems in practice.
+  These successes rely on mature theorem proving environments such as Rocq~\cite{rocq} and Isabelle/HOL, which have enabled rigorous, machine-checked reasoning about source-level semantics and compiler correctness.
 
-    % \emph{Binary rewriters} transform binary programs to optimize, instrument, or enforce a security policy on them.
-    % Rewriters are difficult to verify due to their complexity and the lack of tooling capable of formally reasoning about underspecified pieces of code.
-    % The accepted solution to make a rewriter trustworthy is to split the task of creating a sound rewritten binary across two pieces of software.
-    % The untrusted rewriter rewrites the target program without guaranteeing its output is a sound transformation.
-    % The formally verified \emph{verifier} checks the output and accepts it if it is correct.
+  % \emph{Binary rewriters} transform binary programs to optimize, instrument, or enforce a security policy on them.
+  % Rewriters are difficult to verify due to their complexity and the lack of tooling capable of formally reasoning about underspecified pieces of code.
+  % The accepted solution to make a rewriter trustworthy is to split the task of creating a sound rewritten binary across two pieces of software.
+  % The untrusted rewriter rewrites the target program without guaranteeing its output is a sound transformation.
+  % The formally verified \emph{verifier} checks the output and accepts it if it is correct.
 
-    While machine-certified compilation has received extensive attention in the literature (cf., \cite{lustre_compiler,certi_crypto_comp,certicoq_wasm,compcerto,rocq_compilers_alacarte,design_impl_certifying_compiler,certified_choreographies}), binaries that execute on real mission-critical systems are seldom the unaltered output of a compiler.
-    Compiled binaries typically undergo a variety of binary-level transformations prior to execution, including load-time linking, hardening, and sandboxing, which prepares the binary to safely execute in the context of the surrounding OS or VM\@.
-    The \emph{binary rewriters} that implement these transformations demand an equivalent or higher level of assurance, since any flaw could undermine all assurances achieved during compilation.
-    However, complete formal verification of a binary rewriter \emph{implementation} has remained a difficult challenge for FM, primarily because their correctness properties are universal quantifications over arbitrary binary code.
-    In particular, a binary rewriter is correct if and only if it achieves a desired safety property for all possible input binaries, not merely those produced by a particular compiler or that limit themselves to a particular subset of the ISA\@.
+  While machine-certified compilation has received extensive attention in the literature (cf., \cite{lustre_compiler,certi_crypto_comp,certicoq_wasm,compcerto,rocq_compilers_alacarte,design_impl_certifying_compiler,certified_choreographies}), binaries that execute on real mission-critical systems are seldom the unaltered output of a compiler.
+  Compiled binaries undergo a variety of low-level transformations prior to execution, including load-time linking, hardening, and sandboxing, which prepares the binary to safely execute in the context of the surrounding OS or VM\@.
+  The \emph{binary rewriters} that implement these transformations demand an equivalent or higher level of assurance, since any flaw could undermine all assurances achieved during compilation.
+  However, complete formal verification of a binary rewriter \emph{implementation} has remained a difficult challenge for FM, primarily because their correctness properties are universal quantifications over arbitrary binary code.
+  In particular, a binary rewriter is correct if and only if it achieves a desired safety property for all possible input binaries, not merely those produced by a particular compiler or that limit themselves to a particular subset of the ISA\@.
 
-    Binary \emph{control-flow integrity} (CFI) enforcement is one particularly prominent example of the associated challenges~\cite{safedispatch,typearmor,object_flow_integrity,fineibt,renewablejitcfi,eccut,resource_constrained_cfi,fixingfineibt}.
-    Source-agnostic CFI algorithms transform input binaries so as to confine all their reachable control-flows to a policy-specified whitelist of edges.
-    Implementations typically identify and instrument the target binary's control-flow transfer instructions (e.g., jumps, calls, and returns) with extra \emph{guard code} that checks each impending destination against the policy at runtime.
-    Impending violations solicit a safe intervention, such as secure abort, rollback, or restart.
-    A binary CFI implementation is \emph{sound} if all reachable execution traces of all binaries it generates obey the policy.
+  Binary \emph{control-flow integrity} (CFI) is a well-studied example of the associated challenges~\cite{safedispatch,typearmor,object_flow_integrity,fineibt,renewablejitcfi,eccut,resource_constrained_cfi,fixingfineibt}.
+  Source-agnostic CFI algorithms transform input binaries so as to confine all their reachable control-flows to a policy-specified whitelist of edges.
+  Implementations typically identify and instrument the target binary's control-flow transfer instructions (e.g., jumps, calls, and returns) with extra \emph{guard code} that checks each impending destination against the policy at runtime.
+  Impending violations solicit a safe intervention, such as secure abort, rollback, or restart.
+  A binary CFI implementation is \emph{sound} if all reachable execution traces of all binaries it generates obey the policy.
 
-    Since source-driven (\emph{top-down}) FM approaches cannot state or verify a source-agnostic soundness property, and since binary-driven (\emph{bottom-up}) FM approaches are typically designed to verify concrete input binaries (not the arbitrary output of a binary transformation), prior efforts to verify binary CFI have resorted to verifying each CFI-hardened binary case-by-case (e.g., \cite{rocksalt}).
-    This helps code-consumers protect themselves from untrusted code-producers, but it does not empower code-producers to create a verifiably sound CFI implementation that always passes the consumer's checks.
-    Producers must resort to unit testing (i.e., running the rewriter on many input binaries to see whether any resulting binaries fail verification), losing the primary benefit of FM\@.
+  Since source-driven (\emph{top-down}) FM approaches cannot state or verify a source-agnostic soundness property, and since binary-driven (\emph{bottom-up}) FM approaches are typically designed to verify concrete input binaries (not the arbitrary output of a binary transformation), prior efforts to verify binary CFI have resorted to verifying each CFI-hardened binary case-by-case (e.g., \cite{rocksalt}).
+  This helps code-consumers protect themselves from untrusted code-producers, but it does not empower code-producers to create a verifiably sound CFI implementation that always passes the consumer's checks.
+  Producers must resort to unit testing (i.e., running the rewriter on many input binaries to see whether any resulting binaries fail verification), losing the complete-coverage benefits of FM and risking denial of service if the deployed rewriter fails.
 
-    Formally verifying a binary rewriter implementation requires overcoming two major hurdles:
-    First, it requires a verification framework that supports \emph{underconstrained-code properties}---properties in which the target code is a quantified proof variable, not a concrete program.
-    Such properties are inexpressible in most existing bottom-up FM frameworks (e.g., \cite{trabin,isabil,islaris,myreen08,bjorn14}).
-    Second, the approach must have a capability for reasoning about arbitrary byte sequences as (possibly invalid) binary code.
-    This is necessary because rewriter \emph{implementations} read and write bytes, and their soundness is therefore contingent upon their correct interpretation of those bytes as instructions.
-    Idealizing a rewriter as an abstract model of its algorithm waives verification of many of the most complex parts of its implementation, which are pernicious sources of potential error.
+  Formally verifying a binary rewriter implementation requires overcoming two major hurdles:
+  First, it requires a verification framework that supports \emph{underconstrained-code properties}---properties in which the target code is a quantified proof variable, not a concrete program.
+  Such properties are inexpressible in most existing bottom-up FM frameworks (e.g., \cite{trabin,isabil,islaris,myreen08,bjorn14}).
+  Second, the approach must have a capability for reasoning about arbitrary byte sequences as (possibly invalid) binary code.
+  This is necessary because rewriter implementations read and write bytes, and their soundness is therefore contingent upon their correct interpretation of those bytes as instructions.
+  Idealizing a rewriter as an abstract model of its algorithm waives verification of many of the most complex parts of its implementation, which are pernicious sources of potential error.
 
-    %%% KWH Comment: The relationship of this work to ours is too complex for the intro, imo.  We should discuss this in more depth in the related work section.
-    %The only work in the literature which may support this was released in 2025 and focused on relational properties of \emph{concrete} programs with statically known code~\cite{relational_realistic}.
+  %%% KWH Comment: The relationship of this work to ours is too complex for the intro, imo.  We should discuss this in more depth in the related work section.
+  %The only work in the literature which may support this was released in 2025 and focused on relational properties of \emph{concrete} programs with statically known code~\cite{relational_realistic}.
 
 
-    % Verifying binary rewriters requires reasoning about their effects on arbitrary input codes.
-    % Historically, binary analysis frameworks have been limited to analyzing concrete code~\cite{bap,isabil,islaris,myreen08,bjorn14,trabin}, preventing them from reasoning about binary transformations.
-    % In 2025 a new binary analysis platform debuted with this capability but did not demonstrate its application, focusing instead on relational logic~\cite{relational_realistic}.
+  % Verifying binary rewriters requires reasoning about their effects on arbitrary input codes.
+  % Historically, binary analysis frameworks have been limited to analyzing concrete code~\cite{bap,isabil,islaris,myreen08,bjorn14,trabin}, preventing them from reasoning about binary transformations.
+  % In 2025 a new binary analysis platform debuted with this capability but did not demonstrate its application, focusing instead on relational logic~\cite{relational_realistic}.
 
-    % \emph{Top-down FM} yields high assurance for software representable as source code by extending proofs of source-level properties down to executable codes, such as through type-preserving certified compilation.
-    % But codes that are binary-only, and proofs of binary-level properties that are independent of sources, require a different approach.
-    % For example, low-level runtime ABIs often contain raw assembly or machine code that has been carefully optimized for maximal performance on specific instruction set architectures (ISAs).
-    % These optimizations benefit all source codes that link to them, but potentially undermine top-down FM guarantees that only prove properties of the compiler-generated parts of the final executable, not the ABI code contributed by the runtime system during linking.
-    % Likewise, the correctness of software that manipulates binary code, such as VMs, process loaders, linkers, and binary security hardening transforms, cannot be expressed purely as source-level properties because they concern software that takes \emph{arbitrary} binary code as an \emph{input}.
-    % For example, a VM implementation is secure only if it can successfully load and execute arbitrary byte sequences (even those not generated by any compiler) in a way that prevents the loaded program from escaping the VM sandbox.
+  % \emph{Top-down FM} yields high assurance for software representable as source code by extending proofs of source-level properties down to executable codes, such as through type-preserving certified compilation.
+  % But codes that are binary-only, and proofs of binary-level properties that are independent of sources, require a different approach.
+  % For example, low-level runtime ABIs often contain raw assembly or machine code that has been carefully optimized for maximal performance on specific instruction set architectures (ISAs).
+  % These optimizations benefit all source codes that link to them, but potentially undermine top-down FM guarantees that only prove properties of the compiler-generated parts of the final executable, not the ABI code contributed by the runtime system during linking.
+  % Likewise, the correctness of software that manipulates binary code, such as VMs, process loaders, linkers, and binary security hardening transforms, cannot be expressed purely as source-level properties because they concern software that takes \emph{arbitrary} binary code as an \emph{input}.
+  % For example, a VM implementation is secure only if it can successfully load and execute arbitrary byte sequences (even those not generated by any compiler) in a way that prevents the loaded program from escaping the VM sandbox.
 
-    % \emph{Bottom-up FM} verifies binary code by lifting~\cite{formally_verified_lifting} it to a low-level intermediate language (IL) that expresses the semantics of machine instructions as cpu state transitions.
-    % When the IL has a formally defined semantics, it is amenable to interactive theorem proving, facilitating the same style of compositional, mechanized reasoning used in top-down FM, but applied directly to executable code.
-    % This capability affords stating and proving properties of all possible executions.
+  % \emph{Bottom-up FM} verifies binary code by lifting~\cite{formally_verified_lifting} it to a low-level intermediate language (IL) that expresses the semantics of machine instructions as cpu state transitions.
+  % When the IL has a formally defined semantics, it is amenable to interactive theorem proving, facilitating the same style of compositional, mechanized reasoning used in top-down FM, but applied directly to executable code.
+  % This capability affords stating and proving properties of all possible executions.
 
-    % But while existing bottom-up FM frameworks facilitate reasoning about concrete binary codes, the task of formally reasoning about arbitrary binary codes and the programs that read them has remained an unsolved challenge.
-    % As a hallmark example, \emph{binary control-flow integrity} (CFI) algorithms~\textcolor{red}{[citations]} instrument input binaries to constrain their control-flows to a whitelist of permissible control-flow transfer edges.
-    % The output of the CFI transform is a self-monitoring, self-securing binary that requires no additional sandboxing.
-    % CFI security is a core technology for enforcing many critical software security policies, including process isolation, software fault isolation, stack integrity, mobile code security, and code-reuse attack detection and defense~\textcolor{red}{[citations throughout this list]}.
+  % But while existing bottom-up FM frameworks facilitate reasoning about concrete binary codes, the task of formally reasoning about arbitrary binary codes and the programs that read them has remained an unsolved challenge.
+  % As a hallmark example, \emph{binary control-flow integrity} (CFI) algorithms~\textcolor{red}{[citations]} instrument input binaries to constrain their control-flows to a whitelist of permissible control-flow transfer edges.
+  % The output of the CFI transform is a self-monitoring, self-securing binary that requires no additional sandboxing.
+  % CFI security is a core technology for enforcing many critical software security policies, including process isolation, software fault isolation, stack integrity, mobile code security, and code-reuse attack detection and defense~\textcolor{red}{[citations throughout this list]}.
 
-    % Although prior efforts have verified idealized binary CFI \emph{algorithms} for abstract ISA models of varying detail~\textcolor{red}{[citations]}, % no formally verified binary CFI \emph{implementation} for a real, mainstream ISA has yet been realized.
-    % none have yet verified a binary CFI \emph{implementation} for a real mainstream ISA.
-    % This has left open the dangerous possibility that binary CFI implementations might not match the algorithms on which their designs are informally based.
-    % In practice, such implementations have many subtle details that are prone to error, including accurate decoding of all reachable instructions in potentially malicious or malformed binaries, correct identification of all possible indirect control-flow transfer operations, complete mediation of all such operations, and careful rebasing and relinking of all code fragments displaced by guard code introduced during the rewriting process.
-    % A full proof of safety for a binary CFI implementation must therefore consider all (arbitrary) input byte sequences that constitute executable code on the ISA, and prove that all possible executions of the implementation's output byte sequence satisfy the control-flow policy.
+  % Although prior efforts have verified idealized binary CFI \emph{algorithms} for abstract ISA models of varying detail~\textcolor{red}{[citations]}, % no formally verified binary CFI \emph{implementation} for a real, mainstream ISA has yet been realized.
+  % none have yet verified a binary CFI \emph{implementation} for a real mainstream ISA.
+  % This has left open the dangerous possibility that binary CFI implementations might not match the algorithms on which their designs are informally based.
+  % In practice, such implementations have many subtle details that are prone to error, including accurate decoding of all reachable instructions in potentially malicious or malformed binaries, correct identification of all possible indirect control-flow transfer operations, complete mediation of all such operations, and careful rebasing and relinking of all code fragments displaced by guard code introduced during the rewriting process.
+  % A full proof of safety for a binary CFI implementation must therefore consider all (arbitrary) input byte sequences that constitute executable code on the ISA, and prove that all possible executions of the implementation's output byte sequence satisfy the control-flow policy.
 
-    %Although checkers provide assurance when they accept a binary, they offer no guarantees or guidance when they reject one, leaving the user uncertain about the safety of the transformed code.
+  %Although checkers provide assurance when they accept a binary, they offer no guarantees or guidance when they reject one, leaving the user uncertain about the safety of the transformed code.
 
-    In this paper we address this long-standing challenge through the design and implementation of \Picinae{}, a \uline{p}latform \uline{i}n Ro\uline{c}q for \uline{in}struction-level \uline{a}nalysis of \uline{e}xecutables.
-    \Picinae{} is designed from the ground up to construct machine-checked proofs about real binary programs for real ISAs, while maintaining sufficiently general foundations to prove theorems in which all or part of the target binary code is a proof variable rather than a specific program.
-    It supports modeling both von Neumann and Harvard architectures, including difficult ISA features like misaligned instructions on Intel, conditional instruction prefixes on ARM, undefined and non-deterministic effects, memory access permissions, self-modifying code, hardware exceptions, indirect calls and returns, mixed endianness on ARM, instructions with internal microcode loops, and multi-ISA integrated systems.
-    These capabilities are leveraged to prove that a realistic binary CFI implementation for a mainstream ISA (ARM7) safely hardens arbitrary binaries (including rejecting unsafe or malformed binaries that it cannot secure).
-    Specifically, we present the following contributions:
+  In this paper we address this long-standing challenge through the design and implementation of \Picinae{}, a \uline{p}latform \uline{i}n Ro\uline{c}q for \uline{in}struction-level \uline{a}nalysis of \uline{e}xecutables.
+  \Picinae{} is designed from the ground up to construct machine-checked proofs about real binary programs for real ISAs, while maintaining sufficiently general foundations to prove theorems in which all or part of the target binary code is a proof variable rather than a specific program.
+  It supports modeling both von Neumann and Harvard architectures, including difficult ISA features like misaligned instructions on Intel, conditional instruction prefixes on ARM, undefined and non-deterministic effects, memory access permissions, self-modifying code, hardware exceptions, indirect calls and returns, mixed endianness on ARM, instructions with internal microcode loops, and multi-ISA integrated systems.
+  These capabilities are leveraged to prove that a realistic binary CFI implementation for a mainstream ISA (ARM7) safely hardens arbitrary binaries (including rejecting unsafe or malformed binaries that it is designed to exclude from execution).
+  Specifically, we present the following contributions:
+  \begin{itemize}
+      \item the \Picinae{} framework, which facilitates machine-checked proofs of correctness for binary programs and binary transformations;
+      \item a dependently-typed, co-inductive foundation for proving correctness properties of algorithms that manipulate machine code; and
+      \item a case study demonstrating the first machine-checked proof of soundness for a binary CFI rewriter implementation targeting ARM7 microprocessor code.
+  \end{itemize}
+
 }
 
