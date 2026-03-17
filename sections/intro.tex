@@ -10,29 +10,26 @@
 %   - inherent verification gap due to incomplete test coverage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\cfi has become a cornerstone defense against control hijacking attacks, generating a significant body of research and achieving wide deployment in production environments, including hardware-assisted implementations, thanks to its near-native runtime overhead.
-Yet, despite its well-established theoretical foundations, the security questions surrounding its real-world implementations remain rarely asked and even more rarely answered.
+\cfi{} has become a cornerstone defense against control-hijacking attacks, generating a substantial body of research and seeing wide deployment in production systems due to its near-native runtime overhead. Yet, despite its strong theoretical foundations, the security of real-world CFI implementations remains under-examined.
 
-This phenomenon is not unique~\wc{limited} to \cfi:
-\wc{Such phenomenon is common across general software development process:} % NOTE (@kjee): this phrasing might be  better.
-translating a sound conceptual~\wc{theoretical, paper-only} design into correct, deployable software is inherently difficult and expensive process. History repeatedly evidenced that even rigorously designed systems can yield implementations riddled with bugs, some of them critical vulnerabilities surfacing only after deployment. Testing helps, but it is fundamentally limited in the coverage it can provide.
+This gap is not unique to CFI: translating a sound conceptual design into correct, deployable software is inherently difficult and costly. History has repeatedly shown that even rigorously designed systems can yield implementations with subtle but critical vulnerabilities, often surfacing only after deployment. While testing can help identify such issues, it is fundamentally limited in the assurance it can provide.
 
-These limitations are especially consequential~\wc{deadly, critical} for security software, where implementation flaws do not merely degrade functionality. They undermine the trusted computing base entirely, giving users a false sense of protection \wc{and safety} while quietly introducing~\wc{leading to have} exploitable backdoors.
+These limitations are particularly consequential for security-critical software, where implementation flaws do not merely degrade functionality but can undermine the trusted computing base itself—providing a false sense of protection while quietly introducing exploitable weaknesses.
 \optional{% NOTE(@kjee): we may want to mention real/serious incident in the past.
   The SolarWinds incident stands as a stark reminder of how devastating such vulnerabilities can be in security-sensitive infrastructure.
 }
 
-Despite such urgency and significance, the community's response has been largely confined to dynamic testing techniques such as fuzzing, symbolic execution, and model checking. However, these approaches cannot provide the strong correctness guarantees that security-critical software demands, \wc{given the increasingly growing our society's dependencies to the digitalized cyber infrastructures,} leaving a critical assurance gap that remains, to date, unaddressed.
-  % TODO (@kjee): We'd better come up with a proper phrasing of such phenomena - e.g., ``the verification gap due to testing coverage incompleteness''
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Now FM story begins; FM to the rescue.
+%   - in practice, for a given software code, it tends to accompany *the complemenary proof code* where it runs prior to code translation phase.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-* A family of formal verification (machine check) approaches can be considered to be a solution/an answer for the such risks.
-  - by writing/authoring the critical piece of the code (highly security-sensitve) in a formally verifiable language~\cite{coq,hol} and mathematically proving it for its correctness according the contracted guarantees
-  - Formal method can provide a strong (worry-free) guarantee at the static analysis phase, to assure users to safety, accuracy, and security assurance dynamically at runtime for any given inputs.
 
+% TODO (@kjee): In FM (or Coq) ecosystem, I think we have two different types of sources, say (1) *.v and (2) *_proof.v. Can we name them and call them in a specific way?
+To address this assurance gap, the community has largely relied on dynamic analysis techniques such as fuzzing, symbolic execution, and model checking. While effective in uncovering concrete bugs, these approaches cannot provide strong guarantees of correctness, as they are inherently limited to the executions they explore.
 
+Addressing this limitation requires a fundamentally different approach. \FM{} provide correctness guarantees by mathematically proving that an implementation satisfies a formally specified set of properties, offering assurance over all program behaviors within the scope of the specification. In practice, this results in proof artifacts that can be mechanically checked by a proof assistant, reducing trust to the correctness of the specification and the soundness of the proof checker.
+
+Despite this promise, the adoption of FM{} in production systems remains limited. FM{} requires specialized expertise, and constructing proof artifacts is labor-intensive, often rivaling or exceeding the cost of implementation. Moreover, the guarantees provided are only as strong as the specifications themselves, which may be incomplete or flawed. Finally, proofs are typically tightly coupled to specific implementations and verification contexts, making it difficult to scale verification to large, evolving, and heterogeneous codebases.
 
 \comment{%
     % we want to motivate the reader so that they agree that formal verification of an implementation of binary rewriting is the best way forward
@@ -111,9 +108,13 @@ Despite such urgency and significance, the community's response has been largely
     Specifically, we present the following contributions:
 }
 
+% NOTE (@kjee): very rough/tentative contribution bullets; still open for discussions.
 \begin{itemize} [topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
-    \item The \emph{first} binary-agnostic formal verification framework the most significant/foundational binary inline monitor security solution, \cfi.
-    % \item the \Picinae{} framework, which facilitates machine-checked proofs of correctness for binary programs and binary transformations;
-    % \item a dependently-typed, co-inductive foundation for proving correctness properties of algorithms that manipulate machine code; and
-    % \item a case study demonstrating the first machine-checked proof of soundness for a binary CFI rewriter implementation targeting ARM7 microprocessor code.
+
+  \item We present \pname, the first formal verification framework for \cfi enforced via binary rewriting,  establishing machine-checked correctness guarantees forthe most widely deployed class of \cfi implementations without requiring access to source code or compiler support. To the best of our knowledge, no prior work has applied formal verification to \cfi at the binary level.
+
+  \item \pname employs a static, binary-only rewriting approach and delivers strong, formally stated security guarantees — expressed as machine-checked theorems and validated against real-world binaries — demonstrating that rigorous formal assurance is practical and achievable without source-level access.
 \end{itemize}
+
+% NOTE (@kjee): put the following as a closing/visionary statement (rather than one of bullet points) since it hasn't yet been realized with actual implementations.
+Our research takes a step toward a broader and largely unexplored research direction: the formal verification of security-sensitive binary rewriting tasks beyond CFI. We identify the key challenges and open problems that must be addressed to make this vision a reality, laying the groundwork for future work in this space.
