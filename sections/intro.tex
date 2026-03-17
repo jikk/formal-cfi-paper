@@ -1,13 +1,13 @@
 %! root=./main.tex
 \section{Introduction}
 
-{
+{ % new; CCS and CFI-oriented.
   % NOTE (@kjee): 1 page + 1/3 ~ 2/3 pages with about 3 contribution bullets.
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % CFI is the king of modern security defense.
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \kjee{we may want to have a sentencer that explains \cfi.}
-  \cfi has emerged as a cornerstone defense against control-hijacking attacks, driving extensive research and achieving widespread deployment in production systems due to its strong security guarantees and near-native runtime overhead. Yet, despite its strong theoretical and empirical foundations, the community has largely left the correctness of real-world \cfi implementations at the binary level unexamined, creating a critical gap between \cfi’s theoretical guarantees and the security it delivers in practice.
+  \cfi has emerged as a cornerstone defense against a broad class of control-hijacking attacks, driving extensive research and achieving widespread deployment in production systems due to its strong security guarantees and near-native runtime overhead. Yet, despite its strong theoretical and empirical foundations, the community has largely left the correctness of real-world \cfi implementations at the binary level unexamined, creating a critical gap between \cfi’s theoretical guarantees and the security it delivers in practice.
 
   This gap reflects a broader challenge in security software engineering: developers must translate sound conceptual designs into correct, deployable systems, a process that remains inherently difficult and costly. History repeatedly shows that even rigorously designed systems produce implementations with subtle but critical vulnerabilities, often surfacing only after deployment. In security-critical settings, these flaws do not merely degrade functionality; they undermine the trusted computing base itself, giving users a false sense of protection while introducing exploitable weaknesses.
 
@@ -17,8 +17,7 @@
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
   % TODO (@kjee): In FM (or Coq) ecosystem, I think we have two different types of sources, say (1) *.v and (2) *_proof.v. Can we name them and call them in a specific way?
-  To mitigate these risks, the community has primarily relied on dynamic analysis techniques such as fuzzing, symbolic execution, and model checking. These approaches effectively uncover concrete bugs, but they fundamentally remain limited to the executions they explore and therefore cannot provide the strong correctness guarantees that security-critical software demands.
-  This limitation is not a matter of insufficient engineering effort, rather it is intrinsic to the approach.
+  To mitigate these risks, the community has primarily relied on dynamic analysis techniques such as fuzzing, symbolic execution, and model checking. These approaches effectively uncover concrete bugs, but they fundamentally remain limited to the executions they explore and therefore cannot provide the strong correctness guarantees that security-critical software demands. This limitation is not a matter of insufficient engineering effort, rather it is intrinsic to the approach.
 
   % TODO (@kjee): re-work on sentence ordering.
   \FM provides a fundamentally different foundation. Instead of observing executions,
@@ -50,7 +49,7 @@
   Looking forward, our research takes a step toward a broader and largely unexplored research direction: the formal verification of security-sensitive binary rewriting tasks beyond \cfi. We identify the key challenges and open problems that must be addressed to make this vision a reality, laying the groundwork for future work in this space.
 }
 
-{%
+{% original.
   % we want to motivate the reader so that they agree that formal verification of an implementation of binary rewriting is the best way forward
   % we need to convince them that people have tried the workarounds and that they just don't provide the same level of assurance that we will
 
