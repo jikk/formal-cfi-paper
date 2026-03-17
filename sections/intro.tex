@@ -1,47 +1,60 @@
 %! root=./main.tex
 \section{Introduction}
 
-% NOTE (@kjee): 1 page + 1/3 ~ 2/3 pages with about 3 contribution bullets.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% CFI is the king of modern security defense.
-%   - safety and security of CFI implementation is crucial, but largely overlooked.
-%   - bugs in security defenses are more deadly and critical.
-% Software testing is only viable option available.
-%   - inherent verification gap due to incomplete test coverage
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\kjee{we may want to have a sentencer that explains \cfi.}
-\cfi has emerged as a cornerstone defense against control-hijacking attacks, driving extensive research and achieving widespread deployment in production systems due to its strong security guarantees and near-native runtime overhead. Yet, despite its strong theoretical and empirical foundations, the community has largely left the correctness of real-world CFI implementations at the binary level unexamined, creating a critical gap between CFI’s theoretical guarantees and the security it delivers in practice.
+{
+  % NOTE (@kjee): 1 page + 1/3 ~ 2/3 pages with about 3 contribution bullets.
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % CFI is the king of modern security defense.
+  %   - safety and security of CFI implementation is crucial, but largely overlooked.
+  %   - bugs in security defenses are more deadly and critical.
+  % Software testing is only viable option available.
+  %   - inherent verification gap due to incomplete test coverage
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \kjee{we may want to have a sentencer that explains \cfi.}
+  \cfi has emerged as a cornerstone defense against control-hijacking attacks, driving extensive research and achieving widespread deployment in production systems due to its strong security guarantees and near-native runtime overhead. Yet, despite its strong theoretical and empirical foundations, the community has largely left the correctness of real-world CFI implementations at the binary level unexamined, creating a critical gap between CFI’s theoretical guarantees and the security it delivers in practice.
 
-This gap reflects a broader challenge in security software engineering: developers must translate sound conceptual designs into correct, deployable systems, a process that remains inherently difficult and costly. History repeatedly shows that even rigorously designed systems produce implementations with subtle but critical vulnerabilities, often surfacing only after deployment. In security-critical settings, these flaws do not merely degrade functionality; they undermine the trusted computing base itself, giving users a false sense of protection while introducing exploitable weaknesses.
+  This gap reflects a broader challenge in security software engineering: developers must translate sound conceptual designs into correct, deployable systems, a process that remains inherently difficult and costly. History repeatedly shows that even rigorously designed systems produce implementations with subtle but critical vulnerabilities, often surfacing only after deployment. In security-critical settings, these flaws do not merely degrade functionality; they undermine the trusted computing base itself, giving users a false sense of protection while introducing exploitable weaknesses.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Now FM story begins; FM to the rescue.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % Now FM story begins; FM to the rescue.
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% TODO (@kjee): In FM (or Coq) ecosystem, I think we have two different types of sources, say (1) *.v and (2) *_proof.v. Can we name them and call them in a specific way?
-To mitigate these risks, the community has primarily relied on dynamic analysis techniques such as fuzzing, symbolic execution, and model checking. These approaches effectively uncover concrete bugs, but they fundamentally remain limited to the executions they explore and therefore cannot provide the strong correctness guarantees that security-critical software demands.
-% TODO (@kjee): smell of AI generated text.
-This limitation is not a matter of insufficient engineering effort—it is intrinsic to the approach.
+  % TODO (@kjee): In FM (or Coq) ecosystem, I think we have two different types of sources, say (1) *.v and (2) *_proof.v. Can we name them and call them in a specific way?
+  To mitigate these risks, the community has primarily relied on dynamic analysis techniques such as fuzzing, symbolic execution, and model checking. These approaches effectively uncover concrete bugs, but they fundamentally remain limited to the executions they explore and therefore cannot provide the strong correctness guarantees that security-critical software demands.
+  % TODO (@kjee): smell of AI generated text.
+  This limitation is not a matter of insufficient engineering effort—it is intrinsic to the approach.
 
-% TODO (@kjee): re-work on sentence ordering.
-\FM provides a fundamentally different foundation. Instead of observing executions,
-FM establishes correctness by proving that an implementation satisfies formally specified properties, thereby covering all program behaviors \wc{traces} within the scope of the specification. In practice, this process produces proof artifacts that proof assistants mechanically check, reducing trust to the correctness of the specification and the soundness of the proof checker.
+  % TODO (@kjee): re-work on sentence ordering.
+  \FM provides a fundamentally different foundation. Instead of observing executions,
+  FM establishes correctness by proving that an implementation satisfies formally specified properties, thereby covering all program behaviors \wc{traces} within the scope of the specification. In practice, this process produces proof artifacts that proof assistants mechanically check, reducing trust to the correctness of the specification and the soundness of the proof checker.
 
-Despite these advantages, FM has seen limited adoption in production systems. \nm{1} Developers must invest substantial effort and specialized expertise to construct proof artifacts, often matching or exceeding the cost of implementation. \nm{2} Moreover, FM guarantees remain only as strong as the specifications themselves, which may be incomplete or flawed. \nm{3} Finally, proofs typically bind tightly to specific implementations and verification contexts, making it difficult to scale~\wc{migrate, port, translate, calcify (???), hard-to-maintain} verification across large, heterogeneous, and evolving codebases.
+  Despite these advantages, FM has seen limited adoption in production systems. \nm{1} Developers must invest substantial effort and specialized expertise to construct proof artifacts, often matching or exceeding the cost of implementation. \nm{2} Moreover, FM guarantees remain only as strong as the specifications themselves, which may be incomplete or flawed. \nm{3} Finally, proofs typically bind tightly to specific implementations and verification contexts, making it difficult to scale~\wc{migrate, port, translate, calcify (???), hard-to-maintain} verification across large, heterogeneous, and evolving codebases.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Our story begins; formally-verified, machine-checked CFI.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % Our story begins; formally-verified, machine-checked CFI.
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% TODO (@kjee): we need a killer setence here; summarizing two-folds (CFI implementation accuracy concern, FM scalability difficulties) as a connecting/strong/motivational statement.
-In this research, we address these challenges through a deliberate choice of verification target and system design. We focus on CFI because its theoretical foundations are mature, its security properties admit precise formalization, and its widespread deployment makes closing its assurance gap both urgent and high-impact. This structure substantially reduces the specification burden that has historically limited FM, making formal verification of CFI not only well-motivated but tractable.
+  % TODO (@kjee): we need a killer setence here; summarizing two-folds (CFI implementation accuracy concern, FM scalability difficulties) as a connecting/strong/motivational statement.
+  In this research, we address these challenges through a deliberate choice of verification target and system design. We focus on CFI because its theoretical foundations are mature, its security properties admit precise formalization, and its widespread deployment makes closing its assurance gap both urgent and high-impact. This structure substantially reduces the specification burden that has historically limited FM, making formal verification of CFI not only well-motivated but tractable.
 
-To achieve scalability, we verify the static binary rewriter itself rather than individual binaries. Following the verified compiler paradigm exemplified by CompCert, a one-time verification yields sound correctness guarantees for all transformed binaries, eliminating per-binary verification effort and enabling deployment at scale.
+  To achieve scalability, we verify the static binary rewriter itself rather than individual binaries. Following the verified compiler paradigm exemplified by CompCert, a one-time verification yields sound correctness guarantees for all transformed binaries, eliminating per-binary verification effort and enabling deployment at scale.
 
-Together, these design choices establish the formal verification of a CFI-enforcing static binary rewriter as a rare combination of tractability and impact. To the best of our knowledge, no prior work has explored this space, despite its direct implications for closing the long-standing assurance gap in deployed CFI systems.
+  Together, these design choices establish the formal verification of a CFI-enforcing static binary rewriter as a rare combination of tractability and impact. To the best of our knowledge, no prior work has explored this space, despite its direct implications for closing the long-standing assurance gap in deployed CFI systems.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % NOTE (@kjee): very rough/tentative contribution bullets; still open for discussions.
+  % TODO (@kjee): both bullets are too verbose; make them concise.
+  \begin{itemize} [topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
+  \item We present \pname, the first formal verification framework for \cfi enforced via binary rewriting,  establishing machine-checked correctness guarantees forthe most widely deployed class of \cfi implementations without requiring access to source code or compiler support. To the best of our knowledge, no prior work has applied formal verification to \cfi at the binary level.
+
+  \item \pname employs a static, binary-only rewriting approach and delivers strong, formally stated security guarantees — expressed as machine-checked theorems and validated against real-world binaries — demonstrating that rigorous formal assurance is practical and achievable without source-level access.
+  \end{itemize}
+
+  % NOTE (@kjee): put the following as a closing/visionary statement (rather than one of bullet points) since it hasn't yet been realized with actual implementations.
+  Our research takes a step toward a broader and largely unexplored research direction: the formal verification of security-sensitive binary rewriting tasks beyond CFI. We identify the key challenges and open problems that must be addressed to make this vision a reality, laying the groundwork for future work in this space.
+}
+
 
 {%
     % we want to motivate the reader so that they agree that formal verification of an implementation of binary rewriting is the best way forward
@@ -120,13 +133,3 @@ Together, these design choices establish the formal verification of a CFI-enforc
     Specifically, we present the following contributions:
 }
 
-% NOTE (@kjee): very rough/tentative contribution bullets; still open for discussions.
-% TODO (@kjee): both bullets are too verbose; make them concise.
-\begin{itemize} [topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
-  \item We present \pname, the first formal verification framework for \cfi enforced via binary rewriting,  establishing machine-checked correctness guarantees forthe most widely deployed class of \cfi implementations without requiring access to source code or compiler support. To the best of our knowledge, no prior work has applied formal verification to \cfi at the binary level.
-
-  \item \pname employs a static, binary-only rewriting approach and delivers strong, formally stated security guarantees — expressed as machine-checked theorems and validated against real-world binaries — demonstrating that rigorous formal assurance is practical and achievable without source-level access.
-\end{itemize}
-
-% NOTE (@kjee): put the following as a closing/visionary statement (rather than one of bullet points) since it hasn't yet been realized with actual implementations.
-Our research takes a step toward a broader and largely unexplored research direction: the formal verification of security-sensitive binary rewriting tasks beyond CFI. We identify the key challenges and open problems that must be addressed to make this vision a reality, laying the groundwork for future work in this space.
