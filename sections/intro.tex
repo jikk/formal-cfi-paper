@@ -67,17 +67,20 @@
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % specific story begins;
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-  % NOTE (@kjee): very rough/tentative contribution bullets; still open for discussions.
-  % TODO (@kjee): both bullets are too verbose; make them concise.
-  \begin{itemize} [topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
-      \item We present \pname, the first machine-checked proof of soundness for a binary CFI rewriter implementation targeting ARM7 microprocessor code;
-      \item a dependently-typed, co-inductive foundation for proving correctness properties of algorithms that manipulate machine code; and
-      \item \Picinae{} framework, the core underlying enabler that facilitates machine-checked proofs of correctness for binary programs and binary transformations
+  % NOTE (@kjee): 2nd pass for the bullet points.
+  As a result, in this research, we bring in the following contributions:
+  \begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
+      \item We formalize the security and safety conditions for a binary CFI rewriter and prove their correctness over a real world implementation.
+      \item We design, implement, and release \pname, the first machine checked binary CFI rewriter for the ARMv7 ISA, demonstrating the generality of our approach with near native overhead (XX~\% average on SPEC 2017).
+      \item We pioneer a previously unexplored intersection between FM and binary-level security, delivering concrete insights on FM-aware design principles and surfacing subtle but critical design flaws that dynamic testing alone would have overlooked.
+      % \item Leveraging on machine attraction layer,
+      % \item We present \pname, the first machine-checked proof of soundness for a binary CFI rewriter implementation targeting ARM7 microprocessor code;
+      % \item a dependently-typed, co-inductive foundation for proving correctness properties of algorithms that manipulate machine code; and
+      % \item \Picinae{} framework, the core underlying enabler that facilitates machine-checked proofs of correctness for binary programs and binary transformations
   \end{itemize}
 
   % NOTE (@kjee): put the following as a closing/visionary statement (rather than one of bullet points) since it hasn't yet been realized with actual implementations.
-  Looking forward, our research takes a step toward a broader and largely unexplored research direction: the formal verification of security-sensitive binary rewriting tasks beyond \cfi. We identify the key challenges and open problems that must be addressed to make this vision a reality, laying the groundwork for future work in this space.
+  Looking ahead, by building a binary rewriter framework on top of the ISA abstraction layer provided by Picinae, this work takes a concrete step toward a broader and largely unexplored research direction: the formal verification of large families of security-sensitive binary rewriting tasks beyond CFI. We identify the key challenges and open problems that must be addressed to realize this vision, laying the groundwork for future research in this space.
 }
 
 \comment{% original.

@@ -1,0 +1,16 @@
+%! root=./main.tex
+\section{Implementation}~\label{sec:impl}
+
+\comment{%
+    * [name=kjee] We can relate these to workflow/architecture/execution model
+- framework (Picinae)
+
+    - implementation (armv7.v, arm7cfi.v --- Section #)
+    - proofs of *implementation* correctness (armv7cfi_proof.v --- Section #)
+    --> extraction
+    - *.ml files + py glues --> implement binary rewriter (rewriter.sh)
+        - **py glues** are outside the scope of the research
+            - the proof will be about the program loader would load the generated ELF execution and initialize the process initial state to be compliant to assumptions associated with *the proof of the correctness.*
+                - what is *the proof of the correctness* ; ~~Picinae~~or ARMCFI?
+        - disassembler part that is implemented in Coq hasn't yet been proven
+}
