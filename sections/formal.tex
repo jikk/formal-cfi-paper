@@ -3,11 +3,11 @@
 
 \heading{Setup.} We are given the following inputs:
 
-\begin{itemize}
+\begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
   \item $\pol : \mathbb{Z} \to \mathit{list}\ \mathbb{Z}$ --- the CFI policy
-        (maps each address to a list of valid target addresses),
-  \item $\code : \mathit{list}\ \mathbb{Z}$ --- the original program code
-        (a sequence of bytes),
+        % (maps each address to a list of valid target addresses),
+  \item $\code : \mathit{list}\ \mathbb{Z}$ --- the original program code,
+        % (a sequence of bytes),
   \item $bi \in \mathbb{Z}$ --- base index of the original code,
   \item $bi' \in \mathbb{Z}$ --- base index of the rewritten code,
   \item $tbi \in \mathbb{Z}$ --- policy table base index
@@ -16,7 +16,9 @@
 \end{itemize}
 
 \noindent The CFI rewriter produces $(\codep,\, \tables)$ where:
-\begin{itemize}
+
+
+\begin{itemize} [topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
   \item $\codep : \mathit{list}\ (\mathit{list}\ \mathbb{Z})$ is the rewritten code, and
   \item $\tables : \mathit{list}\ (\mathit{list}\ \mathbb{Z})$ are the dispatch tables.
 \end{itemize}
@@ -46,7 +48,7 @@ The function $\itoi : \mathbb{Z} \to \mathbb{Z}$ is defined by:
 \[
   \itoi(i) \;=\;
   \begin{cases}
-    \text{starting address of } \block(i - bi) \text{ in } \NewText
+    \text{starting address of } \\ \block(i - bi) \text{ in } \NewText
       & \text{if } i \in \OldText, \\
     ai
       & \text{if } i \in \NewText, \\
@@ -64,7 +66,8 @@ The function $\itoio : \mathbb{Z} \to \mathbb{Z}$ is defined by:
 \[
   \itoio(i') \;=\;
   \begin{cases}
-    bi + n, \text{ where } n \text{ is the unique index such that }
+    bi + n, \text{ where } n \text{ is the unique} \\
+    \text{index such that }
     i' \in \block(n)
       & \text{if } i' \in \NewText, \\
     i'
@@ -80,7 +83,7 @@ $\Pol(i,\,j)$ holds if and only if $j \in \pol(i)$.
 \begin{definition}[Derived policy]
 $\Polp(i',\,j')$ holds if and only if at least one of the following
 conditions is satisfied:
-\begin{enumerate}[label=(\arabic*)]
+\begin{enumerate}[label=(\arabic*), topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
   \item $j' = ai$ \quad (transition to abort is always permitted),
   \item $\itoio(i') = \itoio(j')$ \quad (both addresses belong to the
         same original instruction's block), or
@@ -91,7 +94,8 @@ conditions is satisfied:
 
 \begin{definition}[Initial memory condition]
 A memory state $m$ satisfies $\InitMem(m)$ if and only if:
-\begin{itemize}
+
+\begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
   \item $m$ contains $\flatten(\codep)$ starting at $bi'$,
   \item $m$ contains $\flatten(\tables)$ starting at $tbi$, with
         correct target endianness, and
@@ -110,7 +114,7 @@ $\flatten(\tables)$ satisfies:
 
 \begin{definition}[Valid trace]
 A trace $t$ is \emph{valid} if and only if:
-\begin{itemize}
+\begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
   \item the entry-point of $t$ is $\itoi(k)$ for some $k \in \OldText$
         (i.e., a block-start address),
   \item the CPU begins in ARM mode (program counter divisible by $4$), and
@@ -155,7 +159,7 @@ interior. \qed
 Let $n$ be any index into $\code$, and suppose execution begins at
 $\itoi(bi + n)$ with $\InitMem$ holding.  Then exactly one of the
 following occurs:
-\begin{enumerate}[label=(\arabic*)]
+\begin{enumerate}[label=(\arabic*),topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
   \item \textbf{Unchanged instruction.}
         The $n$-th instruction was not altered; the block falls through
         to the next block, and the rewriter ensures that fallthrough is
@@ -215,11 +219,11 @@ $\InitMem$ is preserved by Lemma~3 (the nonwritable invariant), so
 the hypothesis holds at each subsequent block.
 \end{proof}
 
-\section*{Remarks}
-
+\heading{Remarks.}
 The following points are left implicit above and may require additional
 care in a proof assistant:
-\begin{itemize}
+
+\begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
   \item The well-definedness of $\itoio$ (every address in $\NewText$
         belongs to exactly one block) requires a disjointness lemma on
         the block partition.
