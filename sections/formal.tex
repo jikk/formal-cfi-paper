@@ -1,0 +1,233 @@
+%! root=./main.tex
+\section{Formal Definitions and Theorem Statements}
+
+\heading{Setup.} We are given the following inputs:
+
+\begin{itemize}
+  \item $\pol : \mathbb{Z} \to \mathit{list}\ \mathbb{Z}$ --- the CFI policy
+        (maps each address to a list of valid target addresses),
+  \item $\code : \mathit{list}\ \mathbb{Z}$ --- the original program code
+        (a sequence of bytes),
+  \item $bi \in \mathbb{Z}$ --- base index of the original code,
+  \item $bi' \in \mathbb{Z}$ --- base index of the rewritten code,
+  \item $tbi \in \mathbb{Z}$ --- policy table base index
+        (the table maps each address to a list of permitted target addresses),
+  \item $ai \in \mathbb{Z}$ --- abort index.
+\end{itemize}
+
+\noindent The CFI rewriter produces $(\codep,\, \tables)$ where:
+\begin{itemize}
+  \item $\codep : \mathit{list}\ (\mathit{list}\ \mathbb{Z})$ is the rewritten code, and
+  \item $\tables : \mathit{list}\ (\mathit{list}\ \mathbb{Z})$ are the dispatch tables.
+\end{itemize}
+
+\subsection{Definitions}
+
+\begin{definition}[Memory layout]
+The three disjoint segments are:
+\begin{align*}
+  \OldText  &\;=\; \bigl[bi,\; bi + |\flatten(\code)|\bigr), \\
+  \NewText  &\;=\; \bigl[bi',\; bi' + |\flatten(\codep)|\bigr), \\
+  \DataSeg  &\;=\; \bigl[tbi,\; tbi + |\flatten(\tables)|\bigr).
+\end{align*}
+We require $ai \notin \NewText$ (the abort index is disjoint from the new
+text segment).
+\end{definition}
+
+\begin{definition}[Block structure]
+The rewriter partitions $\codep$ into blocks: each element $\codep[n]$
+corresponds to exactly one instruction $\code[n]$.  We write $\block(n)$
+for the $n$-th element of $\codep$, corresponding to the $n$-th
+instruction of $\code$.
+\end{definition}
+
+\begin{definition}[Index translation --- old to new]
+The function $\itoi : \mathbb{Z} \to \mathbb{Z}$ is defined by:
+\[
+  \itoi(i) \;=\;
+  \begin{cases}
+    \text{starting address of } \block(i - bi) \text{ in } \NewText
+      & \text{if } i \in \OldText, \\
+    ai
+      & \text{if } i \in \NewText, \\
+    i
+      & \text{otherwise.}
+  \end{cases}
+\]
+Note that $\itoi$ maps only to block-start addresses or $ai$; it never
+returns an index interior to a block.
+\end{definition}
+
+\begin{definition}[Index translation --- new to old]
+
+The function $\itoio : \mathbb{Z} \to \mathbb{Z}$ is defined by:
+\[
+  \itoio(i') \;=\;
+  \begin{cases}
+    bi + n, \text{ where } n \text{ is the unique index such that }
+    i' \in \block(n)
+      & \text{if } i' \in \NewText, \\
+    i'
+      & \text{otherwise.}
+  \end{cases}
+\]
+\end{definition}
+
+\begin{definition}[Original policy]
+$\Pol(i,\,j)$ holds if and only if $j \in \pol(i)$.
+\end{definition}
+
+\begin{definition}[Derived policy]
+$\Polp(i',\,j')$ holds if and only if at least one of the following
+conditions is satisfied:
+\begin{enumerate}[label=(\arabic*)]
+  \item $j' = ai$ \quad (transition to abort is always permitted),
+  \item $\itoio(i') = \itoio(j')$ \quad (both addresses belong to the
+        same original instruction's block), or
+  \item $\Pol(\itoio(i'),\,\itoio(j'))$ \quad (the original policy
+        permits the corresponding step).
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[Initial memory condition]
+A memory state $m$ satisfies $\InitMem(m)$ if and only if:
+\begin{itemize}
+  \item $m$ contains $\flatten(\codep)$ starting at $bi'$,
+  \item $m$ contains $\flatten(\tables)$ starting at $tbi$, with
+        correct target endianness, and
+  \item the regions $\NewText$ and $\DataSeg$ are nonwritable in $m$.
+\end{itemize}
+\end{definition}
+
+\begin{definition}[Table well-formedness]
+The tables are \emph{well-formed} if and only if every entry $e$ in
+$\flatten(\tables)$ satisfies:
+\[
+  e = ai \qquad \text{or} \qquad
+  \exists\, k \in \OldText.\ e = \itoi(k).
+\]
+\end{definition}
+
+\begin{definition}[Valid trace]
+A trace $t$ is \emph{valid} if and only if:
+\begin{itemize}
+  \item the entry-point of $t$ is $\itoi(k)$ for some $k \in \OldText$
+        (i.e., a block-start address),
+  \item the CPU begins in ARM mode (program counter divisible by $4$), and
+  \item $\InitMem$ holds at the start of $t$.
+\end{itemize}
+\end{definition}
+
+\begin{definition}[CFI-permitted step]
+A single execution step from $i'$ to $j'$ within a trace is
+\emph{CFI-permitted} if $\Polp(i',\,j')$ holds.
+\end{definition}
+
+\subsection{Lemmas}
+
+\begin{lemma}[Endianness and mode stability]
+Under $\InitMem$ and the assumption that no instruction in any block
+modifies memory permissions or CPU endianness, the endianness of the CPU
+and the ARM/Thumb mode (program counter alignment modulo $4$) are
+preserved throughout any valid trace.
+\end{lemma}
+
+\begin{lemma}[Block-entry invariant]
+If execution reaches an address $i' \in \NewText$, then $i'$ is a
+block-start address; that is:
+\[
+  \exists\, k \in \OldText.\ i' = \itoi(k),
+  \qquad \text{or} \qquad
+  i' = ai.
+\]
+In particular, execution never enters a block at any address other than
+its first instruction.
+
+\medskip\noindent
+\textit{Proof sketch.}
+$\itoi$ maps only to block-start addresses.  All table entries are
+block-start addresses or $ai$ by Definition~8.  Therefore no
+control-flow transfer within the rewritten code can target a block
+interior. \qed
+\end{lemma}
+
+\begin{lemma}[Block simulation --- case analysis]
+Let $n$ be any index into $\code$, and suppose execution begins at
+$\itoi(bi + n)$ with $\InitMem$ holding.  Then exactly one of the
+following occurs:
+\begin{enumerate}[label=(\arabic*)]
+  \item \textbf{Unchanged instruction.}
+        The $n$-th instruction was not altered; the block falls through
+        to the next block, and the rewriter ensures that fallthrough is
+        permitted by $\Pol$.
+
+  \item \textbf{Changed, non-control-flow instruction.}
+        The block either starts with a conditional branch directly to
+        the next block (permitted by $\Pol$) or contains only
+        fallthrough instructions.
+
+  \item \textbf{Changed, static control flow.}
+        The block contains a direct branch; the rewriter has verified
+        that the target is permitted by $\Pol$ and has updated the
+        branch target to account for inserted instructions.
+
+  \item \textbf{Changed, dynamic control flow.}
+        The block ends with a table-dispatch sequence: it loads a target
+        address from the appropriate entry of $\tables$ and jumps to it.
+        All table entries are $\itoi$-images of $\Pol$-permitted
+        destinations, or $ai$.
+
+  \item \textbf{Unsupported instruction.}
+        The instruction is replaced by an unconditional branch to $ai$,
+        which is permitted by clause~(1) of $\Polp$.
+\end{enumerate}
+In all cases, upon completion of the block:
+\begin{itemize}
+  \item the next program counter is either $ai$, a block-start address
+        in $\NewText$, or an address outside $\NewText$,
+  \item every step taken within the block is permitted by $\Polp$, and
+  \item $\InitMem$ still holds (since no instruction modifies the
+        nonwritable regions).
+\end{itemize}
+\end{lemma}
+
+\subsection{Main Theorem}
+
+\begin{theorem}[CFI Correctness]
+For every valid trace $t$ (Definition~9), every execution step of $t$
+is permitted by $\Polp$ until $t$ either exits $\NewText$ or raises a
+hardware exception.  Moreover, $t$ can exit $\NewText$ only if the
+original policy $\Pol$ permits the corresponding step.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on the blocks of $t$.  The base case is the entry block,
+which is a block-start address by Definition~9.
+
+For the inductive step, Lemma~3 shows that each block executes only
+$\Polp$-permitted steps internally and transfers control to either
+$ai$, another block-start address, or an address outside $\NewText$.
+Lemma~2 ensures that whenever control remains inside $\NewText$ it
+arrives at a block-start, maintaining the induction hypothesis.
+Lemma~1 ensures that ARM mode and endianness are preserved throughout,
+so no implicit mode switch can bypass the analysis.  Finally,
+$\InitMem$ is preserved by Lemma~3 (the nonwritable invariant), so
+the hypothesis holds at each subsequent block.
+\end{proof}
+
+\section*{Remarks}
+
+The following points are left implicit above and may require additional
+care in a proof assistant:
+\begin{itemize}
+  \item The well-definedness of $\itoio$ (every address in $\NewText$
+        belongs to exactly one block) requires a disjointness lemma on
+        the block partition.
+  \item Lemma~3 is essentially a \emph{simulation relation} between old
+        and new execution; it may be cleaner to state as a forward
+        simulation depending on the chosen semantic framework.
+  \item The ``hardware exception'' escape clause covers undefined
+        behavior at the ISA level.  A separate assumption that no block
+        contains invalid instruction encodings, or an additional terminal
+        case, may be needed.
+\end{itemize}
