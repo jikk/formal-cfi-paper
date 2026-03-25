@@ -1,13 +1,14 @@
 %! root=./main.tex
-\section{Introduction}
+\section{Introduction}~\label{sec:intro}
 
 % NOTE (@kjee): 1 page + 1/3 ~ 2/3 pages with about 3 contribution bullets.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CFI is the king of modern security defense.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\kjee{we may want to have a sentencer that explains \cfi.}
-CFI has become a cornerstone defense against control-hijacking attacks, enabling widespread deployment with strong guarantees and near-native overhead. Yet the community focuses on design-level security guarantees, runtime overheads, and policy generation aspects, while largely overlooking the correctness of CFI implementations in production, leaving a critical gap between theory and practice. This gap underscores a broader challenge in security engineering: translating sound designs into correct, deployable systems is difficult and costly. Even rigorously designed systems often contain subtle flaws that emerge only after deployment. In security-critical settings, these flaws do more than degrade functionality—they undermine the trusted computing base, create false confidence, and expose exploitable weaknesses.
-%
+\cfi has become a cornerstone defense against control-hijacking attacks, enabling widespread deployment with strong guarantees and near-native overhead. Yet the community focuses on design-level security guarantees, runtime overheads, and policy generation aspects, while largely overlooking the correctness of CFI implementations in production, leaving a critical gap between theory and practice.
+
+This gap underscores a broader challenge in security engineering: translating sound designs into correct, deployable systems is difficult and costly. Even rigorously designed systems often contain subtle flaws that emerge only after deployment. In security-critical settings, these flaws do more than degrade functionality—they undermine the trusted computing base, create false confidence, and expose exploitable weaknesses.
+
 To mitigate these risks, the community relies primarily on dynamic testing techniques such as fuzzing and symbolic execution. While effective at uncovering concrete bugs, these approaches remain inherently limited. This limitation stems not from engineering shortcomings, but from the fundamental nature of dynamic analysis.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38,23 +39,13 @@ Third, formally verifying software at the binary level has remained out of reach
 To respond, our research takes a step toward closing that gap. We present the first machine-checked CFI system built on a static binary rewriting framework for a mature, real-world architecture, providing formally verified compliance with the design specification and runtime correctness beyond the incomplete assurances of dynamic testing.
 
 % NOTE (@kjee): specificiation to formally verifiying CFI can be straightforward.
-{
+{%
   % Binary CFI is a well-established and well-specified defense.
   \pname implements source-agnostic (binary-only) CFI by rewriting binaries to confine all control-flow transfers to policy-specified edges. It identifies and instruments control-transfer instructions (\eg jumps, calls, and returns), checking each target against the policy at runtime and triggering a safe abort on violation.
   By definition,\wc{formally} the CFI enforcement for a given binary is \emph{sound} if all possible execution traces of every rewritten binary obey the control-flow policy.
 }
 
 % NOTE (@kjee): FM of binary writer itself is a difficult, unexplored, open challenge.
-\comment{
-- Binary-level CFI, built on static binary rewriting techniques, is a well-studied and mature area.
-- However, formal verification of CFI implementation correctness remains understudied, despite the long-standing availability of mature proof assistants (Coq/Rocq, Isabelle/HOL).
-- The fundamental challenge is the absence of ISA abstractions that are both faithful to real-world architectures and amenable to formal reasoning.
-- As a result, prior work has been largely confined to reasoning about concrete binaries known ahead of time, and cannot generalize to arbitrary binaries supplied by users.
-  - For instance, RockSalt successfully verified the safety guarantees of an SFI solution for x86, but its analysis is confined to a concrete subset of the x86 ISA and the specific binaries conforming to NaCl's sandbox policy, not generalizeable to arbitrary binaries or other ISAs.
-
-- We address this challenge by building on the Picinae framework~\cite{picinae}, which provides a principled foundation for machine-checked proofs about real binary programs on real ISAs. Critically, Picinae supports proofs in which the target binary is treated as a symbolic proof variable rather than a fixed program, enabling verification that generalizes across arbitrary binaries.
-}
-
 Binary-level CFI, built on static binary rewriting techniques, is a well-studied and mature area. Yet formally verifying the correctness of a binary CFI implementation, let alone the broader class of binary rewriters, remains an open challenge, despite the long-standing availability of mature proof assistants such as Coq/Rocq and Isabelle/HOL. The core difficulty is one of semantic generality: correctness must hold for all possible input binaries, whether compiler-generated, hand-written, or otherwise, not merely those drawn from a particular toolchain or restricted to a subset of the ISA. Prior work has been largely confined to reasoning about concrete, fixed binaries, falling short of this bar. RockSalt~\cite{rocksalt}, for instance, successfully verified the safety guarantees of an SFI solution for x86, but its analysis is tied to a concrete subset of the x86 ISA and the NaCl sandbox policy, and does not extend to arbitrary binaries or other ISAs.
 
 \optional{%
