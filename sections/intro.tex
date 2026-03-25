@@ -20,7 +20,7 @@
 
   Formal methods take a fundamentally different approach. Rather than observing executions, formal methods establish stringent correctness guarantees by proving that an implementation satisfies formally specified properties, thereby covering all program behaviors within the scope of the specification. Proof assistants then mechanically check the resulting proof artifacts, reducing trust to the correctness of the specification and the soundness of the proof checker.
 
-  Despite these unparalleled advantages, formal methods have seen limited adoption in production systems for three reasons
+  Despite these unparalleled advantages, formal methods have seen limited adoption in production systems for three reasons:
   % NOTE (kjee): the following is in a way known; conventional perception... However, let's not think about/mention it here at least.
   % Formal verification requires substantial effort and specialized expertise to construct proof artifacts, often rivaling or exceeding the cost of the implementation itself. Moreover, these proofs are tightly coupled to the verified code: even minor changes --- such as bug fixes, optimizations, or refactoring --- can invalidate existing proofs and trigger significant re-verification effort. This tight coupling makes it costly to maintain proofs alongside evolving codebases and limits scalability to large or heterogeneous systems.
   First, the guarantees formal methods deliver are only as strong as the specifications themselves, which may be incomplete or flawed.
@@ -52,7 +52,7 @@
     This approach enables code consumers to protect themselves from untrusted producers, but it does not equip producers with a way to construct a CFI implementation that is provably sound by design and guaranteed to pass such checks. Instead, producers must rely on unit testing—applying the rewriter to many inputs and checking for violations, thereby forfeiting the full-coverage guarantees of formal methods and risking deployment-time failures when the rewriter produces an unsound binary.
   }
 
-  The Picinae framework serves as a core enabler in addressing the intrinsic challenges of formally verifying a binary rewriter. Picinae provides a ground-up foundation for machine-checked proofs about real binary programs on real ISAs, while maintaining sufficiently general foundations to prove theorems in which all or part of the target binary code is a proof variable rather than a specific program.
+  Our research addresses the challenge by incorporating Picinae framework~\cite{picianae} serves as a core enabler in addressing the intrinsic challenges of formally verifying a binary rewriter. Picinae provides a ground-up foundation for machine-checked proofs about real binary programs on real ISAs, while maintaining sufficiently general foundations to prove theorems in which all or part of the target binary code is a proof variable rather than a specific program.
   %
   While broadly generalizable, Picinae accurately models the intricate features of ARMv7, including conditional instruction prefixes, undefined and non-deterministic effects, memory access permissions, hardware exceptions, and indirect calls and returns with mixed endianness. This faithful modeling of a mature, real-world ISA makes Picinae the right foundation for the first formally verified CFI implementation.
 
@@ -63,20 +63,19 @@
   To achieve scalability, we verify the static binary rewriter itself rather than individual binaries. Following the verified compiler paradigm exemplified by CompCert, a one-time verification yields sound correctness guarantees for all transformed binaries, eliminating per-binary verification effort and enabling deployment at scale.
 
   Together, these design choices establish the formal verification of a CFI-enforcing static binary rewriter as a rare combination of tractability and impact. To the best of our knowledge, no prior work has explored this space, despite its direct implications for closing the long-standing assurance gap in deployed CFI systems.
-
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % specific story begins;
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % NOTE (@kjee): 2nd pass for the bullet points.
   As a result, in this research, we bring in the following contributions:
   \begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
-      \item We formalize the security and safety conditions for a binary CFI rewriter and prove their correctness over a real world implementation.
-      \item We design, implement, and release \pname, the first machine checked binary CFI rewriter for the ARMv7 ISA, demonstrating the generality of our approach with near native overhead (XX~\% average on SPEC 2017).
-      \item We pioneer a previously unexplored intersection between FM and binary-level security, delivering concrete insights on FM-aware design principles and surfacing subtle but critical design flaws that dynamic testing alone would have overlooked.
-      % \item Leveraging on machine attraction layer,
-      % \item We present \pname, the first machine-checked proof of soundness for a binary CFI rewriter implementation targeting ARM7 microprocessor code;
-      % \item a dependently-typed, co-inductive foundation for proving correctness properties of algorithms that manipulate machine code; and
-      % \item \Picinae{} framework, the core underlying enabler that facilitates machine-checked proofs of correctness for binary programs and binary transformations
+      \item  We present \pname, a machine-checked binary CFI framework that formalizes and verifies the correctness of CFI rewriting. We implement it as the first machine-checked CFI rewriter for ARMv7 and achieve near-native overhead (XX~\% average on SPEC 2017).
+      % We introduce \pname, a machine-checked binary CFI framework that formally defines the security and safety conditions required for a correct CFI rewriter and verifies them against a real-world implementation. \pname is the first machine-checked binary CFI rewriter for the ARMv7 ISA, demonstrating the generality of our approach while incurring near-native runtime overhead (XX~\% average on SPEC 2017).
+
+      \item Built on Picinae, \pname analyzes arbitrary binaries, overcoming prior FM limitations that require concrete inputs and enabling verification over unbounded binary spaces.
+      % Built on the Picinae framework, \pname accepts arbitrary binaries as input, overcoming a long-standing limitation of prior FM approaches that required concrete byte sequences rather than symbolic representations,  extending the reach of formal verification to unbounded binary inputs.
+
+      \item  We explore a previously uncharted intersection between FM and binary-level security, deriving principled FM-aware design guidelines and uncovering subtle but critical flaws that dynamic testing alone would have missed.
   \end{itemize}
 
   % NOTE (@kjee): put the following as a closing/visionary statement (rather than one of bullet points) since it hasn't yet been realized with actual implementations.
