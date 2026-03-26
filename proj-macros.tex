@@ -16,11 +16,10 @@
 \commentstrue{}
 
 \ifcomments{}
-\usepackage{todonotes}
 	\newcommand{\kjee}[1]{\noindent\textcolor{red}{[KJEE: #1]}}
 	\newcommand{\wc}[1]{}
 	\newcommand{\mxz}[1]{\noindent\textcolor{green}{[Max: #1]}}
-	\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
+	\newcommand{\todo}[1]{\noindent\textcolor{green}{[TODO: #1]}}
 	\newcommand{\review}[1]{\textcolor{orange}{#1}}
 \else
 	\newcommand{\kjee}[1]{}
