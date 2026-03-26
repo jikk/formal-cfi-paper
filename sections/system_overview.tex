@@ -6,25 +6,25 @@
 \kjee{This is the system overview section.}
 
 \comment{%
-% NOTE (@kjee): a brief brainstorming bullet points regarding what this section will be about.
+    % NOTE (@kjee): a brief brainstorming bullet points regarding what this section will be about.
 
-- \pname employs a static binary rewriter that instruments branch instructions to track control flow transfers and detect any violations.
-- \pname consists of four subcomponents: an ARMv7 decoder, a lifter to Picinae IR, a binary rewriter for CFI instrumentation, and a re-archiving/re-linking module for ELF binaries.
+    - \pname employs a static binary rewriter that instruments branch instructions to track control flow transfers and detect any violations.
+    - \pname consists of four subcomponents: an ARMv7 decoder, a lifter to Picinae IR, a binary rewriter for CFI instrumentation, and a re-archiving/re-linking module for ELF binaries.
 
-- With the exception of the binary linking/merging component, all subcomponents of \pname are implemented in Gallina (the specification language of the Coq proof assistant), enabling their correctness to be formally proven and verified at build time. These components are ultimately extracted into OCaml code upon the completion of their safety proofs and verifications.
+    - With the exception of the binary linking/merging component, all subcomponents of \pname are implemented in Gallina (the specification language of the Coq proof assistant), enabling their correctness to be formally proven and verified at build time. These components are ultimately extracted into OCaml code upon the completion of their safety proofs and verifications.
 
-- The prototype targets the ARMv7 architecture for the following reasons.
-    - ARMv7 remains a mature and widely deployed architecture.
-    - WLOG, the current implementation omits the following corner-case CPU features:
-        - Endianness switching (big-endian \leftrightarrow little-endian)
-        - CPU mode switching (ARM \leftrightarrow Thumb)
-        % NOTE (@kjee) a justification is needed for why omitting these features still yields a generalizable and valid approach.
+    - The prototype targets the ARMv7 architecture for the following reasons.
+        - ARMv7 remains a mature and widely deployed architecture.
+        - WLOG, the current implementation omits the following corner-case CPU features:
+            - Endianness switching (big-endian \leftrightarrow little-endian)
+            - CPU mode switching (ARM \leftrightarrow Thumb)
+            % NOTE (@kjee) a justification is needed for why omitting these features still yields a generalizable and valid approach.
 
-- The design is structured such that extending the implementation to other architectures would require modest, well-localized effort, as the core CFI instrumentation logic remains architecture-independent.
+    - The design is structured such that extending the implementation to other architectures would require modest, well-localized effort, as the core CFI instrumentation logic remains architecture-independent.
 
-% NOTE (@kjee): After all, this section would not differ much from a previously implemented CFI implementation, so we do not need to go into too much detail here. Rather, I hope we can identify and highlight the design decisions we had to adopt to make it FM-aware or FM-friendly.
+    % NOTE (@kjee): After all, this section would not differ much from a previously implemented CFI implementation, so we do not need to go into too much detail here. Rather, I hope we can identify and highlight the design decisions we had to adopt to make it FM-aware or FM-friendly.
 
-% NOTE (@kjee): I hope we can make a smooth transition to the (next) Picinae section.
+    % NOTE (@kjee): I hope we can make a smooth transition to the (next) Picinae section.
 }
 
 \begin{figure}[t]
