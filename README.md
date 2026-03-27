@@ -1,6 +1,7 @@
-# README: Formally Verified CFI PLDI 2026
+# README: Machine Check CFI CCS 2026
 
-* CFP: https://pldi26.sigplan.org/track/pldi-2026-papers
+* CFP: https://www.sigsac.org/ccs/CCS2026/call-for/call-for-papers.html
+* Notes: https://codimd.syssec.org/jDeP30sZRmyQZ9SexjXYhQ
 
 ## Story Outline
 

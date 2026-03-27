@@ -51,7 +51,7 @@ Binary-level CFI, built on static binary rewriting techniques, is a well-studied
 The core difficulty is one of semantic generality: correctness must hold for all possible input binaries, whether compiler-generated, hand-written, or otherwise, not merely those drawn from a particular toolchain or restricted to a subset of the ISA. Prior work has been largely confined to reasoning about concrete, fixed binaries, falling short of this bar. RockSalt~\cite{rocksalt}, for instance, successfully verified the safety guarantees of an SFI solution for x86, but its analysis is tied to a concrete subset of the x86 ISA and the NaCl sandbox policy, and does not extend to arbitrary binaries or other ISAs.
 
 \optional{%
-Formal verification directly targets this challenge by reasoning over all possible inputs rather than sampled executions, enabling universal correctness guarantees that dynamic testing cannot provide. These guarantees hold regardless of binary provenance, compiler, or ISA quirk, making formal methods particularly well suited to establishing that a CFI implementation soundly enforces its policy across the full space of binaries it may encounter.
+  Formal verification directly targets this challenge by reasoning over all possible inputs rather than sampled executions, enabling universal correctness guarantees that dynamic testing cannot provide. These guarantees hold regardless of binary provenance, compiler, or ISA quirk, making formal methods particularly well suited to establishing that a CFI implementation soundly enforces its policy across the full space of binaries it may encounter.
 }
 
 We address the key obstacle, namely the absence of ISA abstractions amenable to formal reasoning, by building on the Picinae framework~\cite{picinae}, which supports machine-checked proofs in which the target binary is treated as a symbolic proof variable rather than a fixed program. This enables \pname to achieve verification that generalizes across arbitrary binaries, a capability no prior binary CFI rewriter has demonstrated.
@@ -87,7 +87,7 @@ To the best of our knowledge, no prior work has explored this space, despite its
   \item  We explore a previously uncharted intersection between FM and binary-level security, deriving principled FM-aware design guidelines and uncovering subtle but critical flaws that dynamic testing alone would have missed.
 \end{itemize}
 
-% NOTE (@kjee): put the following as a closing/visionary statement (rather than one of bullet points) since it hasn't yet been realized with actual implementations.
+% NOTE (@kjee): Put the following as a closing/visionary statement (rather than one of bullet points) since it hasn't yet been realized with actual implementations.
 Looking ahead, by building a binary rewriter framework on top of the ISA abstraction layer provided by Picinae, this work takes a concrete step toward a broader and largely unexplored research direction: the formal verification of large families of security-sensitive binary rewriting tasks beyond CFI.
 
-In addition to fully releasing the ArmCFI codebase~\footnote{\url{https://todos}} for the community benefit, we identify the key challenges and open problems that must be addressed to realize this vision, laying the groundwork for future research in this space.
+In addition to fully releasing the \pname codebase~\footnote{\url{https://todos}} for the community benefit, we identify the key challenges and open problems that must be addressed to realize this vision, laying the groundwork for future research in this space.
