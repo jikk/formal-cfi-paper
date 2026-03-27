@@ -57,9 +57,9 @@ Formal verification directly targets this challenge by reasoning over all possib
 We address the key obstacle, namely the absence of ISA abstractions amenable to formal reasoning, by building on the Picinae framework~\cite{picinae}, which supports machine-checked proofs in which the target binary is treated as a symbolic proof variable rather than a fixed program. This enables \pname to achieve verification that generalizes across arbitrary binaries, a capability no prior binary CFI rewriter has demonstrated.
 
 \comment{%
-    Yet formally verifying a binary CFI, let alone the broader class of binary rewriter implementations, remains an open challenge. The core difficulty lies in semantic generality: correctness requires enforcing the desired safety property for all possible input binaries, not merely those produced by a particular compiler or restricted to a subset of the ISA.
-    %
-    Formal verification of static CFI instrumentation directly targets this challenge. By reasoning over all possible inputs rather than sampled executions, formal methods can establish universal correctness guarantees that dynamic testing cannot provide. This makes them particularly well suited to demonstrate that a CFI implementation soundly enforces its policy across the full space of binaries it may encounter.
+  Yet formally verifying a binary CFI, let alone the broader class of binary rewriter implementations, remains an open challenge. The core difficulty lies in semantic generality: correctness requires enforcing the desired safety property for all possible input binaries, not merely those produced by a particular compiler or restricted to a subset of the ISA.
+  %
+  Formal verification of static CFI instrumentation directly targets this challenge. By reasoning over all possible inputs rather than sampled executions, formal methods can establish universal correctness guarantees that dynamic testing cannot provide. This makes them particularly well suited to demonstrate that a CFI implementation soundly enforces its policy across the full space of binaries it may encounter.
 }
 
 \comment{% from the original intro text; the following makes sense.
