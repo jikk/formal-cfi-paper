@@ -33,12 +33,72 @@
     \caption{\pname architecture.}~\label{fig:cfi_arch}
 \end{figure}
 
-\subsection{Decoder}
+ARMv7 has a word size of four bytes. For reasons explained later, we describe addresses as their value divided by four, which we call an index (as if memory was an array of words).
 
-\subsection{Lifter}
+% block structure
+The rewriter takes as input a list of instruction encodings (4-byte integers) and translates each instruction of the original text segment into one or more new instructions, which we will refer to as a block (not to be confused with a basic block). Thus, a block is a list of instruction encodings and the rewriter returns a list of blocks (list of list of ints), where the flattened list is the new text segment to be added to the binary.
 
-\subsection{CFI Instrumentation}
+% policy
+A CFI policy describes what destinations each instruction is allowed to go to. Our rewriter accepts policies as functions from an instruction's memory index to lists of allowed destination indices.
 
-\subsection{ELF Binary Reconstruction}
+% index translation
+We preserve the old text segment at its original location in the new binary, as we cannot distingush between code/data.
+This, along with the fact that we insert additional instructions to enforce the policy, means that blocks will be located at a different address than the original instruction that it corresponds to.
 
-\subsection{Scope of the work}
+The rewriter takes as input a couple of indices describing addresses of certain things: (1) the index of the start of the old text segment $bi$, (2) the index where the start of the new text segment should be placed in the rewritten binary $bi'$, (3) the index where the start of the table segment should be placed in the rewritten binary $ti$, and (4) an abort index that we declare is always safe to jump to $ai$.
+
+With these inputs, we can define a translation function between original and new indices, which we call $i2i'$. For rewritten programs to function correctly, it is sometimes necessary to allow instructions to jump to regions outside the new text segment. As an example, on ARM the Linux kernel provides a couple of helper functions at fixed addresses that we cannot rewrite. Therefore, $i2i'$ must return the input index when it does not fall within the original text segment range. Otherwise, when $i$ is the ith index of the original text segment, $i2i'(i)$ is the index of the first instruction of the ith rewritten block.
+
+% rewriting
+For most instructions, the rewritten block contains just the original instruction, but there are a few cases we need to consider where we cannot do this.
+
+If the instruction performs static control flow, we check that its destination $d$ is permitted by the policy, and if so, replace it with an instruction that branches to $i2i'(d)$. Otherwise, the instruction becomes a branch to $ai$.
+
+If the instruction references the program counter register but does not perform control flow, the block first loads the original value of PC into a scratch register, runs the original instruction with PC replaced with the scratch register, and restores the scratch register to its original value.
+
+If the instruction performs dynamic control flow, we can only determine if the next step is policy permitted at runtime. To perform this check, the rewriter outputs a list of tables to be inserted starting at $ti$ that dually ensures that dynamic control flow instructions only step to permitted destinations and translates addresses in the old text segment to the corresponding address in the rewritten text segment.
+
+% hash table structure
+Given a set of permitted destination indices $d = \{i_1, i_2, \dots\}$, we compute a table $t : list int$ and hash function $H : int \rightarrow int$ with the following properties:
+
+(1) $\forall i_j \in d, t\big[H(i_j)\big] = i_j' * 4$ (the program can compute the translated address of a valid destination by indexing into the table)
+
+(2) $\forall i_j \in d, t\big[H(i_j')\big] = i_j' * 4$ (using a valid translated address to index the table gives back the same address)
+
+% the previous two properties imply this one
+(3) $\forall i_j, i_k \in d, i_j \ne i_k \implies H(i_j) \ne H(i_k) \land H(i_j') \ne H(i_k') \land H(i_j') \ne H(i_k)$ (there are no hash collisions, but we allow corresponding old and translated indices to have the same hash)
+
+(4) $\forall n, \nexists i_j \in d, H(i_j) = n \implies t\big[n\big] = ai * 4$ (we fill unused slots in the table with the abort address)
+
+For our implementation, we choose $H$ to be a function of the form $H(x) = \left\lfloor \frac{x}{2^i} \right\rfloor \bmod 2^j$ (bitsubstring), which can be performed with a single instruction on ARM (UBFX, unsigned bit field extract).
+
+As an example, consider the instruction \texttt{BX r0}, which branches to the address in \texttt{r0}. The rewritten block for this instruction is as follows:
+
+\begin{verbatim}
+UBFX r0, r0, #x, #y     // r0 = H(dest)
+LSL r0, r0, #2          // r0 = H(dest) * 4
+ADD r0, r0, #a          // r0 = &table[H(dest)]
+LDR r0, [r0]            // r0 = table[H(dest)]
+BX r0                   // branch to table[H(dest)]
+\end{verbatim}
+
+Where $x$ and $y$ are the appropriate values to compute $H$, and $a$ is the address of the table.
+% there isn't an instruction to add an arbitrary constant to a register, only certain constants are possible
+% so there are actually 4 add instructions in this block to add each byte separately, but idk if it's necessary to say that here
+
+% unsupported instructions
+There are some ARM instructions that we cannot support. In these cases, we replace them with a branch to $ai$.
+
+% endianness
+ARM supports both little and big endian memory operations, determined by the value of the E bit of the Current Program Status Register. While it does not matter which endianness we start in as long as the hash tables are also in the same endianness, changing the E bit at runtime could allow unpermitted control flow since instructions loading destination addresses from the hash tables will load different values.
+
+% cpu mode
+ARMv7 provides four different instruction states determined by the J and T bits of the CPSR: ARM, Thumb, Jazelle, and ThumbEE. We only consider the ARM instruction set and do not support any of the other modes. While we can remove some instructions that will always change the instruction state, there are certain instructions that that we need to use that could still change the instruction state. Most notably, dynamic control flow instructions will change the instruction state to Thumb mode when the least significant bit of the destination address is 1. For this reason, we describe all addresses as indices, so no entry of the hash table will switch the instruction state.
+
+% unpredictable
+Certain instructions are defined to be UNPREDICTABLE. The manual describes UNPREDICTABLE as
+"Means the behavior cannot be relied upon. UNPREDICTABLE behavior must not perform any function that cannot be performed at the current or a lower level of privilege using instructions that are not UNPREDICTABLE."
+Although in practice, UNPREDICTABLE instructions usually just cause a hardware exception, this definition includes the possibility of performing unpermitted control flow. Thus, the rewriter must detect and remove all such instructions. Most instruction types include at least a few UNPREDICTABLE variants, either from use of the PC register that does not support it or from the instruction encoding requiring certain bits to be 0 or 1. A couple of instructions are only UNPREDICTABLE at runtime, including dynamic control flow instructions when the destination address ends with the bits '10'. This issue is avoided the same way we prevent switching to Thumb mode, by enforcing that all hash table entries are divisible by four.
+
+% python/ocaml extractor
+We implement an ELF rewriter by extracting our verified cfi\_rw function into OCaml. Some additional unverified OCaml and Python scripts implement the logic that parses ELF files for text segment data and addresses, calls cfi\_rw with the proper arguments, and creates a new ELF file with the new segments added. The verification of these components is out of scope for this work.
