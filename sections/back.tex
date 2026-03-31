@@ -37,7 +37,7 @@ Secure IRMs take an untrusted binary as input and produce a hardened, rewritten 
 
 IRMs vary considerably in their statefulness. \kwh{Static} binary CFI is an instance of a stateless IRM, in which the control-flow policy remains fixed throughout program execution and does not require persistent monitor state. Stateful IRMs, by contrast, maintain internal monitoring state across execution, such as shadow memory for dynamic information flow tracking, allocation and deallocation histories for memory leak detection, and similar policies.
 
-\comment{[KWH:] Not all binary CFI is stateless.  For example, the original XFI work implements a stateful shadow stack to enforce call-return matching.  To be safe, we should say "static binary CFI".}
+\comment{[KWH:] Not all binary CFI is stateless.  For example, the original XFI work implements a stateful shadow stack to enforce call-return matching.  To be safe, we should say ``static binary CFI''.}
 
 Regardless of statefulness, protecting the monitor context from compromise by the untrusted guest context is a significant challenge, particularly given that both contexts execute at the same privilege level and any protection mechanism must operate without incurring prohibitive overhead. Although this challenge is orthogonal to the stateless enforcement of CFI addressed in this work, it represents a compelling direction for future research in formally verified binary rewriting, and we revisit it in \autoref{sec:disc}.
 
@@ -52,14 +52,14 @@ Regardless of statefulness, protecting the monitor context from compromise by th
 
 {% NOTE(@kjee): Somewhat vibed text to be modified significantly.
   \kjee{Current text is a place holder draft. We may want to provide high-level discussion on Picinae framework.}
-  
-  \kwh{Recent advances in \emph{formally verified lifting} have opened new avenues for formally verified binary analysis, enabling verification of both correctness and security properties. However, existing frameworks reason over concrete binaries and cannot generalize to prove properties in which some or all the binary code is unknown.
-  This limits their practical applicability to binaries known at verification time.}
-  % [KWH] Formal verification of binary code in any form hasn't been around for very long (only a few years).  So let's not cast it as a well-established science.  Main thing to emphasize here is that apart from Picinae, all the systems take a complete, fully known binary code as input and verify it. They can't prove any property of binary code that isn't fully known at verification time.
+
+Recent advances in \emph{formally verified lifting} have opened new avenues for formally verified binary analysis, enabling verification of both correctness and security properties. However, existing frameworks reason over concrete binaries and cannot generalize to prove properties in which some or all the binary code is unknown. This limits their practical applicability to binaries known at verification time.
+
+\kwh{[KWH] Formal verification of binary code in any form hasn't been around for very long (only a few years).  So let's not cast it as a well-established science.  Main thing to emphasize here is that apart from Picinae, all the systems take a complete, fully known binary code as input and verify it. They can't prove any property of binary code that isn't fully known at verification time.}
 
   Overcoming this limitation requires more than a proof assistant. Rather, it requires an abstraction layer that faithfully models real-world ISAs while supporting symbolic reasoning. \Picinae~\cite{picinae} provides this foundation. Built on Coq/Rocq, it models machine execution through memory state and execution traces and represents program state symbolically, allowing proofs that treat the binary itself as a variable. This enables verification results to generalize from a single program to the unbounded set of binaries a rewriter may encounter.
 
-  This capability is essential for \pname. Frameworks that operate on concrete binaries can verify individual rewritten outputs but cannot prove that the rewriter is correct for all inputs. \Picinae lifts reasoning from individual binaries to the rewriter’s behavior across all binaries, enabling the end-to-end correctness guarantees that \pname requires.
+  This capability is essential for \pname. Frameworks that operate on concrete binaries can verify individual rewritten outputs but cannot prove that the rewriter is correct for all inputs. \Picinae~\xspace lifts reasoning from individual binaries to the rewriter’s behavior across all binaries, enabling the end-to-end correctness guarantees that \pname requires.
 }
 
 \subsection{Threat Model}\label{sec:threat_model}
