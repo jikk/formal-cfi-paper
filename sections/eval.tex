@@ -10,6 +10,12 @@ Here we present the efficiency evaluation result.
 Here we present the security evaluation and policy writing instructions. Firstly, we went over to confirm
 
 
-
 \subsection{Case studies}
 Here we present/discussion subtle/easy-to-overlook bugs (or design flaws) might have overlooked otherwise.
+
+\kjee{tentative items; we hope to have more here.}
+\begin{itemize}
+\item \texttt{LOAD} $\rightarrow$ \texttt{PC}: Not well-aligned to produce/result in ``unpredictable'' behavior.
+\item \texttt{Bx \$PC} instruction interpreted as indirect branch.
+\item (Policy) table overflow.
+\end{itemize}
