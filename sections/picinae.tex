@@ -1,10 +1,69 @@
 %! root=./main.tex
 \section{Picinae framework}~\label{sec:picinae}
 
-\kjee{A section (or subsection) for Picinae story.}
+\kjee{A section (or subsection) for Picinae story: a draft text.}
+
+To obtain the highest possible confidence about the security, correctness, and safety of production-level software systems,
+\emph{machine-checked formal methods} (FMs) are well-recognized as the gold standard in assurance.
+FMs go beyond mere heuristic inspection of code or semi-automated spot-checking (e.g., fuzzing), which cannot exhaustively cover the (often infinite) state spaces of most production software, to achieve guaranteed full-coverage verification.
+
+This is achieved by constructing machine-checked mathematical proofs that are universally quantified over the state space, and that explicitly formalize all assumptions. For example, the Rocq program-proof co-development environment has been used to construct the only C-compiler~\cite{leroy16ertss} in which automated bug-finders (e.g., Csmith~\cite{yang11pldi}) could find no errors.
+
+FM approaches have historically faced at least two major obstacles in practice:
+(1) scalability challenges have impeded FM verification of large software systems, since building a machine-checkable proof is more difficult than running an inexhaustive vulnerability-search; and
+(2) most FM solutions require source code.
+The first of these obstacles is rapidly being overcome by recent breakthroughs in the field of AI-enhanced FMs\@.
+For example, the DARPA PEARLS,\footnote{\url{https://www.darpa.mil/research/programs/proof-engineering-adaptation-repair-and-learning-for-software}} PROVERS,\footnote{\url{https://www.darpa.mil/research/programs/pipelined-reasoning-of-verifiers-enabling-robust-systems}} and V-SPELLS\footnote{\url{https://www.darpa.mil/research/programs/verified-security-and-performance-enhancement-of-large-legacy-software}} programmes have collectively resulted in a series of powerful new algorithms and tools that harness AI and ML models to generate significant portions of machine-checked proofs automatically, leaving only a small subset of the proofs for human experts to complete.
+This has made full FM verification of large software systems increasingly feasible, as witnessed by the advent of the first fully machine-verified OS microkernel (seL4).\footnote{\url{https://sel4.systems}}
+
+\Picinae is designed and implemented to address the inherent challenge (source-free binary FMs) by advancing the state-of-the-art in \emph{bottom-up FMs}.
+Bottom-up approaches to FMs entail \emph{lifting} raw binary codes directly into an intermediate language (IL) form readable by an automated theorem prover.
+%
+Once lifted, FM technologies can then be applied to construct and verify machine-checked proofs of binary code properties without source code, such as control-flow safety, memory safety, process isolation, timing leak-freedom, and even complete functional correctness.
+
+\begin{figure}
+  \centering
+  % \includegraphics[width=0.9\linewidth]{fig/picinae_rocq.mps}
+  \includegraphics[width=.9\linewidth]{figs/picinae_overview}
+  \caption{\Picinae{} Bottom-up formal methods architecture.}\label{fig:picinae}
+  % https://drive.google.com/file/d/149Vu1NpUV6APaJQxOW_8LkdgVBFUkuiN/view?usp=sharing
+  % This is so much better.  Thanks, Ilan!
+\end{figure}
+
+As a foundation for building this connection, we plan to use \Picinae{}, a bottom-up FMs framework. \autoref{fig:picinae} illustrates the intended workflow. Binary code is first lifted to \Picinae's IL language by decoding it to a Rocq-readable form.
+%
+The lifting process is modular, potentially supporting a variety of lifting techniques, including the NSA Ghidra\footnote{\url{https://github.com/nationalsecurityagency/ghidra}} and Binary Analysis Platform (BAP)~\cite{brumley11cav}, both of which have the capability of reliably lifting native codes for a variety of microprocessor architectures, including Intel/AMD x86/x64, ARM7/8, and RISC-V, among others.
+This approach also supports binary bytecode languages; for example, \Picinae{} already supports eBPF bytecode binaries.
 
 \begin{figure}[t]
-    \centering
-    \includegraphics[width=0.9\linewidth]{example-image}
-    \caption{Picinae framework.}~\label{fig:picinae}
+\footnotesize
+\begin{align*}
+&\text{Expressions} & e &\Coloneqq v~|~n\ofwidth{w}~|~e_1[e_2]\ofwidth{w}~|~e_1[e_2\coloneqq e_3]\ofwidth{w}~|~e_1\circledcirc e_2 \\
+& & & |(e:w)~|~\mathsf{let}~v\coloneqq e_1~\mathsf{in}~e_2~|~{*}\ofwidth{w} \\
+&\text{Statements} & s &\Coloneqq \cdot~|~v\coloneqq e~|~\mathtt{jmp}~e~|~\mathtt{exn}~n~|~s_1;s_2~|~e~?~s_1:s_2~|~s^e \\
+&\text{Contexts \& Stores} & c,\sigma &: \Sigma\coloneqq v\rightharpoonup\mathbb{N} \\
+&\text{Exits} & \chi &\Coloneqq~{\fallthru}~\text{(fallthru)}~|~a~\text{(destination address)} \\
+& & & |~{\uparrow}i~\text{(hardware exception)} \\
+&\text{Programs} & p &: \Sigma\rightarrow\mathbb{N}\rightharpoonup s \\
+&\text{Traces} & \tau &\Coloneqq \langle\chi,\sigma\rangle~|~\langle\chi,\sigma\rangle::\tau
+\end{align*}
+\vspace{-20pt}
+% \caption{An IL for expressing individual machine instruction operational semantics}
+\caption{\Picinae{} IL Grammar.}\label{fig:picinae_il}
 \end{figure}
+
+Figure~\ref{fig:IL} summarizes the IL to which binary code is lifted, which is strategically chosen to bridge the semantic gap between real binary software and the formalisms expected by automated theorem provers.
+In particular, each machine instruction is lifted to an IL statement $s$ that explicitly encodes its semantic effects upon the machine state, including assignments of expression computations $e$ to machine state variables $v$ (e.g., cpu registers), control-flow transfers ($\mathtt{jmp}$), hardware exceptions ($\mathtt{exn}$), sequences (\texttt{;}), conditionals (\texttt{?}), and bounded microcode loops ($s^e$).
+IL expressions $e$ range over variable-reads $v$, $w$-bit binary constants $n\ofwidth{w}$, $w$-width memory-reads and writes $e_1[e_2 (\coloneqq e_3)]\ofwidth{w}$, binary arithmetic and logical operations $\circledcirc$, local bindings ($\mathsf{let}$), and non-deterministic processor effects $*\ofwidth{w}$.
+Together, these form a Turing-complete computational language sufficient to express microarchitectural machine semantics with a minimal trusted computing base.
+
+Since disassembly and decompilation for some architectures is provably undecidable in the general case, \Picinae{} does not rely upon perfect disassembly to lift binaries to its IL form.
+It instead expresses lifted programs as an abstract function $p:\Sigma\rightarrow\mathbb{N}\rightharpoonup s$ from machine states $\sigma\in\Sigma$ and virtual addresses $a\in\mathbb{N}$ to the statement $s$ that encodes the machine instruction at $a$.
+This allows a decompiler to comprehensively convey the entire semantic content of an untrusted binary to the automated theorem prover without the need to exhaustively discover all reachable control-flows.
+Control-flow verification is undertaken by the theorem prover, not an obligation of the lifter, making it an untrusted, verified part of the system.
+Code whose unreachability cannot be proved is verified to be safe irrespective of its reachability, ensuring soundness.
+
+Lifted binaries are amenable to a suite of powerful, provably correct analyses within the automated theorem proving system, including an abstract symbolic interpreter, a provably type-safe static semantics based on dependent typing, and an array of proof-tactic automation libraries that conducts guided searches for proofs of common code properties (e.g., memory safety, stack well-formedness, architectural calling convention adherence, control-flow integrity) for specific machine architectures.
+The design and implementation of these analyses within an automated theorem proving environment has the significant advantage of breaking defenders out of the exploitation-patching arms race against adversaries.
+Any code that can be machine-verified by the analyses is guaranteed to satisfy the security specification \emph{for all inputs}, rendering any attackers' subsequent vulnerability searches doomed to failure, no matter how sophisticated.
+
