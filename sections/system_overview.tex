@@ -74,13 +74,13 @@ For our implementation, we choose $H$ to be a function of the form $H(x) = \left
 
 As an example, consider the instruction \texttt{BX r0}, which branches to the address in \texttt{r0}. The rewritten block for this instruction is as follows: \kjee{the following presentation can be improved.}
 
-\begin{verbatim}
+\begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,caption={ARMv7 instructions},label={lst:armv7},captionpos=b,xleftmargin=.3cm]
 UBFX r0, r0, #x, #y     // r0 = H(dest)
-LSL r0, r0, #2          // r0 = H(dest) * 4
-ADD r0, r0, #a          // r0 = &table[H(dest)]
-LDR r0, [r0]            // r0 = table[H(dest)]
-BX r0                   // branch to table[H(dest)]
-\end{verbatim}
+LSL r0, r0, #2           // r0 = H(dest) * 4
+ADD r0, r0, #a           // r0 = &table[H(dest)]
+LDR r0, [r0]             // r0 = table[H(dest)]
+BX r0                    // branch to table[H(dest)]
+\end{lstlisting}
 
 Where $x$ and $y$ are the appropriate values to compute $H$, and $a$ is the address of the table.
 % there isn't an instruction to add an arbitrary constant to a register, only certain constants are possible
