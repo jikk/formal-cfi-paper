@@ -20,3 +20,43 @@
         - To be verified, the CFI binary rewriter is first lifted into Picinae's intermediate representation (PIR) and expressed as a function that takes symbolic variables as input and produces instrumented output.
         - Internally, the rewriter first decodes the input byte stream (i.e., the \texttt{.text} section) to identify target instructions, i.e., the locations to be instrumented.
 }
+
+As discussed in \autoref{sec:overview}, \pname comprises two major components:
+(1) a static binary CFI rewriter that instruments branch instructions at the binary level, and
+(2) proof artifacts that machine-check the conformance of the rewriter to its safety specification.
+Both components are developed within the \Picinae{} framework~(\autoref{sec:picinae}), which provides the underlying infrastructure for lifting binary code into a Rocq-verifiable intermediate representation.
+
+\subsection{Coq Artifacts}
+
+The verified core of \pname is implemented in Gallina, the specification language of the Rocq proof assistant.
+The implementation is organized into three primary artifacts.
+
+\heading{ARMv7 Semantics (\texttt{armv7.v}).}
+The first artifact provides a formal semantics of the ARMv7 instruction set expressed in Picinae's intermediate language.
+Each instruction is specified as a Gallina function that maps a machine state (register file and memory) to an updated state, encoding all architectural effects including register writes, memory operations, and control-flow transfers.
+This semantics is shared across the verification of both the decoder and the rewriter, forming the trusted base for all subsequent proofs.
+
+\heading{CFI Rewriter (\texttt{armcfi.v}).}
+The second artifact implements the CFI binary rewriter described in \autoref{sec:overview} as a Gallina function.
+Given the original instruction stream, base addresses $(bi, bi', tbi)$, and a CFI policy $\pol$, the function produces the rewritten code blocks $\codep$ and dispatch tables $\tables$.
+Internally, the rewriter decodes the input byte stream to identify each instruction and classify it into one of the cases described in \autoref{sec:overview}: static control flow, PC-relative data access, dynamic control flow, or unsupported instruction.
+It then constructs the corresponding instrumented block and, for dynamic branches, synthesizes the appropriate hash table entries.
+\kjee{Note: the disassembler component embedded here has not yet been formally verified; its correctness is assumed as a pre-condition of the overall proof.}
+
+\heading{Correctness Proofs (\texttt{armcfi\_proof.v}).}
+The third artifact contains the machine-checked proofs establishing that the rewriter satisfies the CFI safety theorem of \autoref{sec:formal}.
+Concretely, for any input program and any execution trace of the rewritten binary, the proofs guarantee that every control-flow transfer is permitted by $\pol$.
+These proofs are discharged entirely within Rocq, providing a machine-verified certificate that ships alongside the rewriter.
+
+\subsection{Extraction and the Binary Rewriter}
+
+A typical \pname build first checks all proofs in \texttt{armcfi\_proof.v} using the Rocq proof checker, then invokes Rocq's extraction mechanism to translate the verified Gallina functions into executable OCaml code.
+The extracted OCaml modules are compiled and linked with a small set of unverified OCaml and Python driver scripts that handle the ELF-specific tasks outside the scope of the formal verification:
+parsing the input ELF binary to locate the \texttt{.text} segment and its load address,
+invoking the extracted \texttt{cfi\_rw} function with the appropriate arguments,
+and assembling a new ELF binary that splices in the rewritten text and dispatch table segments.
+
+The formal guarantees of \pname apply to the verified core.
+The surrounding driver scripts are trusted components, analogous to the program loader:
+the safety proof assumes that the loader initializes the process's initial memory state in a manner consistent with the memory layout assumptions of the CFI theorem (disjoint $\OldText$, $\NewText$, and $\DataSeg$ regions, with $ai \notin \NewText$).
+Verifying these loader-level assumptions is left as future work.
