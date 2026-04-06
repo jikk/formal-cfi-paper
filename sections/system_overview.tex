@@ -72,7 +72,7 @@ Given a set of permitted destination indices $d = \{i_1, i_2, \dots\}$, we compu
 
 For our implementation, we choose $H$ to be a function of the form $H(x) = \left\lfloor \frac{x}{2^i} \right\rfloor \bmod 2^j$ (bitsubstring), which can be performed with a single instruction on ARM (UBFX, unsigned bit field extract).
 
-As an example, consider the instruction \texttt{BX r0}, which branches to the address in \texttt{r0}. The rewritten block for this instruction is as follows:
+As an example, consider the instruction \texttt{BX r0}, which branches to the address in \texttt{r0}. The rewritten block for this instruction is as follows: \kjee{the following presentation can be improved.}
 
 \begin{verbatim}
 UBFX r0, r0, #x, #y     // r0 = H(dest)

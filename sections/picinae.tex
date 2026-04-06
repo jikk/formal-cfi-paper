@@ -12,9 +12,10 @@ This is achieved by constructing machine-checked mathematical proofs that are un
 FM approaches have historically faced at least two major obstacles in practice:
 (1) scalability challenges have impeded FM verification of large software systems, since building a machine-checkable proof is more difficult than running an inexhaustive vulnerability-search; and
 (2) most FM solutions require source code.
+
 The first of these obstacles is rapidly being overcome by recent breakthroughs in the field of AI-enhanced FMs\@.
-For example, the DARPA PEARLS,\footnote{\url{https://www.darpa.mil/research/programs/proof-engineering-adaptation-repair-and-learning-for-software}} PROVERS,\footnote{\url{https://www.darpa.mil/research/programs/pipelined-reasoning-of-verifiers-enabling-robust-systems}} and V-SPELLS\footnote{\url{https://www.darpa.mil/research/programs/verified-security-and-performance-enhancement-of-large-legacy-software}} programmes have collectively resulted in a series of powerful new algorithms and tools that harness AI and ML models to generate significant portions of machine-checked proofs automatically, leaving only a small subset of the proofs for human experts to complete.
-This has made full FM verification of large software systems increasingly feasible, as witnessed by the advent of the first fully machine-verified OS microkernel (seL4).\footnote{\url{https://sel4.systems}}
+% For example, the DARPA PEARLS, PROVERS, and V-SPELL programmes have collectively resulted in a series of powerful new algorithms and tools that harness AI and ML models to generate significant portions of machine-checked proofs automatically, leaving only a small subset of the proofs for human experts to complete.
+This has made full FM verification of large software systems increasingly feasible, as witnessed by the advent of the first fully machine-verified OS microkernel (seL4)~\cite{sel4}.
 
 \Picinae is designed and implemented to address the inherent challenge (source-free binary FMs) by advancing the state-of-the-art in \emph{bottom-up FMs}.
 Bottom-up approaches to FMs entail \emph{lifting} raw binary codes directly into an intermediate language (IL) form readable by an automated theorem prover.
@@ -32,7 +33,7 @@ Once lifted, FM technologies can then be applied to construct and verify machine
 
 As a foundation for building this connection, we plan to use \Picinae{}, a bottom-up FMs framework. \autoref{fig:picinae} illustrates the intended workflow. Binary code is first lifted to \Picinae's IL language by decoding it to a Rocq-readable form.
 %
-The lifting process is modular, potentially supporting a variety of lifting techniques, including the NSA Ghidra\footnote{\url{https://github.com/nationalsecurityagency/ghidra}} and Binary Analysis Platform (BAP)~\cite{brumley11cav}, both of which have the capability of reliably lifting native codes for a variety of microprocessor architectures, including Intel/AMD x86/x64, ARM7/8, and RISC-V, among others.
+The lifting process is modular, potentially supporting a variety of lifting techniques, including the NSA Ghidra~\cite{ghidra} and Binary Analysis Platform (BAP)~\cite{brumley11cav}, both of which have the capability of reliably lifting native codes for a variety of microprocessor architectures, including Intel/AMD x86/x64, ARM7/8, and RISC-V, among others.
 This approach also supports binary bytecode languages; for example, \Picinae{} already supports eBPF bytecode binaries.
 
 \begin{figure}[t]
