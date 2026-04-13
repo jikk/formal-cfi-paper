@@ -31,7 +31,8 @@ Once lifted, FM technologies can then be applied to construct and verify machine
   % This is so much better.  Thanks, Ilan!
 \end{figure}
 
-As a foundation for building this connection, we plan to use \Picinae{}, a bottom-up FMs framework. \autoref{fig:picinae} illustrates the intended workflow. Binary code is first lifted to \Picinae's IL language by decoding it to a Rocq-readable form.
+% As a foundation for building this connection, we plan to use \Picinae{}, a bottom-up FMs framework.
+\autoref{fig:picinae} illustrates the intended workflow. Binary code is first lifted to \Picinae's IL language by decoding it to a Rocq-readable form.
 %
 The lifting process is modular, potentially supporting a variety of lifting techniques, including the NSA Ghidra~\cite{ghidra} and Binary Analysis Platform (BAP)~\cite{brumley11cav}, both of which have the capability of reliably lifting native codes for a variety of microprocessor architectures, including Intel/AMD x86/x64, ARM7/8, and RISC-V, among others.
 This approach also supports binary bytecode languages; for example, \Picinae{} already supports eBPF bytecode binaries.
