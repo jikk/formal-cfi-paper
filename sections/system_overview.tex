@@ -1,7 +1,35 @@
 %! root=./main.tex
-\section{CFI Implementation}~\label{sec:overview}
+\section{Formally Verified Static Binary Writer for CFI}~\label{sec:overview}
 % TODO(@kjee): we a better section title here.
 % NOTE: @Max work on it.
+
+\subsection{ARMv7 Decoder}
+read out .text as a bytestream decoder does
+    - (minimal requirements) differentiation/identification of branch/non-branch instruction?
+        - different types of branch instructions
+    - (virtually implemented near-full) diassembly??
+    - *arm* mode only (non thumb) WLOG (engineering, niche)
+        (- Why ARMv7?) q
+
+\subsection{\Picinae{} lifter}
+???
+
+\subsection{CFI Policy}
+- table structure.
+    - hash function.
+- read-only aspect (when??)
+
+\subsection{Rewriter}
+- block (per-instuction) composition
+
+\subsection{ELF Relocator/Merger/Archiver}
+briefly describe what it does
+mention that it is out of the scope of the work.
+
+\subsection{FM-friendly CFI rewriter design}
+- branchless table access
+    - to mitigate state space explosion problem
+- read-only masking of  policy table.
 
 \kjee{This is the system overview section.}
 
@@ -145,7 +173,7 @@ While we can remove some instructions that will always change the instruction st
 there are certain instructions that that we need to use that could still change the instruction state.
 Most notably, dynamic control flow instructions will change the instruction state to Thumb mode when the least significant bit of the destination address is 1.
 For this reason, we describe all addresses as indices, so no entry of the hash table will switch the instruction state.
-Supporting additional 
+Supporting additional
 
 \heading{\unpredictable{} instructions.}
 Certain instructions are defined to be \unpredictable{}. The manual describes this term as:

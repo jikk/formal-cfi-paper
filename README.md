@@ -4,6 +4,8 @@
 
 * Notes: https://codimd.syssec.org/jDeP30sZRmyQZ9SexjXYhQ
 
+* LucidChart link: ????
+
 ## Story Outline
 
 ## Page outline (budget)
@@ -33,6 +35,5 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 
 ## TODOs
 
-### Intro
 
 ##### tag: `pdli`,`max`, `cfi`, `formal verification`, `arm`
