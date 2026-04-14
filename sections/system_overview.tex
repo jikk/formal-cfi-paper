@@ -57,8 +57,16 @@ mention that it is out of the scope of the work.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.9\linewidth]{architecture.pdf}
-    \caption{\pname architecture.}~\label{fig:cfi_arch}
+    \includegraphics[width=0.9\linewidth]{implementation.pdf}
+    % maybe a bit too long
+    \caption{\pname architecture.
+    The original text segment contains potentially dangerous instructions, in red.
+    The rewriter converts each instruction into a block of one or more instructions in the new text segment.
+    The policy maps source indices to a set of allowed destinations
+    (that is not required to be disjoint with other sets, e.g. $i_1$ and $i_n$).
+    Indirect jump instructions become blocks that perform a lookup into a table that constrains the target to permitted destinations and converts between old and new addresses.
+    Instructions with identical destination sets can share a policy table (e.g. tbl2 for $i_1, i_4$).
+    }~\label{fig:cfi_arch}
 \end{figure}
 
 \mxz{todo reference fig 1 here}

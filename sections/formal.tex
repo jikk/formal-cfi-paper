@@ -79,6 +79,11 @@ For a CFI implementation to be sound, all rewritten programs produced by the rew
 \end{align*}
 
 \subsection{Rocq Proof}
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.9\linewidth]{verification.pdf}
+    \caption{Verification and extraction of the core rewriting logic.}~\label{fig:cfi_verif}
+\end{figure}
 We prove that our CFI implementation is sound in Rocq using \Picinae.
 For this, we create an ARMv7 decoder and lifter in Rocq that translates ARM instruction encodings
 into \Picinae{} IL, based on the specification in the official documentation,
