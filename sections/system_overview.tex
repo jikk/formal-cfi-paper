@@ -1,5 +1,5 @@
 %! root=./main.tex
-\section{Formally Verified Static Binary Writer for CFI}~\label{sec:overview}
+\section{Static Rewriter for CFI in ARMv7 Binaries}~\label{sec:overview}
 % TODO(@kjee): we a better section title here.
 % NOTE: @Max work on it.
 
@@ -70,11 +70,12 @@
 \end{figure}
 
 \mxz{todo reference fig 1 here}
-\pname consists of two parts: the implementation of a static ARMv7 binary rewriter for CFI instrumentation and a formal proof of soundness of our implementation.
-In this section, we discuss the first half.
+\subsection{Design}
+We first describe the design of \pname, which consists of two components:
+the CFI rewriter, the component that turns a list of instructions into a rewritten list of instructions with CFI,
+and the ELF editor, which performs the modifications to the ELF file based on the output of the CFI rewriter. The ELF editor is not particularly interesting, so this section will mainly focus on the rewriter.
 
-The rewriter is implemented as a function in Gallina, the specification language of Rocq, that takes the following inputs.
-
+The CFI rewriter is a function that takes the following inputs:
 \begin{itemize}
 \item \heading{Text Segment ($txt$):}
 The rewriter is given the contents of the text segment of the program to rewrite, represented as a list of four-byte integers, the size of an ARM instruction.
@@ -86,6 +87,7 @@ When referring to values that represent addresses divided by four, we will use t
 \item \heading{Policy ($pol$):}
 The CFI policy describes what destinations each instruction of the text segment is allowed to go to.
 Our rewriter accepts policies as a function from source indices to lists of permitted destination indices.
+We do not impose any restriction on the destination sets; an index can belong to multiple distinct destination sets.
 \end{itemize}
 
 % block structure
@@ -165,7 +167,7 @@ Where $x$ and $y$ are the appropriate values to compute $H$, and $a$ is the addr
 % so there are actually 4 add instructions in this block to add each byte separately, but idk if it's necessary to say that here
 
 \heading{Unsupported instructions.}
-There are some ARM instructions that we cannot support. In these cases, we replace them with a branch to $ai$.
+There are some ARM instructions that we do not support. In these cases, we replace them with a branch to $ai$.
 
 \heading{Endianness.}
 ARM supports both little and big endian memory operations, determined by the value of the E bit of the Current Program Status Register.
@@ -192,4 +194,29 @@ Although in practice, these instructions usually just cause a hardware exception
 Thus, the rewriter must detect and remove all such instructions. Most instruction types include at least a few \unpredictable{} variants, either from use of the PC register that does not support it or from the instruction encoding requiring certain bits to be 0 or 1. A couple of instructions are only \unpredictable{} at runtime, including dynamic control flow instructions when the destination address ends with the bits '10'. This issue is avoided the same way we prevent switching to Thumb mode, by enforcing that all hash table entries are divisible by four.
 
 % python/ocaml extractor
-We implement an ELF rewriter by extracting our verified cfi\_rw function into OCaml. Some additional unverified OCaml and Python scripts implement the logic that parses ELF files for text segment data and addresses, calls cfi\_rw with the proper arguments, and creates a new ELF file with the new segments added. The verification of these components is out of scope for this work.
+The ELF editor is given the output of the CFI rewriter and adds new segments to the original ELF for the rewritten instructions, the policy tables, and the abort handler that are loaded at the correct addresses and permissions. The original text segment is changed to be nonexecutable. Finally, the ELF editor uses the rewriter's $i2i'$ function to update the entrypoint and symbol values.
+
+\subsection{Implementation}
+As we would like to formally verify the soundness of our CFI implementation,
+we implement the CFI rewriter as a function in Gallina,
+the specification language of Rocq, to allow us to write machine-checked proofs about its behavior.
+The rewriter function is extracted into OCaml and compiled into an executable
+with some additional driver code for reading/writing files and argument parsing.
+The ELF editor is implemented as a Python script using the LIEF library.
+We do not formally verify the correctness of the extraction process,
+the additional OCaml code, or the ELF editor,
+instead only focusing on the core rewriting logic that transforms the instruction bytes.
+
+However, we are still left with a difficult problem.
+To prove the soundness of the rewriter,
+we must prove that every execution through every binary that the rewriter outputs
+complies with the provided policy.
+Even ignoring ... \mxz{something something state explosion for every trace},
+existing frameworks for bottom-up verification are incapable of proving properties
+of binary code that is not completely concrete,
+preventing us from proving anything about code where the only known information is that
+it was produced by some input to the rewriter.
+\mxz{add some sentences describing how existing cfi verification skirts around this
+by not proving an implementation}
+
+To solve this issue, we turn to the \Picinae{} framework, which we describe in the next section.
