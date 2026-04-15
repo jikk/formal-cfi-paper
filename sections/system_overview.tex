@@ -176,7 +176,7 @@ Given a set of permitted destination indices $d = \{i_1, i_2, \dots\}$, we compu
 (3) $\forall n, \nexists i_j \in d, H(i_j) = n \implies t\big[n\big] = 4 \times ai$
 (we fill unused slots in the table with the abort address)
 
-For our implementation, we choose $H$ to be a function of the form $H(x) = \left\lfloor \frac{x}{2^i} \right\rfloor \bmod 2^j$ (bitsubstring),
+For our implementation, we choose $H$ to be a function of the form $H(x) = \left\lfloor \frac{x}{2^{lsb}} \right\rfloor \bmod 2^w$ (bitsubstring),
 which can be performed with a single instruction on ARM (\texttt{UBFX}, unsigned bit field extract),
 and find appropriate parameters to minimize the size of the table for a given destination set while maintaining the listed properties.
 
@@ -187,7 +187,7 @@ Additionally, instructions that have the same destination set can share a table,
 As an example, consider the instruction \texttt{BX r0}, which branches to the address in \texttt{r0},
 with an original destination set with indices \texttt{0x110}, \texttt{0x120}, and \texttt{0x130},
 and a traslated destination set with indices \texttt{0x200}, \texttt{0x220}, and \texttt{0x240}.
-The optimal parameters for $H$ are $i=4$ and $j=3$, extracting bits 4 to 6 from each index.
+The optimal parameters for $H$ are $lsb=4$ and $w=3$, extracting bits 4 to 6 from each index.
 The rewritten block and policy table for this instruction is as follows: \kjee{the following presentation can be improved.}
 \begin{table}[h]
     \definecolor{green}{rgb}{0.0, 0.6, 0.0}
@@ -215,7 +215,7 @@ The rewritten block and policy table for this instruction is as follows: \kjee{t
 \end{table}
 
 \begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,caption={\texttt{BX r0} block where $a$ is the address of the table},label={lst:armv7},captionpos=b,xleftmargin=.3cm]
-UBFX r0, r0, #6, #3      // r0 = H(dest) (r0 is an address, so we add 2 to i)
+UBFX r0, r0, #6, #3      // r0 = H(dest) (r0 is an address, so we add 2 to lsb)
 LSL r0, r0, #2           // r0 = H(dest) * 4
 ADD r0, r0, #a           // r0 = &table[H(dest)]
 LDR r0, [r0]             // r0 = table[H(dest)]
