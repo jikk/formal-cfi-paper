@@ -131,6 +131,19 @@ the block first loads the original address of the instruction into a scratch reg
 runs the original instruction with PC replaced with the scratch register,
 and finally restores the scratch register to its original value.
 
+Most ARM instructions use the first four bits of the encoding to allow conditional execution. A conditional instruction
+should be rewritten into a conditional block.
+Rather than propagating the condition field to each instruction of the block,
+we choose to insert a branch at the beginning of the block with the
+opposite condition that skips over the entire block to its immediate successor.
+This choice allows us to make the rest of the block unconditional and not worry about cases where the flag bits change
+in the middle of a block.
+\mxz{
+i imagine it's faster too,
+since the cpu doesn't need to process all of the instructions of the block when none of them would run anyways,
+but i have no source to back this up. maybe branching makes it slower if branch prediction is wrong, idk
+}
+
 \heading{Direct control flow.}
 If the instruction performs direct control flow, we check that its destination $d$ is permitted by the policy, and if so,
 replace it with an instruction that branches to $i2i'(d)$. Otherwise, the instruction becomes a branch to $ai$.
@@ -228,15 +241,16 @@ While we can remove some instructions that will always change the instruction st
 there are certain instructions that that we need to use that could still change the instruction state.
 Most notably, dynamic control flow instructions will change the instruction state to Thumb mode when the least significant bit of the destination address is 1.
 For this reason, we describe all addresses as indices, so no entry of the hash table will switch the instruction state.
-Supporting additional
+We omit the support for these additional instruction modes because Jazelle and ThumbEE are extremely niche, and
+support for Thumb mainly just requires duplicating work to accommodate the different instruction encodings.
 
 \heading{\unpredictable{} instructions.}
 Certain instructions are defined to be \unpredictable{}. The manual describes this term as:
 \begin{displayquote}
     Means the behavior cannot be relied upon. \unpredictable{} behavior must not perform any function that cannot be performed at the current or a lower level of privilege using instructions that are not \unpredictable{}.
 \end{displayquote}
-Although in practice, these instructions usually just cause a hardware exception, this definition includes the possibility of performing unpermitted control flow.
-Thus, the rewriter must detect and remove all such instructions. Most instruction types include at least a few \unpredictable{} variants, either from use of the PC register that does not support it or from the instruction encoding requiring certain bits to be 0 or 1. A couple of instructions are only \unpredictable{} at runtime, including dynamic control flow instructions when the destination address ends with the bits '10'. This issue is avoided the same way we prevent switching to Thumb mode, by enforcing that all hash table entries are divisible by four.
+Although in practice, these instructions usually just cause a hardware exception \mxz{maybe?}, this definition includes the possibility of performing unpermitted control flow.
+Thus, the rewriter must detect and remove all such instructions. Most instruction types include at least a few \unpredictable{} variants, either from use of the PC register for instructions that do not support it or from the instruction encoding requiring certain bits to be 0 or 1. A couple of instructions are only \unpredictable{} at runtime, including dynamic control flow instructions when the destination address ends with the bits '10'. This issue is avoided the same way we prevent switching to Thumb mode, by enforcing that all hash table entries are divisible by four.
 
 % python/ocaml extractor
 The ELF editor is given the output of the CFI rewriter and adds new segments to the original ELF for the rewritten instructions, the policy tables, and the abort handler that are loaded at the correct addresses and permissions. The original text segment is changed to be nonexecutable. Finally, the ELF editor uses the rewriter's $i2i'$ function to update the entrypoint and symbol values.
