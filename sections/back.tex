@@ -64,3 +64,13 @@ Recent advances in \emph{formally verified lifting} have opened new avenues for 
 
 \subsection{Threat Model}\label{sec:threat_model}
 \kjee{Still not sure whether need it; we may have sth else --- e.g., The Scope of \FM}
+
+While the primary objective of the research is to apply formal methods to
+
+Regarding \pname implemented with static binary rewriting, our threat model is in consistent with those commonly assumed in prior work on code-reuse attacks and CFI bypasses. In this model, an adversary exploits a memory corruption vulnerability to gain partial control over program execution.
+%
+Such vulnerabilities commonly allow attackers to corrupt code pointers (\eg return IP, function pointers, or dispatch table entries). We also assume the attacker has access to a writable memory region under their control (\eg a heap object or auxiliary buffer) and can obtain limited memory disclosure sufficient to infer relevant code and data addresses in the presence of Address Space Layout Randomization (ASLR).
+%
+We expect attacker-controlled control-flow transfers must comply with CFI policy, including landing-pad requirements for indirect branches and protections for return addresses.
+
+\pname%
