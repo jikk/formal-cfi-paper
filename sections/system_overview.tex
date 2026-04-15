@@ -3,37 +3,37 @@
 % TODO(@kjee): we a better section title here.
 % NOTE: @Max work on it.
 
-\subsection{ARMv7 Decoder}
-read out .text as a bytestream decoder does
-    - (minimal requirements) differentiation/identification of branch/non-branch instruction?
-        - different types of branch instructions
-    - (virtually implemented near-full) diassembly??
-    - *arm* mode only (non thumb) WLOG (engineering, niche)
-        (- Why ARMv7?) q
-
-\subsection{\Picinae{} lifter}
-???
-
-\subsection{CFI Policy}
-- table structure.
-    - hash function.
-- read-only aspect (when??)
-
-\subsection{Rewriter}
-- block (per-instuction) composition
-
-\subsection{ELF Relocator/Merger/Archiver}
-briefly describe what it does
-mention that it is out of the scope of the work.
-
-\subsection{FM-friendly CFI rewriter design}
-- branchless table access
-    - to mitigate state space explosion problem
-- read-only masking of  policy table.
-
-\kjee{This is the system overview section.}
 
 \comment{%
+    \subsection{ARMv7 Decoder}
+    read out .text as a bytestream decoder does
+    - (minimal requirements) differentiation/identification of branch/non-branch instruction?
+    - different types of branch instructions
+    - (virtually implemented near-full) diassembly??
+    - *arm* mode only (non thumb) WLOG (engineering, niche)
+    (- Why ARMv7?) q
+
+    \subsection{\Picinae{} lifter}
+    ???
+
+    \subsection{CFI Policy}
+            - table structure.
+            - hash function.
+            - read-only aspect (when??)
+
+    \subsection{Rewriter}
+            - block (per-instuction) composition
+
+    \subsection{ELF Relocator/Merger/Archiver}
+            briefly describe what it does
+            mention that it is out of the scope of the work.
+
+    \subsection{FM-friendly CFI rewriter design}
+    - branchless table access
+    - to mitigate state space explosion problem
+    - read-only masking of  policy table.
+
+    \kjee{This is the system overview section.}
     % NOTE (@kjee): a brief brainstorming bullet points regarding what this section will be about.
 
     - \pname employs a static binary rewriter that instruments branch instructions to track control flow transfers and detect any violations.
