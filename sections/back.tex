@@ -63,21 +63,9 @@ Recent advances in \emph{formally verified lifting} have opened new avenues for 
 }
 
 \subsection{Threat Model}\label{sec:threat_model}
+\kjee{NOTE: a typical threat model text for CFI paper. This is still an *optional*.}
+\pname targets adversaries who exploit memory corruption vulnerabilities to hijack program control flow, a threat model consistent with prior work on code-reuse attacks. We assume the attacker can corrupt code pointers (return addresses, function pointers, or vtable entries) and possesses a writable memory region under their control (\eg a heap object or auxiliary buffer). We further assume the attacker can perform limited memory disclosure sufficient to infer code and data addresses in the presence of ASLR\@.
+Under \pname's CFI enforcement, any control-flow transfer that violates the policy is redirected to \texttt{abort()}, preventing attacker-controlled diversion of execution.
 
-\pname targets adversaries who exploit memory corruption vulnerabilities to
-hijack program control flow, a threat model consistent with prior work on
-code-reuse attacks. We assume the attacker can corrupt code
-pointers (return addresses, function pointers, or vtable entries) and
-possesses a writable memory region under their control (\eg a heap object
-or auxiliary buffer). We further assume the attacker can perform limited
-memory disclosure sufficient to infer code and data addresses in the
-presence of ASLR. Under \pname's CFI enforcement, any control-flow
-transfer that violates the policy is redirected to \texttt{abort()},
-preventing attacker-controlled diversion of execution.
-
-The current implementation targets statically linked, non-PIE x86-64
-binaries, in which all control transfers are self-contained and symbol
-references use absolute addresses. Extending coverage to
-position-independent executables (PIE) and dynamically linked binaries is
-straightforward with additional engineering effort, and we leave it for
-future work.
+The current implementation targets statically linked, non-PIE ARM binaries, in which all control transfers are self-contained and symbol
+references use absolute addresses. Extending coverage to PIE and dynamically linked binaries is achievable with additional engineering effort, and we leave it for future work.
