@@ -69,12 +69,13 @@
     }~\label{fig:cfi_arch}
 \end{figure}
 
-\mxz{todo reference fig 1 here}
 \subsection{Design}
+\mxz{todo reference fig 1 here}
 We first describe the design of \pname, which consists of two components:
 the CFI rewriter, the component that turns a list of instructions into a rewritten list of instructions with CFI,
 and the ELF editor, which performs the modifications to the ELF file based on the output of the CFI rewriter. The ELF editor is not particularly interesting, so this section will mainly focus on the rewriter.
 
+% inputs
 The CFI rewriter is a function that takes the following inputs:
 \begin{itemize}
 \item \heading{Text Segment ($txt$):}
@@ -114,7 +115,9 @@ When a rewritten program detects that an invalid control flow transfer would hap
 it instead goes to a user provided abort handler located at index $ai$.
 
 % rewriting
-Now we describe the different cases we need to consider when rewriting an instruction.
+The rewriter sequentially examines each original instruction and determines if it much be changed
+to comply with the policy or to preserve functionality of the rewritten binary.
+There are a few different cases we need to consider when rewriting an instruction.
 
 \heading{Unchanged block.}
 For most instructions, the rewriter does not have to make any changes as they are irrelevant to enforcing the policy.
@@ -128,43 +131,85 @@ the block first loads the original address of the instruction into a scratch reg
 runs the original instruction with PC replaced with the scratch register,
 and finally restores the scratch register to its original value.
 
-\heading{Static control flow.}
-If the instruction performs static control flow, we check that its destination $d$ is permitted by the policy, and if so,
+\heading{Direct control flow.}
+If the instruction performs direct control flow, we check that its destination $d$ is permitted by the policy, and if so,
 replace it with an instruction that branches to $i2i'(d)$. Otherwise, the instruction becomes a branch to $ai$.
 
-\heading{Dynamic control flow.}
-If the instruction performs dynamic control flow, we can only determine if the next step is policy permitted at runtime.
-To perform this check, the rewriter outputs a list of tables to be inserted starting at $tbi$ that dually ensures that
-dynamic control flow instructions only step to permitted destinations and translates addresses in the old text segment
+\heading{Indirect control flow.}
+If the instruction performs indirect control flow, we can only determine if the next step is policy permitted at runtime.
+To perform this check, we devise a novel method using hash tables
+that also allows us to easily translate addresses in the old text segment
 to the corresponding address in the rewritten text segment.
+For each indirect branch instruction, we insert code before to load a value from a table that only
+contains permitted destination addresses and use that as the destination instead.
+It is clear that such a block will always take permitted steps,
+but care must be taken during table construction to ensure the original program behavior is preserved.
 
 % hash table structure
 Given a set of permitted destination indices $d = \{i_1, i_2, \dots\}$, we compute a table $t$ and hash function $H$ with the following properties:
 
-(1) $\forall i_j \in d, t\big[H(i_j)\big] = i_j' * 4$ (the program can compute the translated address of a valid destination by indexing into the table)
+\mxz{this looks ugly}
 
-(2) $\forall i_j \in d, t\big[H(i_j')\big] = i_j' * 4$ (using a valid translated address to index the table gives back the same address)
+(1) $\forall i_j \in d, t\big[H(i_j)\big] = 4 \times i_j'$
+(the program can compute the translated address of a valid destination by indexing into the table)
+
+(2) $\forall i_j \in d, t\big[H(i_j')\big] = 4 \times i_j'$
+(using a valid translated address to index the table gives back the same address)
 
 % the previous two properties imply this one
-(3) $\forall i_j, i_k \in d, i_j \ne i_k \implies H(i_j) \ne H(i_k) \land H(i_j') \ne H(i_k') \land H(i_j') \ne H(i_k)$ (there are no hash collisions, but we allow corresponding old and translated indices to have the same hash)
+% (3) $\forall i_j, i_k \in d, i_j \ne i_k \implies H(i_j) \ne H(i_k) \land H(i_j') \ne H(i_k') \land H(i_j') \ne H(i_k)$
+% (there are no hash collisions, but we allow corresponding old and translated indices to have the same hash)
 
-(4) $\forall n, \nexists i_j \in d, H(i_j) = n \implies t\big[n\big] = ai * 4$ (we fill unused slots in the table with the abort address)
+(3) $\forall n, \nexists i_j \in d, H(i_j) = n \implies t\big[n\big] = 4 \times ai$
+(we fill unused slots in the table with the abort address)
 
-For our implementation, we choose $H$ to be a function of the form $H(x) = \left\lfloor \frac{x}{2^i} \right\rfloor \bmod 2^j$ (bitsubstring), which can be performed with a single instruction on ARM (UBFX, unsigned bit field extract).
+For our implementation, we choose $H$ to be a function of the form $H(x) = \left\lfloor \frac{x}{2^i} \right\rfloor \bmod 2^j$ (bitsubstring),
+which can be performed with a single instruction on ARM (\texttt{UBFX}, unsigned bit field extract),
+and find appropriate parameters to minimize the size of the table for a given destination set while maintaining the listed properties.
 
-As an example, consider the instruction \texttt{BX r0}, which branches to the address in \texttt{r0}. The rewritten block for this instruction is as follows: \kjee{the following presentation can be improved.}
+Unlike other policy enforcement schemes that require destination sets to form equivalence classes such as in Abadi et al.,
+using instruction-specific policy tables allows us to enforce policies where a destination can belong to any number of distinct sets.
+Additionally, instructions that have the same destination set can share a table, minimizing space overhead.
 
-\begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,caption={ARMv7 instructions},label={lst:armv7},captionpos=b,xleftmargin=.3cm]
-UBFX r0, r0, #x, #y     // r0 = H(dest)
+As an example, consider the instruction \texttt{BX r0}, which branches to the address in \texttt{r0},
+with an original destination set with indices \texttt{0x110}, \texttt{0x120}, and \texttt{0x130},
+and a traslated destination set with indices \texttt{0x200}, \texttt{0x220}, and \texttt{0x240}.
+The optimal parameters for $H$ are $i=4$ and $j=3$, extracting bits 4 to 6 from each index.
+The rewritten block and policy table for this instruction is as follows: \kjee{the following presentation can be improved.}
+\begin{table}[h]
+    \definecolor{green}{rgb}{0.0, 0.6, 0.0}
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{i} & \textbf{i'} & \textbf{H(i)} & \textbf{H(i')} \\ \hline
+        0x110 & \textcolor{red}{0x200} & \textcolor{red}{1} & \textcolor{red}{0} \\ \hline
+        0x120 & \textcolor{green}{0x220} & \textcolor{green}{2} & \textcolor{green}{2} \\ \hline
+        0x130 & \textcolor{blue}{0x240} & \textcolor{blue}{3} & \textcolor{blue}{4} \\ \hline
+    \end{tabular}
+    \quad
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{key} & \textbf{value} \\ \hline
+        \textcolor{red}{0} & \textcolor{red}{4*0x200} \\ \hline
+        \textcolor{red}{1} & \textcolor{red}{4*0x200} \\ \hline
+        \textcolor{green}{2} & \textcolor{green}{4*0x220} \\ \hline
+        \textcolor{blue}{3} & \textcolor{blue}{4*0x240} \\ \hline
+        \textcolor{blue}{4} & \textcolor{blue}{4*0x240} \\ \hline
+        5 & 4*ai \\ \hline
+        6 & 4*ai \\ \hline
+        7 & 4*ai \\ \hline
+    \end{tabular}
+\end{table}
+
+\begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,caption={\texttt{BX r0} block where $a$ is the address of the table},label={lst:armv7},captionpos=b,xleftmargin=.3cm]
+UBFX r0, r0, #6, #3      // r0 = H(dest) (r0 is an address, so we add 2 to i)
 LSL r0, r0, #2           // r0 = H(dest) * 4
 ADD r0, r0, #a           // r0 = &table[H(dest)]
 LDR r0, [r0]             // r0 = table[H(dest)]
 BX r0                    // branch to table[H(dest)]
 \end{lstlisting}
-
-Where $x$ and $y$ are the appropriate values to compute $H$, and $a$ is the address of the table.
-% there isn't an instruction to add an arbitrary constant to a register, only certain constants are possible
-% so there are actually 4 add instructions in this block to add each byte separately, but idk if it's necessary to say that here
+\mxz{there isn't an instruction to add an arbitrary constant to a register, only certain constants are possible
+so there are actually 4 add instructions in this block to add each byte separately, but idk if it's necessary to say that here}
 
 \heading{Unsupported instructions.}
 There are some ARM instructions that we do not support. In these cases, we replace them with a branch to $ai$.
@@ -205,7 +250,9 @@ with some additional driver code for reading/writing files and argument parsing.
 The ELF editor is implemented as a Python script using the LIEF library.
 We do not formally verify the correctness of the extraction process,
 the additional OCaml code, or the ELF editor,
-instead only focusing on the core rewriting logic that transforms the instruction bytes.
+instead only focusing on the core rewriting logic that transforms the instruction bytes,
+as verification of the other components is not particularly interesting or
+has been covered by previous works in the case of verified extraction.
 
 However, we are still left with a difficult problem.
 To prove the soundness of the rewriter,
