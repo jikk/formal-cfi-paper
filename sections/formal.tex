@@ -1,5 +1,5 @@
 %! root=./main.tex
-\section{CFI Formal Verification}
+\section{Verification of Implementation Soundness}
 
 \subsection{Formalization}
 % Compact list spacing for this section
@@ -84,7 +84,7 @@ For a CFI implementation to be sound, all rewritten programs produced by the rew
     \includegraphics[width=0.9\linewidth]{verification.pdf}
     \caption{Verification and extraction of the core rewriting logic.}~\label{fig:cfi_verif}
 \end{figure}
-We prove that our CFI implementation is sound in Rocq using \Picinae.
+We prove that our CFI rewriter is sound in Rocq using \Picinae.
 For this, we create an ARMv7 decoder and lifter in Rocq that translates ARM instruction encodings
 into \Picinae{} IL, based on the specification in the official documentation,
 and define a \Picinae{} program, \texttt{arm\_prog}, that reads memory of the
@@ -95,6 +95,10 @@ When the given store is not in ARM mode or the given address is not aligned,
 we treat the instruction as \unpredictable{}.
 The decoder and lifter are specific to the User processor mode for ARM, so we do not consider
 instructions that require a higher privilege level.
+
+While \Picinae{} solves our issue of proving properties about binary code that is not fully known,
+we still have to prove the safety of every possible trace of every possible output binary.
+\mxz{some text explaining how our design minimizes state explosion through table lookup/block structure}
 
 We can inductively prove that a trace is safe by proving that if
 the trace starts at the beginning of a block in a state that satisfies our preconditions,
@@ -141,23 +145,14 @@ For instructions that are changed for non-control-flow reasons,
 such as instructions that just reference the PC register without modifying it, we prove a
 lemma similar to the previous case about blocks consisting entirely of safe instructions,
 with one caveat that we must deal with.
-In the ARM instruction set, most instructions use the first four bits of the encoding to allow conditional execution.
-Rather than make the entire block conditional, we choose to insert a branch at the beginning of the block with the
-opposite condition that skips over the entire block to the immediate successor.
-This choice allows us to make the rest of the block unconditional and not worry about cases where the flag bits change
-in the middle of a block.
-\mxz{
-i imagine it's faster too,
-since the cpu doesn't need to process all of the instructions of the block when none of them would run anyways,
-but i have no source to back this up. maybe branching makes it slower if branch prediction is wrong, idk
-}
-However, this first branch instruction is not safe, as it does not always fallthrough or raise an exception.
+Conditional instructions become blocks with a conditional branch at the start,
+which is not a safe instruction, as it does not always fallthrough or raise an exception.
 To handle this, we prove another lemma that if a block is safe, it is still safe after inserting a branch to the next
 block at the beginning, which requires us to prove that the rewriter correctly computes an encoding that decodes to a
 branch with the proper offset. With this lemma, we can prove the safety of all blocks changed for non-control-flow reasons.
 
-\heading{Static control flow.}
-Instructions that perform static control flow must be modified to account for
+\heading{Direct control flow.}
+Instructions that perform direct control flow must be modified to account for
 the additional instructions we insert. We prove that our rewriter computes and uses the correct new offset when the destination
 is permitted by the policy or replaces the instruction with a branch to the abort handler, and that both cases are safe.
 
@@ -166,13 +161,13 @@ Instructions that we do not support,
 such as those that always change the instruction mode or \unpredictable{} instructions,
 are replaced with a branch to the abort handler, which we prove safe similarly to the previous case.
 
-\heading{Dynamic control flow.}
-The code to lookup a destination from an instruction's hash table is the same for all dynamic control flow instructions,
-parameterized by the register containing the destination and the address of the table.
+\heading{Indirect control flow.}
+The code to lookup a destination from an instruction's hash table is the same for all indirect control flow instructions,
+parameterized by the register containing the destination, the bits extracted by the hash function, and the address of the table.
 We prove a lemma about this code that after executing this portion of the block,
 the register contains some value from the table,
 and a separate lemma that the table provided consists entirely of permitted destination addresses for the instruction in question.
-Proving the safety of dynamic control flow blocks simply involves
+Proving the safety of indirect control flow blocks simply involves
 (1) skipping over all of the instructions up to the table lookup,
 since they are all either safe or a conditional branch to the next block
 (2) applying the lemma about the table lookup code to skip to a state afterwards where we have

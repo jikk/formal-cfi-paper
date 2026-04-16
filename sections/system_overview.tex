@@ -1,39 +1,39 @@
 %! root=./main.tex
-\section{Formally Verified Static Binary Writer for CFI}~\label{sec:overview}
+\section{Static Rewriter for CFI in ARMv7 Binaries}~\label{sec:overview}
 % TODO(@kjee): we a better section title here.
 % NOTE: @Max work on it.
 
-\subsection{ARMv7 Decoder}
-read out .text as a bytestream decoder does
-    - (minimal requirements) differentiation/identification of branch/non-branch instruction?
-        - different types of branch instructions
-    - (virtually implemented near-full) diassembly??
-    - *arm* mode only (non thumb) WLOG (engineering, niche)
-        (- Why ARMv7?) q
-
-\subsection{\Picinae{} lifter}
-???
-
-\subsection{CFI Policy}
-- table structure.
-    - hash function.
-- read-only aspect (when??)
-
-\subsection{Rewriter}
-- block (per-instuction) composition
-
-\subsection{ELF Relocator/Merger/Archiver}
-briefly describe what it does
-mention that it is out of the scope of the work.
-
-\subsection{FM-friendly CFI rewriter design}
-- branchless table access
-    - to mitigate state space explosion problem
-- read-only masking of  policy table.
-
-\kjee{This is the system overview section.}
 
 \comment{%
+    \subsection{ARMv7 Decoder}
+    read out .text as a bytestream decoder does
+    - (minimal requirements) differentiation/identification of branch/non-branch instruction?
+    - different types of branch instructions
+    - (virtually implemented near-full) diassembly??
+    - *arm* mode only (non thumb) WLOG (engineering, niche)
+    (- Why ARMv7?) q
+
+    \subsection{\Picinae{} lifter}
+    ???
+
+    \subsection{CFI Policy}
+            - table structure.
+            - hash function.
+            - read-only aspect (when??)
+
+    \subsection{Rewriter}
+            - block (per-instuction) composition
+
+    \subsection{ELF Relocator/Merger/Archiver}
+            briefly describe what it does
+            mention that it is out of the scope of the work.
+
+    \subsection{FM-friendly CFI rewriter design}
+    - branchless table access
+    - to mitigate state space explosion problem
+    - read-only masking of  policy table.
+
+    \kjee{This is the system overview section.}
     % NOTE (@kjee): a brief brainstorming bullet points regarding what this section will be about.
 
     - \pname employs a static binary rewriter that instruments branch instructions to track control flow transfers and detect any violations.
@@ -65,16 +65,18 @@ mention that it is out of the scope of the work.
     The policy maps source indices to a set of allowed destinations
     (that is not required to be disjoint with other sets, e.g. $i_1$ and $i_n$).
     Indirect jump instructions become blocks that perform a lookup into a table that constrains the target to permitted destinations and converts between old and new addresses.
-    Instructions with identical destination sets can share a policy table (e.g. tbl2 for $i_1, i_4$).
+    Instructions with identical destination sets can share a policy table (e.g. tbl2 for $i_1, i_4$).\kjee{caption is too lengthy.}
     }~\label{fig:cfi_arch}
 \end{figure}
 
+\subsection{Design}
 \mxz{todo reference fig 1 here}
-\pname consists of two parts: the implementation of a static ARMv7 binary rewriter for CFI instrumentation and a formal proof of soundness of our implementation.
-In this section, we discuss the first half.
+We first describe the design of \pname, which consists of two components:
+the CFI rewriter, the component that turns a list of instructions into a rewritten list of instructions with CFI,
+and the ELF editor, which performs the modifications to the ELF file based on the output of the CFI rewriter. The ELF editor is not particularly interesting, so this section will mainly focus on the rewriter.
 
-The rewriter is implemented as a function in Gallina, the specification language of Rocq, that takes the following inputs.
-
+% inputs
+The CFI rewriter is a function that takes the following inputs:
 \begin{itemize}
 \item \heading{Text Segment ($txt$):}
 The rewriter is given the contents of the text segment of the program to rewrite, represented as a list of four-byte integers, the size of an ARM instruction.
@@ -86,6 +88,7 @@ When referring to values that represent addresses divided by four, we will use t
 \item \heading{Policy ($pol$):}
 The CFI policy describes what destinations each instruction of the text segment is allowed to go to.
 Our rewriter accepts policies as a function from source indices to lists of permitted destination indices.
+We do not impose any restriction on the destination sets; an index can belong to multiple distinct destination sets.
 \end{itemize}
 
 % block structure
@@ -112,7 +115,9 @@ When a rewritten program detects that an invalid control flow transfer would hap
 it instead goes to a user provided abort handler located at index $ai$.
 
 % rewriting
-Now we describe the different cases we need to consider when rewriting an instruction.
+The rewriter sequentially examines each original instruction and determines if it much be changed
+to comply with the policy or to preserve functionality of the rewritten binary.
+There are a few different cases we need to consider when rewriting an instruction.
 
 \heading{Unchanged block.}
 For most instructions, the rewriter does not have to make any changes as they are irrelevant to enforcing the policy.
@@ -126,46 +131,101 @@ the block first loads the original address of the instruction into a scratch reg
 runs the original instruction with PC replaced with the scratch register,
 and finally restores the scratch register to its original value.
 
-\heading{Static control flow.}
-If the instruction performs static control flow, we check that its destination $d$ is permitted by the policy, and if so,
+Most ARM instructions use the first four bits of the encoding to allow conditional execution. A conditional instruction
+should be rewritten into a conditional block.
+Rather than propagating the condition field to each instruction of the block,
+we choose to insert a branch at the beginning of the block with the
+opposite condition that skips over the entire block to its immediate successor.
+This choice allows us to make the rest of the block unconditional and not worry about cases where the flag bits change
+in the middle of a block.
+\mxz{
+i imagine it's faster too,
+since the cpu doesn't need to process all of the instructions of the block when none of them would run anyways,
+but i have no source to back this up. maybe branching makes it slower if branch prediction is wrong, idk
+}
+
+\heading{Direct control flow.}
+If the instruction performs direct control flow, we check that its destination $d$ is permitted by the policy, and if so,
 replace it with an instruction that branches to $i2i'(d)$. Otherwise, the instruction becomes a branch to $ai$.
 
-\heading{Dynamic control flow.}
-If the instruction performs dynamic control flow, we can only determine if the next step is policy permitted at runtime.
-To perform this check, the rewriter outputs a list of tables to be inserted starting at $tbi$ that dually ensures that
-dynamic control flow instructions only step to permitted destinations and translates addresses in the old text segment
+\heading{Indirect control flow.}
+If the instruction performs indirect control flow, we can only determine if the next step is policy permitted at runtime.
+To perform this check, we devise a novel method using hash tables
+that also allows us to easily translate addresses in the old text segment
 to the corresponding address in the rewritten text segment.
+For each indirect branch instruction, we insert code before to load a value from a table that only
+contains permitted destination addresses and use that as the destination instead.
+It is clear that such a block will always take permitted steps,
+but care must be taken during table construction to ensure the original program behavior is preserved.
 
 % hash table structure
 Given a set of permitted destination indices $d = \{i_1, i_2, \dots\}$, we compute a table $t$ and hash function $H$ with the following properties:
 
-(1) $\forall i_j \in d, t\big[H(i_j)\big] = i_j' * 4$ (the program can compute the translated address of a valid destination by indexing into the table)
+\mxz{this looks ugly}
 
-(2) $\forall i_j \in d, t\big[H(i_j')\big] = i_j' * 4$ (using a valid translated address to index the table gives back the same address)
+(1) $\forall i_j \in d, t\big[H(i_j)\big] = 4 \times i_j'$
+(the program can compute the translated address of a valid destination by indexing into the table)
+
+(2) $\forall i_j \in d, t\big[H(i_j')\big] = 4 \times i_j'$
+(using a valid translated address to index the table gives back the same address)
 
 % the previous two properties imply this one
-(3) $\forall i_j, i_k \in d, i_j \ne i_k \implies H(i_j) \ne H(i_k) \land H(i_j') \ne H(i_k') \land H(i_j') \ne H(i_k)$ (there are no hash collisions, but we allow corresponding old and translated indices to have the same hash)
+% (3) $\forall i_j, i_k \in d, i_j \ne i_k \implies H(i_j) \ne H(i_k) \land H(i_j') \ne H(i_k') \land H(i_j') \ne H(i_k)$
+% (there are no hash collisions, but we allow corresponding old and translated indices to have the same hash)
 
-(4) $\forall n, \nexists i_j \in d, H(i_j) = n \implies t\big[n\big] = ai * 4$ (we fill unused slots in the table with the abort address)
+(3) $\forall n, \nexists i_j \in d, H(i_j) = n \implies t\big[n\big] = 4 \times ai$
+(we fill unused slots in the table with the abort address)
 
-For our implementation, we choose $H$ to be a function of the form $H(x) = \left\lfloor \frac{x}{2^i} \right\rfloor \bmod 2^j$ (bitsubstring), which can be performed with a single instruction on ARM (UBFX, unsigned bit field extract).
+For our implementation, we choose $H$ to be a function of the form $H(x) = \left\lfloor \frac{x}{2^{lsb}} \right\rfloor \bmod 2^w$ (bitsubstring),
+which can be performed with a single instruction on ARM (\texttt{UBFX}, unsigned bit field extract),
+and find appropriate parameters to minimize the size of the table for a given destination set while maintaining the listed properties.
 
-As an example, consider the instruction \texttt{BX r0}, which branches to the address in \texttt{r0}. The rewritten block for this instruction is as follows: \kjee{the following presentation can be improved.}
+Unlike other policy enforcement schemes that require destination sets to form equivalence classes such as in Abadi et al.,
+using instruction-specific policy tables allows us to enforce policies where a destination can belong to any number of distinct sets.
+Additionally, instructions that have the same destination set can share a table, minimizing space overhead.
 
-\begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,caption={ARMv7 instructions},label={lst:armv7},captionpos=b,xleftmargin=.3cm]
-UBFX r0, r0, #x, #y     // r0 = H(dest)
+As an example, consider the instruction \texttt{BX r0}, which branches to the address in \texttt{r0},
+with an original destination set with indices \texttt{0x110}, \texttt{0x120}, and \texttt{0x130},
+and a traslated destination set with indices \texttt{0x200}, \texttt{0x220}, and \texttt{0x240}.
+The optimal parameters for $H$ are $lsb=4$ and $w=3$, extracting bits 4 to 6 from each index.
+The rewritten block and policy table for this instruction is as follows: \kjee{the following presentation can be improved.}
+\begin{table}[h]
+    \definecolor{green}{rgb}{0.0, 0.6, 0.0}
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{i} & \textbf{i'} & \textbf{H(i)} & \textbf{H(i')} \\ \hline
+        0x110 & \textcolor{red}{0x200} & \textcolor{red}{1} & \textcolor{red}{0} \\ \hline
+        0x120 & \textcolor{green}{0x220} & \textcolor{green}{2} & \textcolor{green}{2} \\ \hline
+        0x130 & \textcolor{blue}{0x240} & \textcolor{blue}{3} & \textcolor{blue}{4} \\ \hline
+    \end{tabular}
+    \quad
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{key} & \textbf{value} \\ \hline
+        \textcolor{red}{0} & \textcolor{red}{4*0x200} \\ \hline
+        \textcolor{red}{1} & \textcolor{red}{4*0x200} \\ \hline
+        \textcolor{green}{2} & \textcolor{green}{4*0x220} \\ \hline
+        \textcolor{blue}{3} & \textcolor{blue}{4*0x240} \\ \hline
+        \textcolor{blue}{4} & \textcolor{blue}{4*0x240} \\ \hline
+        5 & 4*ai \\ \hline
+        6 & 4*ai \\ \hline
+        7 & 4*ai \\ \hline
+    \end{tabular}
+\end{table}
+
+\begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,caption={\texttt{BX r0} block where $a$ is the address of the table},label={lst:armv7},captionpos=b,xleftmargin=.3cm]
+UBFX r0, r0, #6, #3      // r0 = H(dest) (r0 is an address, so we add 2 to lsb)
 LSL r0, r0, #2           // r0 = H(dest) * 4
 ADD r0, r0, #a           // r0 = &table[H(dest)]
 LDR r0, [r0]             // r0 = table[H(dest)]
 BX r0                    // branch to table[H(dest)]
 \end{lstlisting}
-
-Where $x$ and $y$ are the appropriate values to compute $H$, and $a$ is the address of the table.
-% there isn't an instruction to add an arbitrary constant to a register, only certain constants are possible
-% so there are actually 4 add instructions in this block to add each byte separately, but idk if it's necessary to say that here
+\mxz{there isn't an instruction to add an arbitrary constant to a register, only certain constants are possible
+so there are actually 4 add instructions in this block to add each byte separately, but idk if it's necessary to say that here}
 
 \heading{Unsupported instructions.}
-There are some ARM instructions that we cannot support. In these cases, we replace them with a branch to $ai$.
+There are some ARM instructions that we do not support. In these cases, we replace them with a branch to $ai$.
 
 \heading{Endianness.}
 ARM supports both little and big endian memory operations, determined by the value of the E bit of the Current Program Status Register.
@@ -181,15 +241,43 @@ While we can remove some instructions that will always change the instruction st
 there are certain instructions that that we need to use that could still change the instruction state.
 Most notably, dynamic control flow instructions will change the instruction state to Thumb mode when the least significant bit of the destination address is 1.
 For this reason, we describe all addresses as indices, so no entry of the hash table will switch the instruction state.
-Supporting additional
+We omit the support for these additional instruction modes because Jazelle and ThumbEE are extremely niche, and
+support for Thumb mainly just requires duplicating work to accommodate the different instruction encodings.
 
 \heading{\unpredictable{} instructions.}
 Certain instructions are defined to be \unpredictable{}. The manual describes this term as:
 \begin{displayquote}
     Means the behavior cannot be relied upon. \unpredictable{} behavior must not perform any function that cannot be performed at the current or a lower level of privilege using instructions that are not \unpredictable{}.
 \end{displayquote}
-Although in practice, these instructions usually just cause a hardware exception, this definition includes the possibility of performing unpermitted control flow.
-Thus, the rewriter must detect and remove all such instructions. Most instruction types include at least a few \unpredictable{} variants, either from use of the PC register that does not support it or from the instruction encoding requiring certain bits to be 0 or 1. A couple of instructions are only \unpredictable{} at runtime, including dynamic control flow instructions when the destination address ends with the bits '10'. This issue is avoided the same way we prevent switching to Thumb mode, by enforcing that all hash table entries are divisible by four.
+Although in practice, these instructions usually just cause a hardware exception \mxz{maybe?}, this definition includes the possibility of performing unpermitted control flow.
+Thus, the rewriter must detect and remove all such instructions. Most instruction types include at least a few \unpredictable{} variants, either from use of the PC register for instructions that do not support it or from the instruction encoding requiring certain bits to be 0 or 1. A couple of instructions are only \unpredictable{} at runtime, including dynamic control flow instructions when the destination address ends with the bits '10'. This issue is avoided the same way we prevent switching to Thumb mode, by enforcing that all hash table entries are divisible by four.
 
 % python/ocaml extractor
-We implement an ELF rewriter by extracting our verified cfi\_rw function into OCaml. Some additional unverified OCaml and Python scripts implement the logic that parses ELF files for text segment data and addresses, calls cfi\_rw with the proper arguments, and creates a new ELF file with the new segments added. The verification of these components is out of scope for this work.
+The ELF editor is given the output of the CFI rewriter and adds new segments to the original ELF for the rewritten instructions, the policy tables, and the abort handler that are loaded at the correct addresses and permissions. The original text segment is changed to be nonexecutable. Finally, the ELF editor uses the rewriter's $i2i'$ function to update the entrypoint and symbol values.
+
+\subsection{Implementation}
+As we would like to formally verify the soundness of our CFI implementation,
+we implement the CFI rewriter as a function in Gallina,
+the specification language of Rocq, to allow us to write machine-checked proofs about its behavior.
+The rewriter function is extracted into OCaml and compiled into an executable
+with some additional driver code for reading/writing files and argument parsing.
+The ELF editor is implemented as a Python script using the LIEF library.
+We do not formally verify the correctness of the extraction process,
+the additional OCaml code, or the ELF editor,
+instead only focusing on the core rewriting logic that transforms the instruction bytes,
+as verification of the other components is not particularly interesting or
+has been covered by previous works in the case of verified extraction.
+
+However, we are still left with a difficult problem.
+To prove the soundness of the rewriter,
+we must prove that every execution through every binary that the rewriter outputs
+complies with the provided policy.
+Even ignoring ... \mxz{something something state explosion for every trace},
+existing frameworks for bottom-up verification are incapable of proving properties
+of binary code that is not completely concrete,
+preventing us from proving anything about code where the only known information is that
+it was produced by some input to the rewriter.
+\mxz{add some sentences describing how existing cfi verification skirts around this
+by not proving an implementation}
+
+To solve this issue, we turn to the \Picinae{} framework, which we describe in the next section.
