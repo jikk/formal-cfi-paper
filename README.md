@@ -4,7 +4,7 @@
 
 * Notes: https://codimd.syssec.org/jDeP30sZRmyQZ9SexjXYhQ
 
-* LucidChart link: ????
+* LucidChart link: https://lucid.app/lucidchart/937aceb8-f94e-457c-95b8-30bb51d70627/edit?invitationId=inv_2f17b57d-ee49-4cce-8d78-ef0a36c365fd
 
 ## Story Outline
 

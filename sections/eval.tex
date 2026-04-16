@@ -39,7 +39,20 @@ In ARM mode, this instruction behaves exactly the same as a static branch with a
 (the GNU assembler will explicitly warn that "use of r15 in bx in ARM mode is not really useful"
 if you try).
 If the rewriter mistakenly handles this instruction like other \texttt{BX} instructions,
-then the corresponding block will start with a \texttt{UBFX} that writes to PC, which is \unpredictable.
+under the assumption that this case would be detected as \unpredictable{} earlier in the rewriting process,
+then the corresponding block will start with a \texttt{UBFX} that writes to PC, which is \unpredictable{},
+and could therefore perform policy-violating control flow.
 
 \heading{Unaligned PC Load.}
-\mxz{todo}
+When loading an address into the program counter, the behavior is \unpredictable{} if the address being loaded from is
+not word-aligned. Some blocks produced by our rewriter use the stack to store store the destination and end by loading this
+address. However, if the stack pointer was unaligned before the block began execution, this load would be \unpredictable{}.
+Even though the ARM calling convention mandates that the stack pointer is always aligned, it is still possible to set its value
+to an unaligned value. To ensure that this does not happen at runtime, a block must realign the stack pointer before loading
+from it.
+
+Edge cases like this one are near impossible to find through testing alone. The precondition for this to happen will
+never occur under normal program execution, as ARM's calling convention explicitly prohibits it.
+Even if this case shows up during testing, \unpredictable{} behavior is implementation dependent;
+regardless of however many times you test this case on one machine, you might still never see a policy violating control flow
+depending on your CPU's implementation.
