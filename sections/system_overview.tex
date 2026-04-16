@@ -108,7 +108,7 @@ and the index where the rewritten text segment should be placed, and define a fu
 For rewritten programs to function correctly, it is sometimes necessary to allow instructions to jump to regions outside the new text segment.
 As an example, on ARM the Linux kernel provides a couple of helper functions at fixed addresses that we cannot rewrite.
 Therefore, $i2i'$ must return the input index when it does not fall within the original text segment range.
-Otherwise, when $i$ is the $i$th index of the original text segment, $i2i'(i)$ is the index of the first instruction of the $i$th rewritten block.
+Otherwise, when $n$ is the $n$th index of the original text segment, $i2i'(n)$ is the index of the first instruction of the $n$th rewritten block.
 
 % abort handler
 When a rewritten program detects that an invalid control flow transfer would happen,
