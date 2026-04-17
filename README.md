@@ -44,6 +44,8 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 
 ## Misc Notes
 
+- Python script is out of scope because there is no formal specification of an OS loader. At the very least, this would be needed to specify the correctness of the ELF editor, if not a formally verified process loader. Paper docs do not count as formal specs. (27:10)
+
 ## TODOs
 
 
