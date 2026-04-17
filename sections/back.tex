@@ -1,67 +1,7 @@
 %! root=./main.tex
 \section{Background}~\label{sec:back}
-{% section opener; optional.
+\comment{% section opener; optional.
     The section provides the background needed to understand our research. We begin with binary-level CFI via static binary rewriting, which operates on arbitrary binaries to instrument control-flow enforcement. We then broaden the discussion to secure \irms implemented through rewriting, placing our work in a broader context. Finally, we review prior \FMs research at the binary level from both security and correctness perspectives.
-}
-\ixb{
-}
-\subsection{\cfi with Static Binary Rewriting}~\label{sec:cfi_back}
-\comment{%
-  - CFI is a foundational security defense designed to protect against control hijacking attacks by restricting the set of valid control-flow transfers a program may execute at runtime.
-
-  - CFI can be enforced at different levels depending on the available program representation. When source code is accessible, CFI is typically implemented as a compiler pass, optionally leveraging hardware support such as Intel CET for enforcement. When only a binary is available, CFI can be enforced via either dynamic instrumentation or static binary rewriting. Although dynamic instrumentation is precise, it is generally less favored due to its runtime overhead and transparency limitations.
-
-  - Static binary rewriting is more efficient in practice, as instrumentation is limited to control-transfer instructions rather than the full instruction stream. However, the underlying challenge of constructing a complete and accurate control-flow policy is widely recognized as difficult and, in many cases, undecidable.
-
-  - This research specifically focuses on the correct implementation of binary-only CFI enforced through static binary rewriting. Other aspects, such as control-flow policy generation or runtime efficiency optimization, are outside the scope of this work.
-}
-\kjee{Current text is better suited for the related work; We'd better utilize the subsection to explain basic illustration of CFI. I think it is okay to be a bit more formal so that it can naturally connect to sec 3 and sec 4.}
-\ixb{Shreya to work on Background/Related Works ($\sim$15:30).}
-
-CFI is a foundational security defense designed to protect against control hijacking attacks by restricting the set of valid control-flow transfers a program may execute at runtime. The level at which CFI is enforced depends on the available program representation. When source code is accessible, CFI is typically implemented as a compiler pass, optionally leveraging hardware support such as Intel CET for enforcement. When only a binary is available, CFI can be enforced via either dynamic instrumentation or static binary rewriting. Although dynamic instrumentation is precise, it is generally less favored due to its runtime overhead and transparency limitations.
-
-Static binary rewriting is more efficient in practice, as instrumentation is limited to control-transfer instructions rather than the full instruction stream. The underlying challenge, however, lies in constructing a complete and accurate control-flow policy from the binary alone, a problem widely recognized as difficult and, in many cases, undecidable. This research specifically focuses on the correct implementation of binary-only CFI enforced through static binary rewriting. Other aspects, such as the generation of control-flow policies or optimization of runtime efficiency, are outside the scope of this work.
-
-
-\subsection{Secure In-lined Reference Monitors (IRMs)}~\label{sec:binary_rewriting_back}
-\comment{%
-    - Security IRMs take an untrusted binary as input and produce a hardened, rewritten binary augmented with additional security checks.
-    - By weaving security logic into the original binary, IRMs partition program execution into two distinct contexts: the guest context, which runs the original program, and the monitor context, which enforces the security policy.
-    - Binary CFI is an instance of a stateless IRM, in which the control-flow policy remains fixed throughout program execution and requires no persistent monitor state.
-    - In contrast, stateful IRMs maintain internal monitoring state across execution, such as shadow memory for dynamic information flow tracking, allocation and deallocation histories for memory leak detection, and similar policies.
-    - Protecting the monitor context from compromise by the untrusted guest context is a significant challenge, particularly given that both contexts execute at the same privilege level and any protection mechanism must operate without incurring prohibitive overhead.
-    While this challenge is orthogonal to the stateless CFI enforcement addressed in this work, it represents a compelling direction for future research in formally verified binary rewriting, and we revisit it in \autoref{sec:disc}.
-}
-
-\kjee{Similarly, We'd better use the subsection to further illustrate the technical preliminary necessary in understanding binary instrumentation via software re-writing. I am not so sure yet, what would be appropriate, but we can look up some of the previous research papers to find something relevant.}
-
-Secure IRMs take an untrusted binary as input and produce a hardened, rewritten binary augmented with additional security checks. By weaving security logic into the original binary, IRMs partition program execution into two distinct contexts: the guest context, which runs the original program, and the monitor context, which enforces the security policy.
-
-IRMs vary considerably in their statefulness. \kwh{Static} binary CFI is an instance of a stateless IRM, in which the control-flow policy remains fixed throughout program execution and does not require persistent monitor state. Stateful IRMs, by contrast, maintain internal monitoring state across execution, such as shadow memory for dynamic information flow tracking, allocation and deallocation histories for memory leak detection, and similar policies.
-
-\comment{[KWH:] Not all binary CFI is stateless.  For example, the original XFI work implements a stateful shadow stack to enforce call-return matching.  To be safe, we should say ``static binary CFI''.}
-
-Regardless of statefulness, protecting the monitor context from compromise by the untrusted guest context is a significant challenge, particularly given that both contexts execute at the same privilege level and any protection mechanism must operate without incurring prohibitive overhead. Although this challenge is orthogonal to the stateless enforcement of CFI addressed in this work, it represents a compelling direction for future research in formally verified binary rewriting, and we revisit it in \autoref{sec:disc}.
-
-\subsection{Formal Verification on Binary Programs}
-\comment{% NOTE (@kjee): I can't outline/write this section; just listing out items that I expect to see from the readers perspective.
-    - Open by briefly surveying prior FM work on binary analysis and security verification, noting the use of Coq/Rocq in this space
-    - Identify the shared limitation: existing frameworks require concrete, known binaries as input and cannot generalize
-    - Introduce Picinae as addressing this limitation specifically, by providing an ISA-faithful abstraction that supports symbolic reasoning over program state
-    - Explain concretely what this enables: proofs that hold for all possible binaries, not just those known at verification time
-    - Close by positioning \pname as the first system to leverage this capability for a binary CFI rewriter, motivating the rest of the section
-}
-
-{% NOTE(@kjee): Somewhat vibed text to be modified significantly.
-  \kjee{Current text is a place holder draft. We may want to provide high-level discussion on Picinae framework.}
-
-Recent advances in \emph{formally verified lifting} have opened new avenues for formally verified binary analysis, enabling verification of both correctness and security properties. However, existing frameworks reason over concrete binaries and cannot generalize to prove properties in which some or all the binary code is unknown. This limits their practical applicability to binaries known at verification time.
-
-\kwh{[KWH] Formal verification of binary code in any form hasn't been around for very long (only a few years).  So let's not cast it as a well-established science.  Main thing to emphasize here is that apart from Picinae, all the systems take a complete, fully known binary code as input and verify it. They can't prove any property of binary code that isn't fully known at verification time.}
-
-  Overcoming this limitation requires more than a proof assistant. Rather, it requires an abstraction layer that faithfully models real-world ISAs while supporting symbolic reasoning. \Picinae~\cite{picinae} provides this foundation. Built on Coq/Rocq, it models machine execution through memory state and execution traces and represents program state symbolically, allowing proofs that treat the binary itself as a variable. This enables verification results to generalize from a single program to the unbounded set of binaries a rewriter may encounter.
-
-  This capability is essential for \pname. Frameworks that operate on concrete binaries can verify individual rewritten outputs but cannot prove that the rewriter is correct for all inputs. \Picinae~\xspace lifts reasoning from individual binaries to the rewriter’s behavior across all binaries, enabling the end-to-end correctness guarantees that \pname requires.
 }
 
 \subsection{Threat Model and Research Scope}\label{sec:threat_model}
