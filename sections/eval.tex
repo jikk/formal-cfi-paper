@@ -26,7 +26,7 @@ whole-program call-graph enforcement or fine-grained per-callsite constraints.
 
 The following shows an example policy used for the basic security evaluation.
 
-\begin{lstlisting}[language=c, linewidth=0.8\linewidth,caption={CFI policy example.},label={lst:cfi_policy},captionpos=b,xleftmargin=.3cm]
+\begin{lstlisting}[language=c, linewidth=0.9\linewidth,caption={CFI policy example.\kjee{a dummy, placeholder}},label={lst:cfi_policy},captionpos=b,xleftmargin=.3cm]
 /* Blacklist policy: deny control-flow transfers to bad_func() */
 BLACKLIST {
     bad_func
@@ -36,7 +36,7 @@ BLACKLIST {
 DEFAULT ALLOW;
 \end{lstlisting}
 
-Detailed documentation of the policy specification language is available in \texttt{POLICY.md} in the \pname repository.
+Detailed documentation of the policy specification language is available in \texttt{POLICY.md} in the \pname repository\footnoteref{note0}.
 
 %%%%%%%%%%%%%%%%%% case_studies %%%%%%%%%%%%%%%%%%%%%
 \input{sections/case_studies}

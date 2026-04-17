@@ -16,7 +16,6 @@
 \usepackage[most]{tcolorbox}
 \usepackage[normalem]{ulem}
 \usepackage[ruled, vlined, linesnumbered]{algorithm2e}
-% \usepackage[utf8]{inputenc}
 \usepackage{amsfonts}
 \usepackage{amsmath}
 \usepackage{arydshln}
@@ -25,7 +24,6 @@
 \usepackage{booktabs}
 \usepackage{cancel}
 \usepackage{caption}[font={footnotesize}]
-%\usepackage{caption}
 \captionsetup{font=small}
 \usepackage{color,soul}
 \usepackage{csquotes}
@@ -57,6 +55,15 @@
 % enable page numbers.
 \thispagestyle{plain}
 \pagestyle{plain}
+
+%%%
+%%% footnoteref
+%%%
+
+\makeatletter
+\newcommand\footnoteref[1]{\protected@xdef\@thefnmark{\ref{#1}}\@footnotemark}
+\makeatother
+
 
 %%%
 %%% Colors
