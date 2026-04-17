@@ -4,10 +4,9 @@
     The section provides the background needed to understand our research. We begin with binary-level CFI via static binary rewriting, which operates on arbitrary binaries to instrument control-flow enforcement. We then broaden the discussion to secure \irms implemented through rewriting, placing our work in a broader context. Finally, we review prior \FMs research at the binary level from both security and correctness perspectives.
 }
 
-
-
 \subsection{Threat Model and Research Scope}\label{sec:threat_model}
 \kjee{NOTE: a typical threat model text for CFI paper. This is still an *optional*.}
+\ixb{Tricky things to include ($\sim$21:30): basically attackers get to send inputs to victim programs and send malware to the CFI rewriter, out of scope is messing with the hardware, ELF metadata, and manipulating the policy input.}
 \pname targets adversaries who exploit memory corruption vulnerabilities to hijack program control flow, a threat model consistent with prior work on code-reuse attacks. We assume the attacker can corrupt code pointers (return addresses, function pointers, or vtable entries) and possesses a writable memory region under their control (\eg a heap object or auxiliary buffer). We further assume the attacker can perform limited memory disclosure sufficient to infer code and data addresses in the presence of ASLR\@.
 Under \pname's CFI enforcement, any control-flow transfer that violates the policy is redirected to \texttt{abort()}, preventing attacker-controlled diversion of execution.
 
