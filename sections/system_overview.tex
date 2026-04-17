@@ -58,6 +58,7 @@
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.9\linewidth]{implementation.pdf}
+    \includegraphics[width=0.9\linewidth]{figs/implementation_ixb_proposal.pdf}
     % maybe a bit too long
     \caption{\pname architecture.
     The original text segment contains potentially dangerous instructions, in red.
@@ -72,8 +73,16 @@
 \subsection{Design}
 \mxz{todo reference fig 1 here}
 We first describe the design of \pname, which consists of two components:
-the CFI rewriter, the component that turns a list of instructions into a rewritten list of instructions with CFI,
+the CFI rewriter, which turns a list of instructions into a rewritten list of instructions with CFI,
 and the ELF editor, which performs the modifications to the ELF file based on the output of the CFI rewriter. The ELF editor is not particularly interesting, so this section will mainly focus on the rewriter.
+
+\ixb{(Proposal)
+Figure~\ref{fig:cfi_arch} depicts the design of \pname.
+The core application logic, the CFI rewriter function, is implemented in Rocq and verified to produce only policy-adhering binaries as described in \S~\ref{sec:verification}.
+The Rocq code is extracted to OCaml, which, along with minimal wrapper code for file IO, is compiled into the executable that performs the binary rewriting.
+The ELF editor is a python script that stitches together the rewritten and original ELF files.
+The rest of this section focuses on the design of the CFI rewriter function.
+}
 
 % inputs
 The CFI rewriter is a function that takes the following inputs:

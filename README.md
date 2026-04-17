@@ -24,11 +24,17 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 ### Intro
 
 ### Background
+- TODO: start running example of bug in an ARM CFI rewriter
 
 ### System Overview
 - TODO: need to mention `abort` routine in some way.
+- 50% homework (typical CFI explanation, people will just know it)
+- 50% verification-friendly design decisions
+- 10% motivation for why we need Picinae, why we couldn't do this before
+- Program-proof codevelopment story (~5:00)
 
 ### Picinae
+-
 
 ### Formal Verification
 
