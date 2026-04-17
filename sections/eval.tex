@@ -18,6 +18,7 @@ we developed the following proof-of-concept (PoC) programs, each paired with a c
 
 \pname successfully instrumented control-flow monitoring for all binaries above and blocked
 the corresponding attacks at runtime.
+\mxz{there is no jop/srop eval. also we cannot block srop, since we dont instrument syscalls, and the proof cant catch this either since we lift svc as an inst that raises an exception (the kernel is not modeled)}
 Beyond enforcement correctness, \pname supports flexible policy specification.
 For these experiments, we applied a partial blacklisting policy that designates a function by
 name (\eg \texttt{bad\_func()}) as an invalid control-flow destination.

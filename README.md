@@ -8,6 +8,9 @@
 
 ## Story Outline
 
+- 3->4: 
+- 4->5:
+
 ## Page outline (budget)
 
 Given page budget (20 + 5), the following outlines overall/rough page budget distribution.
@@ -51,5 +54,11 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 * [ ] better name for `ELF Editor`
     - `ELF Repackager`, `ELF Composer`, `ELF Reconstructor`, `ELF Rebuilder`
 
+* [ ] Ilan, Shreya, Charles brainstorm
+    1. Formal verification friendly design decisions
+    2. Bugs caught only because of the proof obligations
+    3. What are the design principles for making the next binary rewriter
+        * Inductive structure of the proof/correctness specification
+        * 
 
 ##### tag: `pdli`,`max`, `cfi`, `formal verification`, `arm`
