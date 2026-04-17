@@ -264,7 +264,7 @@ Thus, the rewriter must detect and remove all such instructions. Most instructio
 % python/ocaml extractor
 The ELF editor is given the output of the CFI rewriter and adds new segments to the original ELF for the rewritten instructions, the policy tables, and the abort handler that are loaded at the correct addresses and permissions. The original text segment is changed to be nonexecutable. Finally, the ELF editor uses the rewriter's $i2i'$ function to update the entrypoint and symbol values.
 
-\subsection{Implementation}
+\subsection{Workflow \ixb{Tentative title}}
 As we would like to formally verify the soundness of our CFI implementation,
 we implement the CFI rewriter as a function in Gallina,
 the specification language of Rocq, to allow us to write machine-checked proofs about its behavior.
