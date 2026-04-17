@@ -54,7 +54,7 @@ This approach also supports binary bytecode languages; for example, \Picinae{} a
 \caption{\Picinae{} IL Grammar.}\label{fig:picinae_il}
 \end{figure}
 
-Figure~\ref{fig:IL} summarizes the IL to which binary code is lifted, which is strategically chosen to bridge the semantic gap between real binary software and the formalisms expected by automated theorem provers.
+Figure~\ref{fig:picinae_il} summarizes the IL to which binary code is lifted, which is strategically chosen to bridge the semantic gap between real binary software and the formalisms expected by automated theorem provers.
 In particular, each machine instruction is lifted to an IL statement $s$ that explicitly encodes its semantic effects upon the machine state, including assignments of expression computations $e$ to machine state variables $v$ (e.g., cpu registers), control-flow transfers ($\mathtt{jmp}$), hardware exceptions ($\mathtt{exn}$), sequences (\texttt{;}), conditionals (\texttt{?}), and bounded microcode loops ($s^e$).
 IL expressions $e$ range over variable-reads $v$, $w$-bit binary constants $n\ofwidth{w}$, $w$-width memory-reads and writes $e_1[e_2 (\coloneqq e_3)]\ofwidth{w}$, binary arithmetic and logical operations $\circledcirc$, local bindings ($\mathsf{let}$), and non-deterministic processor effects $*\ofwidth{w}$.
 Together, these form a Turing-complete computational language sufficient to express microarchitectural machine semantics with a minimal trusted computing base.
