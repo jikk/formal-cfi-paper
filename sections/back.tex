@@ -15,6 +15,7 @@
   - This research specifically focuses on the correct implementation of binary-only CFI enforced through static binary rewriting. Other aspects, such as control-flow policy generation or runtime efficiency optimization, are outside the scope of this work.
 }
 \kjee{Current text is better suited for the related work; We'd better utilize the subsection to explain basic illustration of CFI. I think it is okay to be a bit more formal so that it can naturally connect to sec 3 and sec 4.}
+\ixb{Shreya to work on Background/Related Works ($\sim$15:30).}
 
 CFI is a foundational security defense designed to protect against control hijacking attacks by restricting the set of valid control-flow transfers a program may execute at runtime. The level at which CFI is enforced depends on the available program representation. When source code is accessible, CFI is typically implemented as a compiler pass, optionally leveraging hardware support such as Intel CET for enforcement. When only a binary is available, CFI can be enforced via either dynamic instrumentation or static binary rewriting. Although dynamic instrumentation is precise, it is generally less favored due to its runtime overhead and transparency limitations.
 
@@ -64,6 +65,7 @@ Recent advances in \emph{formally verified lifting} have opened new avenues for 
 
 \subsection{Threat Model and Research Scope}\label{sec:threat_model}
 \kjee{NOTE: a typical threat model text for CFI paper. This is still an *optional*.}
+\ixb{Tricky things to include ($\sim$21:30): basically attackers get to send inputs to victim programs and send malware to the CFI rewriter, out of scope is messing with the hardware, ELF metadata, and manipulating the policy input.}
 \pname targets adversaries who exploit memory corruption vulnerabilities to hijack program control flow, a threat model consistent with prior work on code-reuse attacks. We assume the attacker can corrupt code pointers (return addresses, function pointers, or vtable entries) and possesses a writable memory region under their control (\eg a heap object or auxiliary buffer). We further assume the attacker can perform limited memory disclosure sufficient to infer code and data addresses in the presence of ASLR\@.
 Under \pname's CFI enforcement, any control-flow transfer that violates the policy is redirected to \texttt{abort()}, preventing attacker-controlled diversion of execution.
 
