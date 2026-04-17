@@ -1,13 +1,43 @@
 %! root=./main.tex
 \section{Evaluation}\label{sec:eval}
 
+\kjee{@Max please have a look this section as a whole.}
+
 \subsection{Efficiency}
+\kjee{@Max: We need more text here. (1) could \pname cover all benchmark items?; (2) what are fast? why? (3) what are slow? why?}
+\kjee{@Shreya: we may want to have a SOTA comparsion for the CFI efficiency}
 Here we present the efficiency evaluation result.
 
 \input{tables/spec2017_tab2}
 
 \subsection{Security Evaluation}
-Here we present the security evaluation and policy writing instructions. Firstly, we went over to confirm
+To evaluate the effectiveness of \pname against representative control-flow hijacking attacks,
+we developed the following proof-of-concept (PoC) programs, each paired with a corresponding attack script.
 
+\input{tables/basic_vul_tab}
 
+\pname successfully instrumented control-flow monitoring for all binaries above and blocked
+the corresponding attacks at runtime.
+Beyond enforcement correctness, \pname supports flexible policy specification.
+For these experiments, we applied a partial blacklisting policy that designates a function by
+name (\eg \texttt{bad\_func()}) as an invalid control-flow destination.
+\pname is designed to accommodate more comprehensive and realistic policies, such as
+whole-program call-graph enforcement or fine-grained per-callsite constraints.
+
+The following shows an example policy used for the basic security evaluation.
+
+\begin{lstlisting}[language=c, linewidth=0.8\linewidth,caption={CFI policy example.},label={lst:cfi_policy},captionpos=b,xleftmargin=.3cm]
+/* Blacklist policy: deny control-flow transfers to bad_func() */
+BLACKLIST {
+    bad_func
+}
+
+/* All other control-flow transfers follow the default policy */
+DEFAULT ALLOW;
+\end{lstlisting}
+
+Detailed documentation of the policy specification language is available in \texttt{POLICY.md} in the \pname repository.
+
+%%%%%%%%%%%%%%%%%% case_studies %%%%%%%%%%%%%%%%%%%%%
 \input{sections/case_studies}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
