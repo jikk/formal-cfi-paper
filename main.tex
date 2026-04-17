@@ -68,6 +68,12 @@
 \newlength\listingnumberwidth
 \setlength\listingnumberwidth{\widthof{00} + 2em}
 
+\ifsubmitready{}
+  \settopmatter{printfolios=false}
+\else
+  \settopmatter{printfolios=true}
+\fi
+
 \begin{document}
 
 \input{sections/abstract}
