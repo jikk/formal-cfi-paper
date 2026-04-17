@@ -70,20 +70,20 @@
 \end{figure}
 
 \subsection{Design}
-\mxz{todo reference fig 1 here}
+\mxz{TODO reference fig 1 here}
 We first describe the design of \pname, which consists of two components:
 the CFI rewriter, the component that turns a list of instructions into a rewritten list of instructions with CFI,
-and the ELF editor, which performs the modifications to the ELF file based on the output of the CFI rewriter. The ELF editor is not particularly interesting, so this section will mainly focus on the rewriter.
+and the ELF editor, which performs the modifications to the ELF file based on the output of the CFI rewriter. In this work, we mainly focus on CFI rewriter component and consider ELF editor outside the scope of the work.
 
 % inputs
 The CFI rewriter is a function that takes the following inputs:
-\begin{itemize}
+\begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
 \item \heading{Text Segment ($txt$):}
 The rewriter is given the contents of the text segment of the program to rewrite, represented as a list of four-byte integers, the size of an ARM instruction.
 \item \heading{Addresses ($bi, bi', tbi, ai$):}
-The rewriter needs to know the addresses of various things that we describe in more detail as they become relevant.
+The rewriter needs to know the addresses of various things\kjee{@Max what are various things here?} that we describe in more detail as they become relevant.
 These addresses are passed to the rewriter as their value divided by four, for reasons also explained later.
-\mxz{im not sure if i like deferring the explanation of these, but i dont know how else to structure this section}
+\mxz{I',m not sure if I like deferring the explanation of these, but i don't know how else to structure this section}
 When referring to values that represent addresses divided by four, we will use the term "index", as if memory was an array of four-byte values.
 \item \heading{Policy ($pol$):}
 The CFI policy describes what destinations each instruction of the text segment is allowed to go to.

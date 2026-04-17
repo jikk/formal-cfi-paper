@@ -40,5 +40,8 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 
 ## TODOs
 
+* [ ] better name for `ELF Editor`
+    - `ELF Repackager`, `ELF Composer`, `ELF Reconstructor`, `ELF Rebuilder`
+
 
 ##### tag: `pdli`,`max`, `cfi`, `formal verification`, `arm`
