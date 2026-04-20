@@ -1,6 +1,46 @@
 %! root=./main.tex
 \section{Background}~\label{sec:back}
 
+In this section, we first present a motivating example that illustrates a class of bugs that can be easily overlooked, even by experienced developers, and are difficult to uncover through extensive dynamic testing. Then we discuss positioning and design scope of the research. Lastly, we discuss the threat model of the research.
+
+\subsection{Motivation: Unpredictable Behavior}
+
+\comment{%
+- A CFI binary rewriter performs inherently complex transformations, including:
+  - rewriting control-flow instructions (e.g., branches),
+  - relocating and reassembling both original and newly generated code segments, and
+  - embedding auxiliary structures such as policy tables.
+
+- As a result, producing a rewritten binary that is both:
+  - compliant with the underlying ISA specification, and
+  - faithful to CFI safety and security requirements is nontrivial.
+
+- In particular, a CFI-enforcing binary rewriter must guarantee that the generated binary sequence remains fully compliant with the ISA.
+  - However, achieving such assurance through dynamic testing alone is fundamentally limited.
+
+- Like other ISAs, ARM architecture explicitly defines *unpredictable* behaviors.
+  - These behaviors arise from deliberate design choices:
+    - to preserve implementation flexibility,
+    - to avoid over-specifying invalid or ill-formed programs, and
+    - to balance performance with backward compatibility.
+
+- From a verification perspective, *unpredictable* behavior introduces significant challenges:
+  - it induces semantic nondeterminism,
+  - necessitates conservative over-approximation, and
+  - complicates the establishment of precise correctness guarantees.
+
+- In practice, many CPU implementations handle such cases by trapping or terminating execution, although the specification does not mandate a single outcome.
+  - Accordingly, compilers and toolchains typically avoid generating instruction sequences that may trigger unpredictable behavior.
+  - ARMCFI explicitly disallows rewritten binaries that could trigger such behavior.
+
+- This challenge motivates ARMCFI: it ensures that rewriting never introduces execution paths that fall into architecturally unpredictable regions.
+  - Achieving this guarantee is difficult with conventional techniques such as dynamic testing.
+  - In contrast, formal verification enables proactive identification of problematic execution paths, allowing them to be ruled out or corrected by construction (Section XXX).
+
+- In section XXX, we provide the detailed discussion of two error cases of (1) branching to PC register and (2) unaligned/misaligned PC load, which we encountered and corrected via formal verification process.
+}
+
+
 \subsection{Formally Verified Binary Rewriting}
 
 We position the research and discuss design space.
@@ -37,7 +77,6 @@ We position the research and discuss design space.
     - ARMCFI complements this approach by verifying the transformation itself, ensuring that the generated binaries satisfy the intended security properties by construction.
 }
 
-\subsection{ARM Unpredictable Behavior}
 
 \subsection{Threat Model and Research Scope}\label{sec:threat_model}
 \kjee{NOTE: a typical threat model text for CFI paper. This is still an *optional*.}

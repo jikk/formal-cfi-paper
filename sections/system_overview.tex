@@ -271,7 +271,7 @@ the specification language of Rocq, to allow us to write machine-checked proofs 
 The rewriter function is extracted into OCaml and compiled into an executable
 with some additional driver code for reading/writing files and argument parsing.
 The ELF editor is implemented as a Python script using the LIEF library.
-We do not formally verify the correctness of the extraction process,
+We do not formally verify the correctness of the extraction process
 the additional OCaml code, or the ELF editor,
 instead only focusing on the core rewriting logic that transforms the instruction bytes,
 as verification of the other components is not particularly interesting or
