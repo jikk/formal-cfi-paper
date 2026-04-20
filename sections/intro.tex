@@ -48,7 +48,7 @@ To respond, our research takes a step toward closing that gap. We present \pname
 }
 
 % NOTE (@kjee): FM of binary writer itself is a difficult, unexplored, open challenge.
-Binary-level CFI, built on static binary rewriting techniques, is a well-studied and mature area. Yet formally verifying the correctness of a binary CFI implementation, let alone the broader class of binary rewriters, remains an open challenge, despite the long-standing availability of mature proof assistants such as Coq/Rocq and Isabelle/HOL.
+Binary-level CFI, built on static binary rewriting techniques, is a well-studied and mature area. Yet formally verifying the correctness of a binary CFI implementation, let alone the broader class of binary rewriters, remains an open challenge, despite the long-standing availability of mature proof assistants such as Coq/Rocq and Isabelle/HOL~\cite{rocq,isabel_hol}.
 
 The core difficulty is one of semantic generality: correctness must hold for all possible input binaries, whether compiler-generated, hand-written, or otherwise, not merely those drawn from a particular toolchain or restricted to a subset of the ISA\@. Prior work has been largely confined to reasoning about concrete, fixed binaries, falling short of this bar. RockSalt~\cite{rocksalt}, for instance, successfully verified the safety guarantees of an SFI algorithm for x86, but its analysis is tied to a concrete subset of the x86 ISA and the NaCl sandbox policy, and does not extend to arbitrary binaries or other ISAs.
 
@@ -76,7 +76,7 @@ We address the key obstacle, namely the absence of ISA abstractions amenable to 
   Our research addresses the challenge by incorporating Picinae framework~\cite{picianae} serves as a core enabler in addressing the intrinsic challenges of formally verifying a binary rewriter. Picinae provides a ground-up foundation for machine-checked proofs about real binary programs on real ISAs, while maintaining sufficiently general foundations to prove theorems in which all or part of the target binary code is a proof variable rather than a specific program.
 }
 
-Building on \Picinae's ISA abstractions, \pname accurately models the architecture-specific features of ARMv7, including conditional instruction prefixes, undefined and non-deterministic effects, memory access permissions, hardware exceptions, and indirect calls and returns with mixed endianness. This faithful modeling enables \pname to serve as the first formally verified CFI implementation for ARMv7 binaries.
+Building on \Picinae's ISA abstractions, \pname accurately models the architecture-specific features of ARMv7, including conditional instruction prefixes, undefined and non-deterministic effects, memory access permissions, hardware exceptions, and indirect calls and returns with mixed endianness\kjee{do we want to state this? ArmCFI only considers little endianness2. How can you set the volume to take my sufficient? Sweetheart. No, I just. It's better when you call. Cortana sing. Hey, Cortana. I. }. This faithful modeling enables \pname to serve as the first formally verified CFI implementation for ARMv7 binaries.
 \optional{% sounds redundant.
   Together, our research establishes the formal verification of a CFI-enforcing static binary rewriter as a rare combination of tractability and impact.
 }

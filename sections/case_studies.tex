@@ -1,5 +1,5 @@
 %! root=./main.tex
-\subsection{Case studies}
+\subsection{Case studies}\label{sec:case_studies}
 In this section, we present three case studies highlighting subtle bugs introduced during the CFI rewriter implementation that were subsequently uncovered through the formal proof process. These bugs stem from corner cases that are difficult to reason about in isolation (\eg software testing); arising either from nuanced hardware specification details or from the inherent complexity of co-managing guest and monitor contexts at the same privilege level. \mxz{i dont think any of these cases have to deal with guest/monitor context}
 
 \kjee{For each case study item, we want to have (1) why this is overlooked in CFI writer implementation?; (2) How it is detected during the proof process?; and (3) How it is fixed?}
