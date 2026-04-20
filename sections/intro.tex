@@ -54,7 +54,7 @@ The core difficulty is one of semantic generality: correctness must hold for all
 
 \kwh{%
   [KWH:] Should we also observe here that RockSalt only verifies a loadtime verifier for their system?  It doesn't verify that the rewriter that produces the binaries always yields binaries that pass the loadtime verifier's checks.  RockSalt therefore doesn't solve the problem of creating a machine-verified binary rewriter.
-}
+}\kjee{I need helps from others for this part.}
 
 \optional{%
   Formal verification directly targets this challenge by reasoning over all possible inputs rather than sampled executions, enabling universal correctness guarantees that dynamic testing cannot provide. These guarantees hold regardless of binary provenance, compiler, or ISA quirk, making formal methods particularly well suited to establishing that a CFI implementation soundly enforces its policy across the full space of binaries it may encounter.
