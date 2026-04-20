@@ -1,5 +1,10 @@
 %! root=./main.tex
 \section{Background}~\label{sec:back}
+
+\subsection{Formally Verified Binary Rewriting}
+
+We position the research and discuss design space.
+
 \comment{%
 - **Positioning and scope.**
   ARMCFI is, to our knowledge, the first work to formally verify a *program transformation* (i.e., a static binary rewriter) that takes arbitrary binaries as input and produces security-hardened outputs that provably comply with a precise safety specification.
@@ -31,6 +36,8 @@
     - However, it does not verify the *rewriter* that produces such binaries; instead, it assumes untrusted code and checks it at load time.
     - ARMCFI complements this approach by verifying the transformation itself, ensuring that the generated binaries satisfy the intended security properties by construction.
 }
+
+\subsection{ARM Unpredictable Behavior}
 
 \subsection{Threat Model and Research Scope}\label{sec:threat_model}
 \kjee{NOTE: a typical threat model text for CFI paper. This is still an *optional*.}
