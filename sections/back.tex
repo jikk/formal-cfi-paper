@@ -1,100 +1,81 @@
 %! root=./main.tex
-\section{Background}~\label{sec:back}
+% \section{Background and Motivation}~\label{sec:back}
+\section{Formal Verification of CFI Binary Rewriter}~\label{sec:back}
 
-In this section, we first present a motivating example that illustrates a class of bugs that can be easily overlooked, even by experienced developers, and are difficult to uncover through extensive dynamic testing. Then we discuss positioning and design scope of the research. Lastly, we discuss the threat model of the research.
+\pname formally verifies a program transformation: a static binary rewriter that takes arbitrary binaries as input and produces security-hardened outputs that provably satisfy a precise safety specification.
+%
+Formal reasoning about binary-to-binary transformations presents fundamental challenges. The input space is vast and highly irregular, lacking the structural guarantees available at the source level. Verification requires precise modeling of low-level ISA semantics, including subtle architectural corner cases.
+%
+At the same time, the system must preserve correctness while actively modifying executable code, rather than merely analyzing or validating it.
 
-\subsection{Motivation: Unpredictable Behavior}
+These challenges distinguish binary rewriting from two representative approaches on formal verification of binary programs: CompCert~\cite{compcert} proves semantic preservation from source programs to generated machine code using machine-checked proofs. It replaces testing-based assurance with formal guarantees but assumes well-defined source inputs.
+RockSalt~\cite{rocksalt} verifies a validator for software fault isolation on x86, ensuring that accepted binaries satisfy a sandboxing policy. However, it does not verify the transformation that produces such binaries.
+%
+\pname operates directly on existing binaries, verifying the correctness of the rewriting transformation itself and ensuring that generated binaries satisfy security properties by construction.
 
-\comment{%
-- A CFI binary rewriter performs inherently complex transformations, including:
-  - rewriting control-flow instructions (e.g., branches),
-  - relocating and reassembling both original and newly generated code segments, and
-  - embedding auxiliary structures such as policy tables.
+In the following, we motivate the problem with a class of bugs that elude even experienced developers and resist exhaustive dynamic testing, then discuss our design scope and threat model.
 
-- As a result, producing a rewritten binary that is both:
-  - compliant with the underlying ISA specification, and
-  - faithful to CFI safety and security requirements is nontrivial.
+\subsection{Motivation: ARM Unpredictable Behavior}
 
-- In particular, a CFI-enforcing binary rewriter must guarantee that the generated binary sequence remains fully compliant with the ISA.
-  - However, achieving such assurance through dynamic testing alone is fundamentally limited.
+A CFI binary rewriter performs inherently complex transformations on executable code.
+These include rewriting control-flow instructions (\eg branches), relocating and
+reassembling both original and newly generated code segments, and embedding auxiliary
+structures such as policy tables. As a result, producing a rewritten binary that is
+both compliant with the underlying ISA specification \emph{and} faithful to CFI
+safety requirements is nontrivial.
 
-- Like other ISAs, ARM architecture explicitly defines *unpredictable* behaviors.
-  - These behaviors arise from deliberate design choices:
-    - to preserve implementation flexibility,
-    - to avoid over-specifying invalid or ill-formed programs, and
-    - to balance performance with backward compatibility.
+In particular, a CFI-enforcing binary rewriter must guarantee that every generated
+instruction sequence remains fully compliant with the target ISA\@. However,
+establishing such assurance through dynamic testing alone is fundamentally limited.
 
-- From a verification perspective, *unpredictable* behavior introduces significant challenges:
-  - it induces semantic nondeterminism,
-  - necessitates conservative over-approximation, and
-  - complicates the establishment of precise correctness guarantees.
+Like other ISAs, the ARM architecture explicitly defines \emph{unpredictable}
+behaviors: execution outcomes that are left deliberately unspecified. These arise
+from design choices intended to preserve implementation flexibility, to avoid
+over-specifying invalid or ill-formed programs, and to balance performance with
+backward compatibility. From a verification perspective, unpredictable behavior
+introduces significant challenges: it induces semantic nondeterminism, necessitates
+conservative over-approximation, and complicates the establishment of precise
+correctness guarantees.
 
-- In practice, many CPU implementations handle such cases by trapping or terminating execution, although the specification does not mandate a single outcome.
-  - Accordingly, compilers and toolchains typically avoid generating instruction sequences that may trigger unpredictable behavior.
-  - ARMCFI explicitly disallows rewritten binaries that could trigger such behavior.
+In practice, many CPU implementations handle such cases by trapping or terminating
+execution, though the specification mandates no single outcome. Accordingly,
+compilers and toolchains typically avoid generating instruction sequences that may
+trigger unpredictable behavior. \pname{} explicitly disallows any rewritten binary
+that could trigger such behavior.
 
-- This challenge motivates ARMCFI: it ensures that rewriting never introduces execution paths that fall into architecturally unpredictable regions.
-  - Achieving this guarantee is difficult with conventional techniques such as dynamic testing.
-  - In contrast, formal verification enables proactive identification of problematic execution paths, allowing them to be ruled out or corrected by construction (Section XXX).
-
-- In section XXX, we provide the detailed discussion of two error cases of (1) branching to PC register and (2) unaligned/misaligned PC load, which we encountered and corrected via formal verification process.
-}
-
-
-\subsection{Formally Verified Binary Rewriting}
-
-We position the research and discuss design space.
-
-\comment{%
-- **Positioning and scope.**
-  ARMCFI is, to our knowledge, the first work to formally verify a *program transformation* (i.e., a static binary rewriter) that takes arbitrary binaries as input and produces security-hardened outputs that provably comply with a precise safety specification.
-
-- **Problem setting.**
-  We study the problem of formally verifying a system that operates on *arbitrary binaries*.
-  - In this work, we focus on arbitrary *ELF* binaries.
-  - Within each binary, we restrict our analysis to the `.text` section (i.e., executable instruction streams).
-  - Other components of the binary (e.g., metadata, relocation, dynamic linking) may affect overall behavior, but we treat them as out of scope.
-
-- **Challenges of the domain.**
-  Formal methods for programs that consume and transform arbitrary binaries remain rare and challenging.
-  - The input space is vast and highly irregular.
-  - Reasoning requires precise, low-level ISA semantics.
-  - The system must preserve correctness while modifying executable code, not just analyze or validate it.
-
-- **Relation to prior work.**
-  We contrast ARMCFI with two representative lines of work:
-
-  - **CompCert (verified compilation).**
-    CompCert is a seminal verified C compiler that proves semantic preservation from source to target code using machine-checked proofs.
-    - It replaces testing-based confidence with formal guarantees and produces efficient code.
-    - However, it assumes well-defined source programs (i.e., no undefined behavior) and operates on source-level inputs rather than arbitrary binaries.
-    - In contrast, ARMCFI works directly on existing binaries and verifies the correctness of a *rewriting transformation*, rather than compilation from a high-level language.
-
-  - **RockSalt (verified validation).**
-    RockSalt verifies a validator that enforces software fault isolation (SFI) for x86 binaries.
-    - It guarantees that any binary accepted by the validator satisfies the sandboxing policy.
-    - However, it does not verify the *rewriter* that produces such binaries; instead, it assumes untrusted code and checks it at load time.
-    - ARMCFI complements this approach by verifying the transformation itself, ensuring that the generated binaries satisfy the intended security properties by construction.
-}
+This requirement motivates the use of formal verification in \pname{}: it ensures
+that rewriting never introduces execution paths that enter architecturally
+unpredictable regions. Achieving this guarantee is beyond the reach of conventional
+dynamic testing, which explores only observed paths and cannot rule out problematic
+sequences by construction. In contrast, formal verification enables proactive
+identification of all such paths, allowing Cornerstone defense against control hijacking attacks, achieving widespread deployment with strong guarantees and near native overhead. However, the community has focused on design level guarantees, runtime overhead and policy generation largely overlooking implementation correctness and relying instead on dynamic testing. A more fundamental approach, formally verifying CFI implementations against safety and security specifications, remains largely unexplored. We need to be careful here to identify the overlook problem as developing guaranteed correct CFI implementations, not merely the problem of finding bugs in deployed CFI implementations.
+%
+The letter is extensively studied in the literature, the former is not. This gap underscores a. them to be ruled out or corrected statically. In \autoref{sec:case_studies}, we present two concrete error cases (branching to the PC register and unaligned PC loads) that we encountered and corrected through the formal verification process.
 
 
-\subsection{Threat Model and Research Scope}\label{sec:threat_model}
-\kjee{NOTE: a typical threat model text for CFI paper. This is still an *optional*.}
+\subsection{Threat Model and Research Scope}
+
 \ixb{Tricky things to include ($\sim$21:30): basically attackers get to send inputs to victim programs and send malware to the CFI rewriter, out of scope is messing with the hardware, ELF metadata, and manipulating the policy input.}
+
+\heading{Threat model.}
+Unlike prior work that verifies either compilers (\ie source-to-binary transformations) or validators (\ie binary-to-accept/reject decisions), \pname{} verifies a \emph{binary-to-binary transformation} that enforces security properties directly on arbitrary inputs.
+%
 \pname targets adversaries who exploit memory corruption vulnerabilities to hijack program control flow, a threat model consistent with prior work on code-reuse attacks. We assume the attacker can corrupt code pointers (return addresses, function pointers, or vtable entries) and possesses a writable memory region under their control (\eg a heap object or auxiliary buffer). We further assume the attacker can perform limited memory disclosure sufficient to infer code and data addresses in the presence of ASLR\@.
 Under \pname's CFI enforcement, any control-flow transfer that violates the policy is redirected to \texttt{abort()}, preventing attacker-controlled diversion of execution.
 
-The current implementation targets statically linked, non-PIE ARM binaries, in which all control transfers are self-contained and symbol
-references use absolute addresses. Extending coverage to PIE and dynamically linked binaries is achievable with additional engineering effort, and we leave it for future work.
+\heading{Research scope.}
+We target the ARMv7 ISA for three reasons. First, ARMv7 represents one of the most
+widely deployed architectures by installed base, particularly in low-powered embedded
+and IoT devices that are commonly deployed without modern security defenses, making
+binary hardening for this platform practically important. Second, a formal
+specification for the ARMv7 instruction decoder exists and has been the subject of
+substantial prior work on formal verification of instruction decoding, providing a
+solid semantic foundation. Third, by targeting a fixed-width instruction encoding,
+we avoid the variable-length decoding complexities of x86, allowing us to focus
+formal reasoning effort on the binary rewriter itself rather than the decoder.
 
-\comment{%
-- **Key distinction.**
-  Unlike prior work that verifies either compilers (source → binary) or validators (binary → accept/reject), ARMCFI verifies a *binary-to-binary transformation* that enforces security properties on arbitrary inputs.
+% \heading{Problem setting.}
+This work explores the formal verification of binary rewriter that operate on arbitrary binaries. Specifically, we focus on ELF binaries and restrict our reasoning to the \texttt{.text} section, the executable instruction stream. Other components, such as metadata, relocation entries, and dynamic linking structures. These may affect program behavior but fall outside our current scope.
 
-    - Justify our choice of ARMv7
-      - ISA the largest (or 2nd largest) user-based; not so sure about it. Try to find more grounded sources to support the claim.
-      - Formal specification for instruction decoder exists and ample literature on formal verification of the instruction decoding process also exist.
-        - In an attempt to avoid variable-length instructions and tricky decoding behavior of x86 ISA, so that we can focus on formal reasoning of binary re-writer component.
-      - (real world impact aspect) ARMv7 architecture is widely used for low-powered embedded devices (e.g., IoT) deployed with minimal security defenses thus in high demand for binary hardening.
-}
 
+The current implementation targets statically linked, non-PIE ARM binaries, in which all control transfers are self-contained and symbol references use absolute addresses. Extending coverage to PIE and dynamically linked binaries is achievable with additional engineering effort, and we leave it for future work.
