@@ -2,16 +2,16 @@
 % \section{Background and Motivation}~\label{sec:back}
 \section{Formal Verification of CFI Binary Rewriter}~\label{sec:back}
 
-\pname formally verifies a program transformation: a static binary rewriter that takes arbitrary binaries as input and produces security-hardened outputs that provably satisfy a precise safety specification.
-%
-Formal reasoning about binary-to-binary transformations presents fundamental challenges. The input space is vast and highly irregular, lacking the structural guarantees available at the source level. Verification requires precise modeling of low-level ISA semantics, including subtle architectural corner cases.
+\pname formally verifies a program transformation: a static binary rewriter that takes arbitrary binaries as input and produces security-hardened outputs that provably satisfy a precise safety specification.\kjee{so why this is cool?}
+
+Formal reasoning about static binary rewriting (or binary-to-binary transformations) presents fundamental challenges. The input space is vast and highly irregular, lacking the structural guarantees available at the source level. Verification requires precise modeling of low-level ISA semantics, including subtle architectural corner cases.
 %
 At the same time, the system must preserve correctness while actively modifying executable code, rather than merely analyzing or validating it.
 
-These challenges distinguish binary rewriting from two representative approaches on formal verification of binary programs: CompCert~\cite{compcert} proves semantic preservation from source programs to generated machine code using machine-checked proofs. It replaces testing-based assurance with formal guarantees but assumes well-defined source inputs.
-RockSalt~\cite{rocksalt} verifies a validator for software fault isolation on x86, ensuring that accepted binaries satisfy a sandboxing policy. However, it does not verify the transformation that produces such binaries.
-%
-\pname operates directly on existing binaries, verifying the correctness of the rewriting transformation itself and ensuring that generated binaries satisfy security properties by construction.
+These challenges distinguish ArmCFI, and more broadly static binary rewriting, from two representative approaches to formally verifying binary programs. CompCert~\cite{compcert} proves semantic preservation from source programs to machine code using machine-checked proofs, but assumes well-defined source inputs.
+RockSalt~\cite{rocksalt} verifies a validator for software fault isolation on x86, ensuring that accepted binaries satisfy a sandboxing policy, but does not verify the transformation that produces them.
+
+In contrast, \pname operates directly on existing binaries, verifying the correctness of the rewriting transformation itself and ensuring that generated binaries satisfy security properties by construction. \kjee{I want to say sth about \Picinae{} here.}
 
 In the following, we motivate the problem with a class of bugs that elude even experienced developers and resist exhaustive dynamic testing, then discuss our design scope and threat model.
 
