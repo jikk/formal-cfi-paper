@@ -17,9 +17,11 @@ To mitigate these risks, the community relies primarily on dynamic testing techn
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % TODO (@kjee): In FM (or Coq) ecosystem, I think we have two different types of sources, say (1) *.v and  (2) *_proof.v. Can we name them and call them in a specific way?
+% ixb: @kjee, (1) I'd characterize the distinction as that between the implementation/functional specification of the algorithm (*.v), e.g., Max's `rewrite', and the proofs about the algorithm's properties (*_proof.v). (2) The distinction is uninteresting from my perspective, I'd like to hear more about why you think the binary analysis community would want to know.
 % TODO (@kjee): re-work on sentence ordering.
 
-\FMs take a fundamentally different approach. Rather than observing executions, FMs establish stringent, universally-quantified safety, security, and correctness guarantees by proving that an implementation satisfies formally specified properties, thereby covering all program behaviors within the scope of the specification. Proof assistants then mechanically check the resulting proof artifacts, reducing trust to the correctness of the specification and the soundness of the proof checker.
+\FMs take a fundamentally different approach. Rather than observing executions, FMs establish stringent, universally-quantified safety, security, and correctness guarantees by proving that an implementation satisfies formally specified properties, thereby covering all program behaviors within the scope of the specification. Proof assistants then mechanically check the resulting proof artifacts, reducing trust to the validity of the specification and the soundness of the proof checker.
+\ixb{I think ``validity of the specification'' rather than ``correctness'' is more accurate here. Iiuc, validity is whether the specification actually states the property the author intends.}
 
 Despite these unparalleled advantages, FMs have seen limited adoption in production systems for the following reasons:
 % NOTE (kjee): the following is in a way known; conventional perception... However, let's not think about/mention it here at least.
@@ -29,6 +31,7 @@ Second, proofs bind tightly to specific implementations and verification context
 % TODO (@kjee): my first attempt to justify/motivate Picinae layer/framework.
 Third, formally verifying software designed to accept \emph{arbitrary} binary codes as input has remained largely out of reach because the community has lacked a sound and accurate abstraction layer to serve as a foundation for such verification.
 \kwh{[KWH] If we merely say that verifying "binary software" is out of reach, most FM reviewers will retort that it's not out of reach because we can verify compilers and let the compilers produce the verified binary software.  Rather than that claim, the central problem is that software that's expected to accept arbitrary binary code as input can't be verified. It can't be verified because source-level FM can't even specify its correctness, much less verify such a property.}\kjee{@KWH: I turned `arbitrary' as italic, not sure it would be enough...}
+\ixb{@KWH, I'm uncomfortable about the Third claim after reading RockSalt and being convinced that they did reason about arbitrary code.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Our story begins; formally-verified, machine-checked CFI.
@@ -39,6 +42,7 @@ Third, formally verifying software designed to accept \emph{arbitrary} binary co
 
 % TODO (@kjee): we need a killer setence here; summarizing two-folds (CFI implementation accuracy concern, FM scalability on arbitary binaries inputs) as a connecting/strong/motivational statement.
 To respond, our research takes a step toward closing that gap. We present \pname, the first machine-checked CFI implementation built on a static binary rewriting framework for a mature, real-world architecture, providing formally verified compliance with the design specification and runtime correctness beyond the incomplete assurances of dynamic testing.
+\ixb{I'm confused by the ``built on a static binary rewriting framework''. My first interpretation is that we're introducing Picin\ae as a framework for building static binary rewriters.}
 
 % NOTE (@kjee): specificiation to formally verifiying CFI can be straightforward.
 {%
@@ -48,13 +52,19 @@ To respond, our research takes a step toward closing that gap. We present \pname
 }
 
 % NOTE (@kjee): FM of binary writer itself is a difficult, unexplored, open challenge.
-Binary-level CFI, built on static binary rewriting techniques, is a well-studied and mature area. Yet formally verifying the correctness of a binary CFI implementation, let alone the broader class of binary rewriters, remains an open challenge, despite the long-standing availability of mature proof assistants such as Coq/Rocq and Isabelle/HOL~\cite{rocq,isabel_hol}.
+Binary-level CFI, built on static binary rewriting techniques, is a well-studied and mature area. Yet formally verifying the correctness of a binary CFI implementation, let alone the broader class of binary rewriters, remains an open challenge, despite the long-standing availability of mature proof assistants such as Rocq and Isabelle/HOL.
+\ixb{eliminated references to Coq, rename happened March 2025. Should save us some space and confusion. Hopefully the CCS community is up to date on this development in FMs?}
 
-The core difficulty is one of semantic generality: correctness must hold for all possible input binaries, whether compiler-generated, hand-written, or otherwise, not merely those drawn from a particular toolchain or restricted to a subset of the ISA\@. Prior work has been largely confined to reasoning about concrete, fixed binaries, falling short of this bar. RockSalt~\cite{rocksalt}, for instance, successfully verified the safety guarantees of an SFI algorithm for x86, but its analysis is tied to a concrete subset of the x86 ISA and the NaCl sandbox policy, and does not extend to arbitrary binaries or other ISAs.
+The core difficulty is one of semantic generality: correctness must hold for all possible input binaries, whether compiler-generated, hand-written, or otherwise, not merely those drawn from a particular toolchain or restricted to a subset of the ISA\@. \ixb{but isn't our rewriter limited to binaries over the ISA subset we model?} Prior work has been largely confined to reasoning about concrete, fixed binaries, falling short of this bar. RockSalt~\cite{rocksalt}, for instance, successfully verified the safety guarantees of an SFI algorithm for x86, but its analysis is tied to a concrete subset of the x86 ISA and the NaCl sandbox policy, and does not extend to arbitrary binaries or other ISAs.
+\ixb{Why are we picking on RockSalt not extending to other ISAs? We don't extend to other ISAs, specifically stating that we intentionally limit ourselves to fixed-width instruction set in this development. I know that we can extend this, but it won't be trivial.}
 
 \kwh{%
   [KWH:] Should we also observe here that RockSalt only verifies a loadtime verifier for their system?  It doesn't verify that the rewriter that produces the binaries always yields binaries that pass the loadtime verifier's checks.  RockSalt therefore doesn't solve the problem of creating a machine-verified binary rewriter.
 }\kjee{I need helps from others for this part.}
+\ixb{To mention RockSalt not verifying the rewriter, I think we'd need to rewrite this paragraph. Right now it focuses on domain coverage (ISA subset supported, binary origin). Maybe it would be better to add another paragraph dedicated to arguing why verifying the verifier is insufficient and pick on RockSalt again.
+% RockSalt verified a Rocq impl. of their verifier, but instead of extracting it like we did, they manually translated it to C and then tested that impl. against Google's NaCl verifier.
+% Seems like it reasons over arbitrary binaries for which RockSalt returns True.
+}
 
 \optional{%
   Formal verification directly targets this challenge by reasoning over all possible inputs rather than sampled executions, enabling universal correctness guarantees that dynamic testing cannot provide. These guarantees hold regardless of binary provenance, compiler, or ISA quirk, making formal methods particularly well suited to establishing that a CFI implementation soundly enforces its policy across the full space of binaries it may encounter.
