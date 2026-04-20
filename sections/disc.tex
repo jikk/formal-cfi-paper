@@ -17,3 +17,18 @@
 (scope aspect) formal verification of
     - decoder
     - merger (???)
+
+\subsection{Coverage}
+\comment{%
+- **Limited scope of verification.** Current work focuses only on the `.text` section (ARMv7 instruction streams), leaving other components of the binary lifecycle unverified.
+
+- **Unverified dependencies in end-to-end rewriting.** Extending coverage to the full pipeline, such as ELF packaging and program loading, requires external tools whose correctness we do not verify.
+  - For example, the rewriting pipeline relies on libraries such as `lief` for ELF manipulation.
+  - These dependencies fall outside the formal model, weakening end-to-end guarantees.
+
+- **Challenge of full-stack formalization.** Rewriting and verifying the entire dependency chain in a formally verifiable language would be prohibitively complex.
+  - Formal verification of systems implemented in general-purpose languages remains difficult and resource-intensive.
+
+- **Alternative design direction.** One could instead formally verify the program loader against a well-defined security specification.
+  - However, this approach also introduces significant complexity and remains a challenging open problem.
+}

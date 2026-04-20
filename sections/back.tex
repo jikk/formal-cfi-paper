@@ -1,5 +1,22 @@
 %! root=./main.tex
 \section{Background}~\label{sec:back}
+\comment{%
+  - In this section, we attempt to set up the research's design space;
+    - formally verifying a program that takes in *arbitrary* binary as an input and produces hardened/security-enhanced binaries.
+      - To be specific, in this research, we consider arbitrary *ELF* binary.
+      - Within ELF, we focuses on .txt section of the given input binary.
+        - the rest may matter, but we regard them as the outside scope of the paper.
+    - FM on programs that handle/deal with arbitrary binaries as their input/output are not common and considered to be a very difficult and challenging domain (@kwh: why?)
+
+    - specifically, we can consider/discuss two predecessor works.
+      - CompCert is a seminal work
+      - RockSalt
+
+    - Justify our choice of ARMv7
+      - ISA the largest (or 2nd largest) user-based; not so sure about it. Try to find more grounded sources to support the claim.
+      - Formal specification for instruction decoder exists and ample literature on formal verification of the instruction decoding process also exist.
+      - (real world impact aspect)
+}
 
 \subsection{Threat Model and Research Scope}\label{sec:threat_model}
 \kjee{NOTE: a typical threat model text for CFI paper. This is still an *optional*.}
