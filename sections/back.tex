@@ -1,5 +1,6 @@
 %! root=./main.tex
-\section{Background and Motivation}~\label{sec:back}
+% \section{Background and Motivation}~\label{sec:back}
+\section{Formal Verification of CFI Binary Rewriter}~\label{sec:back}
 
 \pname formally verifies a program transformation: a static binary rewriter that takes arbitrary binaries as input and produces security-hardened outputs that provably satisfy a precise safety specification.
 %
@@ -52,6 +53,7 @@ identification of all such paths, allowing Cornerstone defense against control h
 The letter is extensively studied in the literature, the former is not. This gap underscores a. them to be ruled out or corrected statically. In \autoref{sec:case_studies}, we present two concrete error cases (branching to the PC register and unaligned PC loads) that we encountered and corrected through the formal verification process.
 
 
+\subsection{Threat Model and Research Scope}
 
 \ixb{Tricky things to include ($\sim$21:30): basically attackers get to send inputs to victim programs and send malware to the CFI rewriter, out of scope is messing with the hardware, ELF metadata, and manipulating the policy input.}
 
