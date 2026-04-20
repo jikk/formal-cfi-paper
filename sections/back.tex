@@ -8,9 +8,9 @@ Formal reasoning about binary-to-binary transformations presents fundamental cha
 At the same time, the system must preserve correctness while actively modifying executable code, rather than merely analyzing or validating it.
 
 These challenges distinguish binary rewriting from two representative approaches on formal verification of binary programs: CompCert~\cite{compcert} proves semantic preservation from source programs to generated machine code using machine-checked proofs. It replaces testing-based assurance with formal guarantees but assumes well-defined source inputs.
-% \pname instead operates directly on existing binaries and verifies the correctness of a rewriting transformation.
 RockSalt~\cite{rocksalt} verifies a validator for software fault isolation on x86, ensuring that accepted binaries satisfy a sandboxing policy. However, it does not verify the transformation that produces such binaries.
-% \pname complements this line of work by verifying the rewriter itself, ensuring that generated binaries satisfy security properties by construction.
+%
+\pname operates directly on existing binaries, verifying the correctness of the rewriting transformation itself and ensuring that generated binaries satisfy security properties by construction.
 
 In the following, we motivate the problem with a class of bugs that elude even experienced developers and resist exhaustive dynamic testing, then discuss our design scope and threat model.
 
@@ -61,7 +61,7 @@ Unlike prior work that verifies either compilers (\ie source-to-binary transform
 \pname targets adversaries who exploit memory corruption vulnerabilities to hijack program control flow, a threat model consistent with prior work on code-reuse attacks. We assume the attacker can corrupt code pointers (return addresses, function pointers, or vtable entries) and possesses a writable memory region under their control (\eg a heap object or auxiliary buffer). We further assume the attacker can perform limited memory disclosure sufficient to infer code and data addresses in the presence of ASLR\@.
 Under \pname's CFI enforcement, any control-flow transfer that violates the policy is redirected to \texttt{abort()}, preventing attacker-controlled diversion of execution.
 
-\heading{Choice of target ISA.}
+\heading{Research scope.}
 We target the ARMv7 ISA for three reasons. First, ARMv7 represents one of the most
 widely deployed architectures by installed base, particularly in low-powered embedded
 and IoT devices that are commonly deployed without modern security defenses, making
@@ -73,7 +73,7 @@ we avoid the variable-length decoding complexities of x86, allowing us to focus
 formal reasoning effort on the binary rewriter itself rather than the decoder.
 
 % \heading{Problem setting.}
-This work explore the formal verification of binary rewriter that operate on arbitrary binaries. Specifically, we focus on ELF binaries and restrict our reasoning to the \texttt{.text} section, the executable instruction stream. Other components, such as metadata, relocation entries, and dynamic linking structures. These may affect program behavior but fall outside our current scope.
+This work explores the formal verification of binary rewriter that operate on arbitrary binaries. Specifically, we focus on ELF binaries and restrict our reasoning to the \texttt{.text} section, the executable instruction stream. Other components, such as metadata, relocation entries, and dynamic linking structures. These may affect program behavior but fall outside our current scope.
 
 
 The current implementation targets statically linked, non-PIE ARM binaries, in which all control transfers are self-contained and symbol references use absolute addresses. Extending coverage to PIE and dynamically linked binaries is achievable with additional engineering effort, and we leave it for future work.
