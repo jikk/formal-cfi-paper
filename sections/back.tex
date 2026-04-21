@@ -74,6 +74,14 @@ solid semantic foundation. Third, by targeting a fixed-width instruction encodin
 we avoid the variable-length decoding complexities of x86, allowing us to focus
 formal reasoning effort on the binary rewriter itself rather than the decoder.
 
+\pname covers subset of ARMv7 features to ensure sound rewriting while preserving practical applicability and coverage. Unsupported instructions are conservatively replaced with a branch to a safe abort handler. First, we assume a fixed endianness and disallow runtime changes to the CPSR E bit, as such changes could corrupt control-flow targets loaded from policy tables.
+%
+We also restrict execution to the ARM instruction set and exclude Thumb, Jazelle, and ThumbEE modes to avoid unintended state transitions and additional encoding complexity; all control-flow targets are aligned to prevent implicit mode switching.
+%
+Finally, we detect and eliminate all \unpredictable{} instructions, whose undefined semantics could otherwise introduce unintended or unsafe control flow.
+%
+\autoref{sec:overview} provides further details on these architectural features and the rationale behind these design choices.
+
 % \heading{Problem setting.}
 This work explores the formal verification of binary rewriter that operate on arbitrary binaries. Specifically, we focus on ELF binaries and restrict our reasoning to the \texttt{.text} section, the executable instruction stream. Other components, such as metadata, relocation entries, and dynamic linking structures. These may affect program behavior but fall outside our current scope.
 

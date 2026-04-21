@@ -233,33 +233,35 @@ BX r0                    // branch to table[H(dest)]
 \mxz{there isn't an instruction to add an arbitrary constant to a register, only certain constants are possible
 so there are actually 4 add instructions in this block to add each byte separately, but idk if it's necessary to say that here}
 
-\heading{Unsupported instructions.}
-There are some ARM instructions that we do not support. In these cases, we replace them with a branch to $ai$.
+{% NOTE (@jee): somewhat length, feel redudant.
+    \heading{Unsupported instructions.}
+    There are some ARM instructions that we do not support. In these cases, we replace them with a branch to $ai$.
 
-\heading{Endianness.}
-ARM supports both little and big endian memory operations, determined by the value of the E bit of the Current Program Status Register.
-While it does not matter which endianness we start in as long as the hash tables are also in the same endianness,
-changing the E bit at runtime could allow unpermitted control flow since instructions loading destination addresses from the hash tables will load different values.
-Support for this feature could be added by setting the E bit in each dynamic control flow block and restoring the previous value after loading the table,
-but we instead choose to omit support as it is not commonly used.
+    \heading{Endianness.}
+    ARM supports both little and big endian memory operations, determined by the value of the E bit of the Current Program Status Register.
+    While it does not matter which endianness we start in as long as the hash tables are also in the same endianness,
+    changing the E bit at runtime could allow unpermitted control flow since instructions loading destination addresses from the hash tables will load different values.
+    Support for this feature could be added by setting the E bit in each dynamic control flow block and restoring the previous value after loading the table,
+    but we instead choose to omit support as it is not commonly used.
 
-\heading{Instruction mode.}
-ARMv7 provides four different instruction states determined by the J and T bits of the CPSR: ARM, Thumb, Jazelle, and ThumbEE.
-We only consider the ARM instruction set and do not support any of the other modes.
-While we can remove some instructions that will always change the instruction state,
-there are certain instructions that that we need to use that could still change the instruction state.
-Most notably, dynamic control flow instructions will change the instruction state to Thumb mode when the least significant bit of the destination address is 1.
-For this reason, we describe all addresses as indices, so no entry of the hash table will switch the instruction state.
-We omit the support for these additional instruction modes because Jazelle and ThumbEE are extremely niche, and
-support for Thumb mainly just requires duplicating work to accommodate the different instruction encodings.
+    \heading{Instruction mode.}
+    ARMv7 provides four different instruction states determined by the J and T bits of the CPSR: ARM, Thumb, Jazelle, and ThumbEE.
+    We only consider the ARM instruction set and do not support any of the other modes.
+    While we can remove some instructions that will always change the instruction state,
+    there are certain instructions that that we need to use that could still change the instruction state.
+    Most notably, dynamic control flow instructions will change the instruction state to Thumb mode when the least significant bit of the destination address is 1.
+    For this reason, we describe all addresses as indices, so no entry of the hash table will switch the instruction state.
+    We omit the support for these additional instruction modes because Jazelle and ThumbEE are extremely niche, and
+    support for Thumb mainly just requires duplicating work to accommodate the different instruction encodings.
 
-\heading{\unpredictable{} instructions.}
-Certain instructions are defined to be \unpredictable{}. The manual describes this term as:
-\begin{displayquote}
-    Means the behavior cannot be relied upon. \unpredictable{} behavior must not perform any function that cannot be performed at the current or a lower level of privilege using instructions that are not \unpredictable{}.
-\end{displayquote}
-Although in practice, these instructions usually just cause a hardware exception \mxz{maybe?}, this definition includes the possibility of performing unpermitted control flow.
-Thus, the rewriter must detect and remove all such instructions. Most instruction types include at least a few \unpredictable{} variants, either from use of the PC register for instructions that do not support it or from the instruction encoding requiring certain bits to be 0 or 1. A couple of instructions are only \unpredictable{} at runtime, including dynamic control flow instructions when the destination address ends with the bits '10'. This issue is avoided the same way we prevent switching to Thumb mode, by enforcing that all hash table entries are divisible by four.
+    \heading{\unpredictable{} instructions.}
+    Certain instructions are defined to be \unpredictable{}. The manual describes this term as:
+    \begin{displayquote}
+        Means the behavior cannot be relied upon. \unpredictable{} behavior must not perform any function that cannot be performed at the current or a lower level of privilege using instructions that are not \unpredictable{}.
+    \end{displayquote}
+    Although in practice, these instructions usually just cause a hardware exception \mxz{maybe?}, this definition includes the possibility of performing unpermitted control flow.
+    Thus, the rewriter must detect and remove all such instructions. Most instruction types include at least a few \unpredictable{} variants, either from use of the PC register for instructions that do not support it or from the instruction encoding requiring certain bits to be 0 or 1. A couple of instructions are only \unpredictable{} at runtime, including dynamic control flow instructions when the destination address ends with the bits '10'. This issue is avoided the same way we prevent switching to Thumb mode, by enforcing that all hash table entries are divisible by four.
+    }
 
 % python/ocaml extractor
 The ELF editor is given the output of the CFI rewriter and adds new segments to the original ELF for the rewritten instructions, the policy tables, and the abort handler that are loaded at the correct addresses and permissions. The original text segment is changed to be nonexecutable. Finally, the ELF editor uses the rewriter's $i2i'$ function to update the entrypoint and symbol values.
