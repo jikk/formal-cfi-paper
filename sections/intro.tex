@@ -1,16 +1,18 @@
 %! root=./main.tex
-\section{Introduction}~\label{sec:intro}
+\section{Introduction}
+\label{sec:intro}
 
 % NOTE (@kjee): 1 page + 1/3 ~ 2/3 pages with about 3 contribution bullets.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CFI is the king of modern security defense.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\cfi has become a cornerstone defense against control-hijacking attacks, achieving widespread deployment with strong guarantees and near-native overhead. However, the community has focused on design-level guarantees, runtime overhead, and policy generation, largely overlooking implementation correctness and relying instead on dynamic testing~\cite{cfi0, cfi1, cfi2, cfi3}. A more fundamental approach, formally verifying CFI implementations against safety and security specifications, remains largely unexplored.
-\kwh{[KWH] We need to be careful here to identify the overlooked problem as developing guaranteed-correct CFI implementations, not merely the problem of finding bugs in deployed CFI implementations.  The latter is extensively studied in the literature; the former is not.}\kjee{@KWH; tried to address; would you have a look?}
+\cfi has become a cornerstone defense against control-hijacking attacks, achieving widespread deployment with near-native overhead. However, the community has largely focused on design-level guarantees, runtime overhead, and policy generation, offering relatively weak assurance of full implementation correctness (\eg evidence from dynamic testing)~\cite{cfi0, cfi1, cfi2, cfi3}. A more fundamental approach to CFI implementation---formal soundness, safety, and security verification of a full CFI implementation down to the binary level---has remained beyond reach.
+%\kwh{[KWH] We need to be careful here to identify the overlooked problem as developing guaranteed-correct CFI implementations, not merely the problem of finding bugs in deployed CFI implementations.  The latter is extensively studied in the literature; the former is not.}\kjee{@KWH; tried to address; would you have a look?}
 
 This gap underscores a broader challenge in security engineering: translating sound designs into correct, deployable systems is difficult and costly. Even rigorously designed systems often contain subtle flaws that emerge only after deployment. In security-critical settings, these flaws do more than degrade functionality; they undermine the trusted computing base, create false confidence, and expose exploitable weaknesses~\cite{solarwinds}.
 
-To mitigate these risks, the community relies primarily on dynamic testing techniques such as fuzzing and symbolic execution. While effective at uncovering concrete bugs, these approaches remain inherently limited. This limitation stems not from engineering shortcomings, but from the fundamental nature of dynamic analysis.
+To mitigate these risks, the community relies primarily on dynamic testing techniques, such as fuzzing and symbolic execution. While effective for anecdotally uncovering concrete bugs, these approaches face dangerous incompleteness limitations when applied to software with vast input spaces, such as code transforms applicable to arbitrary untrusted code.
+This limitation stems not from engineering shortcomings, but from the fundamental nature of dynamic analysis.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Now FM story begins; FM to the rescue.
@@ -20,18 +22,19 @@ To mitigate these risks, the community relies primarily on dynamic testing techn
 % ixb: @kjee, (1) I'd characterize the distinction as that between the implementation/functional specification of the algorithm (*.v), e.g., Max's `rewrite', and the proofs about the algorithm's properties (*_proof.v). (2) The distinction is uninteresting from my perspective, I'd like to hear more about why you think the binary analysis community would want to know.
 % TODO (@kjee): re-work on sentence ordering.
 
-\FMs take a fundamentally different approach. Rather than observing executions, FMs establish stringent, universally-quantified safety, security, and correctness guarantees by proving that an implementation satisfies formally specified properties, thereby covering all program behaviors within the scope of the specification. Proof assistants then mechanically check the resulting proof artifacts, reducing trust to the validity of the specification and the soundness of the proof checker.
-\ixb{I think ``validity of the specification'' rather than ``correctness'' is more accurate here. Iiuc, validity is whether the specification actually states the property the author intends.}
+\FMs take a fundamentally different approach. Rather than observing executions, FMs establish stringent, univer\-sally-quantified safety, security, and correctness guarantees by proving that an implementation satisfies formally specified properties, thereby covering all program behaviors and all program inputs within the scope of the specification. Proof assistants mechanically check the resulting proof artifacts, reducing trust to the validity of the specification and the soundness of the proof checker.
+%\ixb{I think ``validity of the specification'' rather than ``correctness'' is more accurate here. Iiuc, validity is whether the specification actually states the property the author intends.}
 
-Despite these unparalleled advantages, FMs have seen limited adoption in production systems for the following reasons:
+Despite these unparalleled advantages, FMs have seen limited adoption in production systems for at least three reasons:
 % NOTE (kjee): the following is in a way known; conventional perception... However, let's not think about/mention it here at least.
 % Formal verification requires substantial effort and specialized expertise to construct proof artifacts, often rivaling or exceeding the cost of the implementation itself. Moreover, these proofs are tightly coupled to the verified code: even minor changes --- such as bug fixes, optimizations, or refactoring --- can invalidate existing proofs and trigger significant re-verification effort. This tight coupling makes it costly to maintain proofs alongside evolving codebases and limits scalability to large or heterogeneous systems.
 First, the guarantees FMs deliver are only as strong as the specifications they prove, which can be difficult to write accurately and completely for complex, production-ready software.
 Second, proofs bind tightly to specific implementations and verification contexts, making it difficult to scale verification across large, heterogeneous, and evolving codebases.
 % TODO (@kjee): my first attempt to justify/motivate Picinae layer/framework.
-Third, formally verifying software designed to accept \emph{arbitrary} binary codes as input has remained largely out of reach because the community has lacked a sound and accurate abstraction layer to serve as a foundation for such verification.
-\kwh{[KWH] If we merely say that verifying "binary software" is out of reach, most FM reviewers will retort that it's not out of reach because we can verify compilers and let the compilers produce the verified binary software.  Rather than that claim, the central problem is that software that's expected to accept arbitrary binary code as input can't be verified. It can't be verified because source-level FM can't even specify its correctness, much less verify such a property.}\kjee{@KWH: I turned `arbitrary' as italic, not sure it would be enough...}
+Third, formally verifying software designed to accept \emph{arbitrary} binary codes as input has remained largely out of reach because the community has lacked a formally verified abstraction layer of sufficient generality to serve as a foundation for such verification.
+%\kwh{[KWH] If we merely say that verifying "binary software" is out of reach, most FM reviewers will retort that it's not out of reach because we can verify compilers and let the compilers produce the verified binary software.  Rather than that claim, the central problem is that software that's expected to accept arbitrary binary code as input can't be verified. It can't be verified because source-level FM can't even specify its correctness, much less verify such a property.}\kjee{@KWH: I turned `arbitrary' as italic, not sure it would be enough...}
 \ixb{@KWH, I'm uncomfortable about the Third claim after reading RockSalt and being convinced that they did reason about arbitrary code.}
+\kwh{[@IXB, RockSalt did not reason about arbitrary code. They implement a unit tester that conservatively rejects almost all code. It only accepts code that has been CFI-hardened in a very specific way, and conservatively rejects almost anything else (e.g., any instruction not in a whitelist).  Their proof verifies the algorithm that the unit tester is intended to implement, but does not verify that the unit tester actually implements that algorithm, and does not verify that the code-rewriter actually produces code that the unit tester accepts.  All of those things are left to dynamic testing.]}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Our story begins; formally-verified, machine-checked CFI.
@@ -43,21 +46,27 @@ Third, formally verifying software designed to accept \emph{arbitrary} binary co
 % TODO (@kjee): we need a killer setence here; summarizing two-folds (CFI implementation accuracy concern, FM scalability on arbitary binaries inputs) as a connecting/strong/motivational statement.
 To respond, our research takes a step toward closing that gap. We present \pname, the first machine-checked CFI implementation built on a static binary rewriting framework for a mature, real-world architecture, providing formally verified compliance with the design specification and runtime correctness beyond the incomplete assurances of dynamic testing.
 \ixb{I'm confused by the ``built on a static binary rewriting framework''. My first interpretation is that we're introducing Picin\ae as a framework for building static binary rewriters.}
+\kwh{[@IXB: The static binary rewriting framework is what Max implemented; it's not Picinae.  I don't think a non-Picinae reader will be confused by this.  An average CFI-aware reader knows right away what a static binary rewriting framework is in the context of CFI.]}
 
 % NOTE (@kjee): specificiation to formally verifiying CFI can be straightforward.
 {%
   % Binary CFI is a well-established and well-specified defense.
   \pname implements source-agnostic (binary-only) CFI by rewriting binaries to confine all control-flow transfers to policy-specified edges. It identifies and instruments control-transfer instructions (\eg jumps, calls, and returns), checking each target against the policy at runtime and triggering a safe abort on violation.
-  By definition,\wc{formally} the CFI enforcement for a given binary is \emph{sound} if all possible execution traces of every rewritten binary obey the control-flow policy.
+  By definition,\wc{formally} the CFI enforcement for a given binary is \emph{sound} if all possible execution traces of every rewritten binary obey the policy.
 }
 
 % NOTE (@kjee): FM of binary writer itself is a difficult, unexplored, open challenge.
-Binary-level CFI, built on static binary rewriting techniques, is a well-studied and mature area. Yet formally verifying the correctness of a binary CFI implementation, let alone the broader class of binary rewriters, remains an open challenge, despite the long-standing availability of mature proof assistants such as Rocq and Isabelle/HOL.
-\ixb{eliminated references to Coq, rename happened March 2025. Should save us some space and confusion. Hopefully the CCS community is up to date on this development in FMs?}
+Binary-level CFI, built on static binary rewriting techniques, is a well-studied and mature area. Yet formally verifying the correctness of a binary CFI implementation, let alone the broader class of binary rewriters, remains an open challenge despite the long-standing availability of mature proof assistants such as Rocq and Isabelle/HOL.
+%\ixb{eliminated references to Coq, rename happened March 2025. Should save us some space and confusion. Hopefully the CCS community is up to date on this development in FMs?}
 
-The core difficulty is one of semantic generality: correctness must hold for all possible input binaries, whether compiler-generated, hand-written, or otherwise, not merely those drawn from a particular toolchain or restricted to a subset of the ISA\@. \ixb{but isn't our rewriter limited to binaries over the ISA subset we model?} Prior work has been largely confined to reasoning about concrete, fixed binaries, falling short of this bar. RockSalt~\cite{rocksalt}, for instance, successfully verified the safety guarantees of an SFI algorithm for x86, but its analysis is tied to a concrete subset of the x86 ISA and the NaCl sandbox policy, and does not extend to arbitrary binaries or other ISAs.
+The core difficulty is semantic generality: correctness must hold for all possible input binaries, whether compiled, hand-written, or otherwise, not merely those drawn from a particular toolchain or restricted to a compiler-sanctioned subset of the ISA\@.
+Prior work has been largely confined to reasoning about concrete, fixed binaries, falling short of this bar. RockSalt~\cite{rocksalt}, for instance, successfully verifies outputs from a specific SFI algorithm on a per-case basis, but does not verify that any SFI implementation always produces verifiably safe executable code, or that the full verifier implementation correctly implements all details of the design-level verification algorithm.
+These implementation assurances are left to software quality control processes (\eg dynamic testing) that cannot comprehensively cover such a vast input space.
+
+\kwh{[KWH rewrote the above paragraph based on the discussion below.]}
+\ixb{but isn't our rewriter limited to binaries over the ISA subset we model?}
+\kwh{[@IXB: Yes, but our goal is to model as much of the ISA as possible, whereas the alternative works we're talking about only try to model the portion of the ISA emitted by a particular toolchain or compiler.]}
 \ixb{Why are we picking on RockSalt not extending to other ISAs? We don't extend to other ISAs, specifically stating that we intentionally limit ourselves to fixed-width instruction set in this development. I know that we can extend this, but it won't be trivial.}
-
 \kwh{%
   [KWH:] Should we also observe here that RockSalt only verifies a loadtime verifier for their system?  It doesn't verify that the rewriter that produces the binaries always yields binaries that pass the loadtime verifier's checks.  RockSalt therefore doesn't solve the problem of creating a machine-verified binary rewriter.
 }\kjee{I need helps from others for this part.}
@@ -70,7 +79,7 @@ The core difficulty is one of semantic generality: correctness must hold for all
   Formal verification directly targets this challenge by reasoning over all possible inputs rather than sampled executions, enabling universal correctness guarantees that dynamic testing cannot provide. These guarantees hold regardless of binary provenance, compiler, or ISA quirk, making formal methods particularly well suited to establishing that a CFI implementation soundly enforces its policy across the full space of binaries it may encounter.
 }
 
-We address the key obstacle, namely the absence of ISA abstractions amenable to formal reasoning, by building on the \Picinae{} framework~\cite{picinae}, which supports machine-checked proofs in which the target binary is treated as a symbolic proof variable rather than a fixed program. This enables \pname to achieve verification that generalizes across arbitrary binaries, a capability no prior binary CFI rewriter has demonstrated.
+We address this key semantic generality obstacle by building on the \Picinae{} framework~\cite{picinae}, which supports machine-checked proofs in which all or part of the target binary code can be a symbolic proof variable rather than a concrete program. This enables \pname to achieve verification that generalizes across arbitrary binaries, a capability no prior binary CFI rewriter has demonstrated.
 
 \comment{%
   Yet formally verifying a binary CFI, let alone the broader class of binary rewriter implementations, remains an open challenge. The core difficulty lies in semantic generality: correctness requires enforcing the desired safety property for all possible input binaries, not merely those produced by a particular compiler or restricted to a subset of the ISA.
