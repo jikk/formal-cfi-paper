@@ -81,6 +81,7 @@ Unlike prior work that verifies either compilers (\ie source-to-binary transform
 Under \pname's CFI enforcement, any control-flow transfer that violates the policy is redirected to \texttt{abort()}, preventing attacker-controlled diversion of execution.
 \ixb{Do we need to mention we do not support multithreading/concurrency?}
 \ixb{@Max, for my curiosity, are there CF transfer violations that get redirected to valid targets rather than \texttt{abort}?}
+\mxz{yes, an invalid control flow transfer that hashes to the same value as a valid one gets redirected there}
 
 \heading{Research scope.}
 We target the ARMv7 ISA for three reasons. First, ARMv7 represents one of the most
