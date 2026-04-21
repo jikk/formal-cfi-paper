@@ -6,13 +6,14 @@
 \subsection{Efficiency}
 \kjee{@Max: We need more text here. (1) could \pname cover all benchmark items?; (2) what are fast? why? (3) what are slow? why?}
 \kjee{@Shreya: we may want to have a SOTA comparsion for the CFI efficiency}
+\ixb{@Shreya: my suggestions for the SOTA comparison: start with the ``Cracks in shields'' survey for the CFI tech they survey. They might also link to other surveys that focused on performance. If that's too old then you'll need to find more recent CFI work in top venues (CCS, NDSS, USENIX Security, IEEE S\&P and maybe high-tier venues (ESORICS, AsiaCCS, RAID, ACSAC, EuroS\&P). I think we'd prefer to compare to other solutions supporting ARMv7, so take note of which ISAs each support just in case.}
 Here we present the efficiency evaluation result.
 
 \input{tables/spec2017_tab2}
 
 \subsection{Security Evaluation}
 To evaluate the effectiveness of \pname against representative control-flow hijacking attacks,
-we developed the following proof-of-concept (PoC) programs, each paired with a corresponding attack script.
+we developed the following proof-of-concept (PoC) programs and their exploit scripts.
 
 \input{tables/basic_vul_tab}
 

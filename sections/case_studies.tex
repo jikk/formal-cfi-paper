@@ -5,8 +5,10 @@ In this section, we present three case studies highlighting subtle bugs introduc
 \kjee{For each case study item, we want to have (1) why this is overlooked in CFI writer implementation?; (2) How it is detected during the proof process?; and (3) How it is fixed?}
 
 \heading{Address translation.}
-As we describe the $i'2i$ function in \autoref{sec:formalization}, we briefly mentioned an
-\emph{unintuitive} behavior that permits jumping to the old text segment since some of its indices are left unchanged.
+Recall the \emph{unintuitive} behavior of $\mathit{i'2i}$: unchanged indices permit jumping to the old text segment.
+\ixb{@MAX: proposed rewrite of what you had before, though I'm not sure I captured the behavior correctly. The main point of the rewrite is to make it less wordy and highlight \emph{unintuitive} earlier to fuel reader interest.}
+% As we describe the $i'2i$ function in \autoref{sec:formalization}, we briefly mentioned an
+% \emph{unintuitive} behavior that permits jumping to the old text segment since some of its indices are left unchanged.
 % but gave an explanation on why this is still fine.
 \kjee{In what case do we still need to preserve the control transfer (or data reference) to *the old text*. We need more detailed explanation/justification; Here or from somewhere in section 3.}
 %

@@ -65,5 +65,7 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 * [ ] Basic examples
     1. Max completed bof, rop, fmt
     2. JOP: ixb tried and failed ot add jop by translating the example given in the tech. report. from x86 to ARMv7. Open problem. See Section 4.4 of the TR: https://www.academia.edu/909994/Jump_oriented_programming_A_new_class_of_code_reuse_attack
+* [ ] Advanced examples?
+    1. We could use RecIPE, an "extensible and comprehensive benchmark for evaluating memory error defenses" (https://dl.acm.org/doi/pdf/10.1145/3488932.3524127)
 
 ##### tag: `pdli`,`max`, `cfi`, `formal verification`, `arm`
