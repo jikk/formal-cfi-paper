@@ -61,10 +61,10 @@ that rewriting never introduces execution paths that enter architecturally
 \unpredictable{} regions. Achieving this guarantee is beyond the reach of conventional
 dynamic testing, which explores only observed paths and cannot rule out problematic
 sequences by construction \ixb{``by design'' maybe?}. In contrast, formal verification enables proactive
-identification of all such paths, allowing Cornerstone defense against control hijacking attacks, achieving widespread deployment with strong guarantees and near native overhead. However, the community has focused on design level guarantees, runtime overhead and policy generation largely overlooking implementation correctness and relying instead on dynamic testing. A more fundamental approach, formally verifying CFI implementations against safety and security specifications, remains largely unexplored. 
+identification of all such paths, allowing Cornerstone defense against control hijacking attacks, achieving widespread deployment with strong guarantees and near native overhead. However, the community has focused on design level guarantees, runtime overhead and policy generation largely overlooking implementation correctness and relying instead on dynamic testing. A more fundamental approach, formally verifying CFI implementations against safety and security specifications, remains largely unexplored.
 % We need to be careful here to identify the overlook problem as developing guaranteed correct CFI implementations, not merely the problem of finding bugs in deployed CFI implementations.
 %
-% The latter is extensively studied in the literature, the former is not. This gap underscores a. them to be ruled out or corrected statically. 
+% The latter is extensively studied in the literature, the former is not. This gap underscores a. them to be ruled out or corrected statically.
 In \autoref{sec:case_studies}, we present two concrete error cases of unpredictability (branching to the PC register and unaligned PC loads) that we encountered and corrected through the formal verification process.
 \ixb{I'm not familiar with the term "Cornerstone defense" and web search only yields a company by that name.}
 
