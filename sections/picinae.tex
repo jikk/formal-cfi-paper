@@ -1,26 +1,22 @@
 %! root=./main.tex
-\section{\Picinae{} Framework}~\label{sec:picinae}
+\section{\Picinae{} Framework}
+\label{sec:picinae}
 
 \kjee{A section (or subsection) for Picinae story: a draft text.}
 
-To obtain the highest possible confidence about the security, correctness, and safety of production-level software systems,
-\emph{machine-checked formal methods} (FMs) are well-recognized as the gold standard in assurance.
-FMs go beyond mere heuristic inspection of code or semi-automated spot-checking (e.g., fuzzing), which cannot exhaustively cover the (often infinite) state spaces of most production software, to achieve guaranteed full-coverage verification.
+%To obtain the highest possible confidence about the security, correctness, and safety of production-level software systems,
+%\emph{machine-checked formal methods} (FMs) are well-recognized as the gold standard in assurance.
+%FMs go beyond mere heuristic inspection of code or semi-automated spot-checking (e.g., fuzzing), which cannot exhaustively cover the (often infinite) state spaces of most production software, to achieve guaranteed full-coverage verification.
 
-This is achieved by constructing machine-checked mathematical proofs that are universally quantified over the state space, and that explicitly formalize all assumptions. For example, the Rocq program-proof co-development environment has been used to construct the only C-compiler~\cite{leroy16ertss} in which automated bug-finders (e.g., Csmith~\cite{yang11pldi}) could find no errors.
+%This is achieved by constructing machine-checked mathematical proofs that are universally quantified over the state space, and that explicitly formalize all assumptions. For example, the Rocq program-proof co-development environment has been used to construct the only C-compiler~\cite{leroy16ertss} in which automated bug-finders (e.g., Csmith~\cite{yang11pldi}) could find no errors.
 
-FM approaches have historically faced at least two major obstacles in practice:
-(1) scalability challenges have impeded FM verification of large software systems, since building a machine-checkable proof is more difficult than running an inexhaustive vulnerability-search; and
-(2) most FM solutions require source code.
+%FM approaches have historically faced at least two major obstacles in practice:
+%(1) scalability challenges have impeded FM verification of large software systems, since building a machine-checkable proof is more difficult than running an inexhaustive vulnerability-search; and
+%(2) most FM solutions require source code.
 
-The first of these obstacles is rapidly being overcome by recent breakthroughs in the field of AI-enhanced FMs\@.
+%The first of these obstacles is rapidly being overcome by recent breakthroughs in the field of AI-enhanced FMs\@.
 % For example, the DARPA PEARLS, PROVERS, and V-SPELL programmes have collectively resulted in a series of powerful new algorithms and tools that harness AI and ML models to generate significant portions of machine-checked proofs automatically, leaving only a small subset of the proofs for human experts to complete.
-This has made full FM verification of large software systems increasingly feasible, as witnessed by the advent of the first fully machine-verified OS microkernel (seL4)~\cite{sel4}.
-
-\Picinae is designed and implemented to address the inherent challenge (source-free binary FMs) by advancing the state-of-the-art in \emph{bottom-up FMs}.
-Bottom-up approaches to FMs entail \emph{lifting} raw binary codes directly into an intermediate language (IL) form readable by an automated theorem prover.
-%
-Once lifted, FM technologies can then be applied to construct and verify machine-checked proofs of binary code properties without source code, such as control-flow safety, memory safety, process isolation, timing leak-freedom, and even complete functional correctness.
+%This has made full FM verification of large software systems increasingly feasible, as witnessed by the advent of the first fully machine-verified OS microkernel (seL4)~\cite{sel4}.
 
 \begin{figure}
   \centering
@@ -28,14 +24,26 @@ Once lifted, FM technologies can then be applied to construct and verify machine
   \includegraphics[width=.9\linewidth]{figs/picinae_overview}
   \caption{\Picinae{} Bottom-up formal methods architecture.}\label{fig:picinae}
   % https://drive.google.com/file/d/149Vu1NpUV6APaJQxOW_8LkdgVBFUkuiN/view?usp=sharing
-  % This is so much better.  Thanks, Ilan!
 \end{figure}
 
+\Picinae{} is a bottom-up FMs framework that extends the Rocq proof assistant with facilities for machine-checked reasoning about source-free, stripped native code on a variety of ISAs\@.
+\autoref{fig:picinae} illustrates its typical workflow.
+Concrete binary code is first lifted to a low-level intermediate language (IL) that encodes each machine instruction's operational effects upon the machine state.
+Lifting can be performed externally or internally.
+External lifting uses a separate binary reverse-engineering tool, such as NSA Ghidra~\cite{ghidra} or the Binary Analysis Platform (BAP)~\cite{brumley11cav}, to convert machine code to the tool's IL (P-code or BIL, respectively), which translates directly to \Picinae{}'s IL\@.
+Internal lifters implement this process within Rocq rather than using an external tool.
+To realize ARMCFI, we implemented an internal lifter for the ARM7 ISA\@.
+\kwh{[KWH: Figure~\ref{fig:picinae} needs to extended to have two in-flows---one with an ``External Lifter'' and one with an ``Internal Lifter''. Also, change ``symbolic executor'' to ``symbolic interpreter''.]}
+
+Lifting includes instruction decoding but not full disassembly or control-flow recovery (which are Turing-undecidable tasks on many architectures in the general case).
+In particular, the bytes at every virtual address are decoded into an assembly instruction and its IL representation without predicting how the instructions may interrelate at runtime.
+The results of lifting are therefore formalized as a partial function $p:\mathbb{N}\rightharpoonup(\mathbb{N}\times\mathit{IL})$ from each virtual address $a\in\mathbb{N}$ to the size and IL of the machine instruction located at $a$.
+
 % As a foundation for building this connection, we plan to use \Picinae{}, a bottom-up FMs framework.
-\autoref{fig:picinae} illustrates the intended workflow. Binary code is first lifted to \Picinae's IL language by decoding it to a Rocq-readable form.
+%\autoref{fig:picinae} illustrates the intended workflow. Binary code is first lifted to \Picinae's IL language by decoding it to a Rocq-readable form.
 %
-The lifting process is modular, potentially supporting a variety of lifting techniques, including the NSA Ghidra~\cite{ghidra} and Binary Analysis Platform (BAP)~\cite{brumley11cav}, both of which have the capability of reliably lifting native codes for a variety of microprocessor architectures, including Intel/AMD x86/x64, ARM7/8, and RISC-V, among others.
-This approach also supports binary bytecode languages; for example, \Picinae{} already supports eBPF bytecode binaries.
+%The lifting process is modular, potentially supporting a variety of lifting techniques, including the NSA Ghidra~\cite{ghidra} and Binary Analysis Platform (BAP)~\cite{brumley11cav}, both of which have the capability of reliably lifting native codes for a variety of microprocessor architectures, including Intel/AMD x86/x64, ARM7/8, and RISC-V, among others.
+%This approach also supports binary bytecode languages; for example, \Picinae{} already supports eBPF bytecode binaries.
 
 \begin{figure}[t]
 \footnotesize
@@ -54,17 +62,21 @@ This approach also supports binary bytecode languages; for example, \Picinae{} a
 \caption{\Picinae{} IL Grammar.}\label{fig:picinae_il}
 \end{figure}
 
-Figure~\ref{fig:picinae_il} summarizes the IL to which binary code is lifted, which is strategically chosen to bridge the semantic gap between real binary software and the formalisms expected by automated theorem provers.
+Figure~\ref{fig:picinae_il} summarizes \Picinae{}'s IL, which is strategically chosen to bridge the semantic gap between real binary software and the formalisms expected by automated theorem provers.
 In particular, each machine instruction is lifted to an IL statement $s$ that explicitly encodes its semantic effects upon the machine state, including assignments of expression computations $e$ to machine state variables $v$ (e.g., cpu registers), control-flow transfers ($\mathtt{jmp}$), hardware exceptions ($\mathtt{exn}$), sequences (\texttt{;}), conditionals (\texttt{?}), and bounded microcode loops ($s^e$).
 IL expressions $e$ range over variable-reads $v$, $w$-bit binary constants $n\ofwidth{w}$, $w$-width memory-reads and writes $e_1[e_2 (\coloneqq e_3)]\ofwidth{w}$, binary arithmetic and logical operations $\circledcirc$, local bindings ($\mathsf{let}$), and non-deterministic processor effects $*\ofwidth{w}$.
 Together, these form a Turing-complete computational language sufficient to express microarchitectural machine semantics with a minimal trusted computing base.
 
-Since disassembly and decompilation for some architectures is provably undecidable in the general case, \Picinae{} does not rely upon perfect disassembly to lift binaries to its IL form.
-It instead expresses lifted programs as an abstract function $p:\Sigma\rightarrow\mathbb{N}\rightharpoonup s$ from machine states $\sigma\in\Sigma$ and virtual addresses $a\in\mathbb{N}$ to the statement $s$ that encodes the machine instruction at $a$.
-This allows a decompiler to comprehensively convey the entire semantic content of an untrusted binary to the automated theorem prover without the need to exhaustively discover all reachable control-flows.
-Control-flow verification is undertaken by the theorem prover, not an obligation of the lifter, making it an untrusted, verified part of the system.
-Code whose unreachability cannot be proved is verified to be safe irrespective of its reachability, ensuring soundness.
+%Since disassembly and decompilation for some architectures is provably undecidable in the general case, \Picinae{} does not rely upon perfect disassembly to lift binaries to its IL form.
+%It instead expresses lifted programs as an abstract function $p:\Sigma\rightarrow\mathbb{N}\rightharpoonup s$ from machine states $\sigma\in\Sigma$ and virtual addresses $a\in\mathbb{N}$ to the statement $s$ that encodes the machine instruction at $a$.
+%This allows a decompiler to comprehensively convey the entire semantic content of an untrusted binary to the automated theorem prover without the need to exhaustively discover all reachable control-flows.
+%Control-flow verification is undertaken by the theorem prover, not an obligation of the lifter, making it an untrusted, verified part of the system.
+%Code whose unreachability cannot be proved is verified to be safe irrespective of its reachability, ensuring soundness.
 
+\Picinae{} provides an array of powerful facilities for semi-automated, formal, machine-checked reasoning about lifted binaries, including a fully machine-verified symbolic interpreter, IL type-checker, binary arithmetic symbolic expression solver, and theories of modular arithmetic, memory safety, dynamic trace analysis, interprocedural analysis, binary data structures, mixed endianness and two's complement arithmetic, and temporal logics.
+This facilitates construction and verification of machine-checked proofs of binary code properties without source code, such as control-flow safety, memory safety, process isolation, timing leak-freedom, and even complete functional correctness.
+
+\kwh{[TODO: Adapt/rewrite this paragraph. Also need to talk more about internal lifting and its role in this research.]}
 Lifted binaries are amenable to a suite of powerful, provably correct analyses within the automated theorem proving system, including an abstract symbolic interpreter, a provably type-safe static semantics based on dependent typing, and an array of proof-tactic automation libraries that conducts guided searches for proofs of common code properties (e.g., memory safety, stack well-formedness, architectural calling convention adherence, control-flow integrity) for specific machine architectures.
 The design and implementation of these analyses within an automated theorem proving environment has the significant advantage of breaking defenders out of the exploitation-patching arms race against adversaries.
 Any code that can be machine-verified by the analyses is guaranteed to satisfy the security specification \emph{for all inputs}, rendering any attackers' subsequent vulnerability searches doomed to failure, no matter how sophisticated.

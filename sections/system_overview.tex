@@ -72,7 +72,7 @@
     }~\label{fig:cfi_arch}
 \end{figure}
 
-\subsection{Design}
+\subsection{Design}\label{sec:cfi_design}
 \mxz{TODO reference fig 1 here}
 We first describe the design of \pname, which consists of two components:
 the CFI rewriter, the component that turns a list of instructions into a rewritten list of instructions with CFI,
@@ -117,7 +117,7 @@ For this, we use the $bi$ and $bi'$ inputs, which describe the index that the or
 and the index where the rewritten text segment should be placed, and define a function $i2i'$ that performs this translation.
 
 For rewritten programs to function correctly, it is sometimes necessary to allow instructions to jump to regions outside the new text segment.
-As an example, on ARM the Linux kernel provides a couple of helper functions at fixed addresses that we cannot rewrite.
+As an example, the ARM Linux kernel provides helper functions that we cannot rewrite at fixed addresses.
 Therefore, $i2i'$ must return the input index when it does not fall within the original text segment range.
 Otherwise, when $n$ is the $n$th index of the original text segment, $i2i'(n)$ is the index of the first instruction of the $n$th rewritten block.
 
@@ -272,7 +272,7 @@ so there are actually 4 add instructions in this block to add each byte separate
 % python/ocaml extractor
 The ELF editor is given the output of the CFI rewriter and adds new segments to the original ELF for the rewritten instructions, the policy tables, and the abort handler that are loaded at the correct addresses and permissions. The original text segment is changed to be nonexecutable. Finally, the ELF editor uses the rewriter's $i2i'$ function to update the entrypoint and symbol values.
 
-\subsection{Workflow \ixb{Tentative title}}
+\subsection{Workflow}
 As we would like to formally verify the soundness of our CFI implementation,
 we implement the CFI rewriter as a function in Gallina,
 the specification language of Rocq, to allow us to write machine-checked proofs about its behavior.
