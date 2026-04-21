@@ -1,5 +1,6 @@
 %! root=./main.tex
-\section{Static Rewriter for CFI in ARMv7 Binaries}~\label{sec:overview}
+\section{Static Rewriter for CFI in ARMv7 Binaries}
+\label{sec:overview}
 % TODO(@kjee): we a better section title here.
 % NOTE: @Max work on it.
 
@@ -60,13 +61,14 @@
     % \includegraphics[width=0.9\linewidth]{implementation.pdf}
     \includegraphics[width=0.9\linewidth]{figs/implementation_ixb_proposal.pdf}
     % maybe a bit too long
-    \caption{\pname architecture.
-    The original text segment contains potentially dangerous instructions, in red.
-    The rewriter converts each instruction into a block of one or more instructions in the new text segment.
-    The policy maps source indices to a set of allowed destinations
-    (that is not required to be disjoint with other sets, e.g. $i_1$ and $i_n$).
-    Indirect jump instructions become blocks that perform a lookup into a table that constrains the target to permitted destinations and converts between old and new addresses.
-    Instructions with identical destination sets can share a policy table (e.g.\ tbl2 for $i_1, i_4$).\kjee{caption is too lengthy.}
+    \caption{\pname architecture and dataflow showing instrumented instructions (highlighted red and green) and policy table construction (labels colored red and green).
+    % Highlighted instructions are potentially dangerous (red) or their instrumented output (green).
+    % The original text segment contains potentially dangerous instructions, in red.
+    % The rewriter converts each instruction into a block of one or more instructions in the new text segment.
+    % The policy maps source indices to a set of allowed destinations
+    % (that is not required to be disjoint with other sets, e.g. $i_1$ and $i_n$).
+    % Indirect jump instructions become blocks that perform a lookup into a table that constrains the target to permitted destinations and converts between old and new addresses.
+    % Instructions with identical destination sets can share a policy table (e.g.\ tbl2 for $i_1, i_4$).\kjee{caption is too lengthy.}
     }~\label{fig:cfi_arch}
 \end{figure}
 
@@ -232,11 +234,15 @@ BX r0                    // branch to table[H(dest)]
 \end{lstlisting}
 \mxz{there isn't an instruction to add an arbitrary constant to a register, only certain constants are possible
 so there are actually 4 add instructions in this block to add each byte separately, but idk if it's necessary to say that here}
+\ixb{I bet it's not necessary.}
 
 {% NOTE (@jee): somewhat length, feel redudant.
     \heading{Unsupported instructions.}
-    There are some ARM instructions that we do not support. In these cases, we replace them with a branch to $ai$.
-
+    % There are some ARM instructions that we do not support. 
+    Some ARM instructions are predictable but out of scope (\eg floating point). 
+    In these cases, we replace them with a branch to $ai$.
+    \ixb{todo---fact check with Max.}
+    
     \heading{Endianness.}
     ARM supports both little and big endian memory operations, determined by the value of the E bit of the Current Program Status Register.
     While it does not matter which endianness we start in as long as the hash tables are also in the same endianness,

@@ -35,6 +35,7 @@ Third, formally verifying software designed to accept \emph{arbitrary} binary co
 %\kwh{[KWH] If we merely say that verifying "binary software" is out of reach, most FM reviewers will retort that it's not out of reach because we can verify compilers and let the compilers produce the verified binary software.  Rather than that claim, the central problem is that software that's expected to accept arbitrary binary code as input can't be verified. It can't be verified because source-level FM can't even specify its correctness, much less verify such a property.}\kjee{@KWH: I turned `arbitrary' as italic, not sure it would be enough...}
 \ixb{@KWH, I'm uncomfortable about the Third claim after reading RockSalt and being convinced that they did reason about arbitrary code.}
 \kwh{[@IXB, RockSalt did not reason about arbitrary code. They implement a unit tester that conservatively rejects almost all code. It only accepts code that has been CFI-hardened in a very specific way, and conservatively rejects almost anything else (e.g., any instruction not in a whitelist).  Their proof verifies the algorithm that the unit tester is intended to implement, but does not verify that the unit tester actually implements that algorithm, and does not verify that the code-rewriter actually produces code that the unit tester accepts.  All of those things are left to dynamic testing.]}
+\ixb{I agree on all points but the first. Their proof verifies the algorithm, which takes in arbitrary binary inputs and checks they conform to the specific CFI-hardened format (whitelisted instructions, 32-byte aligned instructions, masks before indirect branches). I don't see how they could verify the binary checker algorithm without quantifying over all binary inputs. }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Our story begins; formally-verified, machine-checked CFI.
@@ -45,8 +46,10 @@ Third, formally verifying software designed to accept \emph{arbitrary} binary co
 
 % TODO (@kjee): we need a killer setence here; summarizing two-folds (CFI implementation accuracy concern, FM scalability on arbitary binaries inputs) as a connecting/strong/motivational statement.
 To respond, our research takes a step toward closing that gap. We present \pname, the first machine-checked CFI implementation built on a static binary rewriting framework for a mature, real-world architecture, providing formally verified compliance with the design specification and runtime correctness beyond the incomplete assurances of dynamic testing.
-\ixb{I'm confused by the ``built on a static binary rewriting framework''. My first interpretation is that we're introducing Picin\ae as a framework for building static binary rewriters.}
+\ixb{I'm confused by the ``built on a static binary rewriting framework''. My first interpretation is that we're introducing Picin\ae{} as a framework for building static binary rewriters.}
 \kwh{[@IXB: The static binary rewriting framework is what Max implemented; it's not Picinae.  I don't think a non-Picinae reader will be confused by this.  An average CFI-aware reader knows right away what a static binary rewriting framework is in the context of CFI.]}
+\ixb{Okay; I see it as a function, it's hard for me to see the framework.}
+
 
 % NOTE (@kjee): specificiation to formally verifiying CFI can be straightforward.
 {%
