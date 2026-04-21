@@ -42,8 +42,7 @@ safety requirements is nontrivial.
 
 In particular, establishing an assurance CFI-enforcing binary rewriter must guarantee that every generated instruction sequence remains fully compliant with the target ISA through dynamic testing alone is fundamentally limited.
 
-Like other ISAs, the ARM architecture explicitly defines \emph{unpredictable}
-behaviors~\cite{unpredictable_behaviors,examiner2024asplos}: execution outcomes that are left deliberately unspecified. These arise from design choices intended to preserve implementation flexibility, to avoid
+Like other ISAs, the ARM architecture explicitly defines \emph{unpredictable} behaviors~\cite{unpredictable_behaviors,examiner2024asplos}: execution outcomes that are left deliberately unspecified. These arise from design choices intended to preserve implementation flexibility, to avoid
 over-specifying invalid or ill-formed programs, and to balance performance with
 backward compatibility. From a verification perspective, unpredictable behavior
 introduces significant challenges: it induces semantic nondeterminism, necessitates
