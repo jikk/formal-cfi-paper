@@ -22,13 +22,13 @@ This limitation stems not from engineering shortcomings, but from the fundamenta
 % ixb: @kjee, (1) I'd characterize the distinction as that between the implementation/functional specification of the algorithm (*.v), e.g., Max's `rewrite', and the proofs about the algorithm's properties (*_proof.v). (2) The distinction is uninteresting from my perspective, I'd like to hear more about why you think the binary analysis community would want to know.
 % TODO (@kjee): re-work on sentence ordering.
 
-\FMs take a fundamentally different approach. Rather than observing executions, FMs establish stringent, univer\-sally-quantified safety, security, and correctness guarantees by proving that an implementation satisfies formally specified properties, thereby covering all program behaviors and all program inputs within the scope of the specification. Proof assistants mechanically check the resulting proof artifacts, reducing trust to the validity of the specification and the soundness of the proof checker.
+\FMs take a fundamentally different approach. Rather than observing executions, \FMs establish stringent, univer\-sally-quantified safety, security, and correctness guarantees by proving that an implementation satisfies formally specified properties, thereby covering all program behaviors and all program inputs within the scope of the specification. Proof assistants mechanically check the resulting proof artifacts, reducing trust to the validity of the specification and the soundness of the proof checker.
 %\ixb{I think ``validity of the specification'' rather than ``correctness'' is more accurate here. Iiuc, validity is whether the specification actually states the property the author intends.}
 
-Despite these unparalleled advantages, FMs have seen limited adoption in production systems for at least three reasons:
+Despite these unparalleled advantages, \FMs have seen limited adoption in production systems for at least three reasons:
 % NOTE (kjee): the following is in a way known; conventional perception... However, let's not think about/mention it here at least.
 % Formal verification requires substantial effort and specialized expertise to construct proof artifacts, often rivaling or exceeding the cost of the implementation itself. Moreover, these proofs are tightly coupled to the verified code: even minor changes --- such as bug fixes, optimizations, or refactoring --- can invalidate existing proofs and trigger significant re-verification effort. This tight coupling makes it costly to maintain proofs alongside evolving codebases and limits scalability to large or heterogeneous systems.
-First, the guarantees FMs deliver are only as strong as the specifications they prove, which can be difficult to write accurately and completely for complex, production-ready software.
+First, the guarantees \FMs deliver are only as strong as the specifications they prove, which can be difficult to write accurately and completely for complex, production-ready software.
 Second, proofs bind tightly to specific implementations and verification contexts, making it difficult to scale verification across large, heterogeneous, and evolving codebases.
 % TODO (@kjee): my first attempt to justify/motivate Picinae layer/framework.
 Third, formally verifying software designed to accept \emph{arbitrary} binary codes as input has remained largely out of reach because the community has lacked a formally verified abstraction layer of sufficient generality to serve as a foundation for such verification.
@@ -110,10 +110,10 @@ No prior work has explored this space, despite its direct relevance to closing t
   \item  We present \pname, a machine-checked binary CFI framework that formalizes and verifies the its correctness. We implement it as the first machine-checked CFI rewriter for ARMv7 and achieve near-native overhead (XX~\% average on SPEC 2017).
   % We introduce \pname, a machine-checked binary CFI framework that formally defines the security and safety conditions required for a correct CFI rewriter and verifies them against a real-world implementation. \pname is the first machine-checked binary CFI rewriter for the ARMv7 ISA, demonstrating the generality of our approach while incurring near-native runtime overhead (XX~\% average on SPEC 2017).
 
-  \item Built on \Picinae, \pname analyzes arbitrary binaries, overcoming prior FM limitations that require concrete inputs and enabling verification over unbounded binary spaces.
+  \item Built on \Picinae, \pname analyzes arbitrary binaries, overcoming prior \FM limitations that require concrete inputs and enabling verification over unbounded binary spaces.
   % Built on the Picinae framework, \pname accepts arbitrary binaries as input, overcoming a long-standing limitation of prior FM approaches that required concrete byte sequences rather than symbolic representations,  extending the reach of formal verification to unbounded binary inputs.
 
-  \item  We explore a previously uncharted intersection between FM and binary-level security, deriving principled FM-aware design guidelines and uncovering subtle but critical flaws that dynamic testing alone would have missed.
+  \item  We explore a previously uncharted intersection between \FM and binary-level security, deriving principled \FM-aware design guidelines and uncovering subtle but critical flaws that dynamic testing alone would have missed.
 \end{itemize}
 
 % NOTE (@kjee): Put the following as a closing/visionary statement (rather than one of bullet points) since it hasn't yet been realized with actual implementations.
