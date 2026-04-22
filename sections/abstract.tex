@@ -8,14 +8,32 @@ Yet, despite Compcert's 2009 seminal demonstration that verified source-to-binar
 \pname combines binary lifting and sound symbolic reasoning in Rocq's expressive logic to deliver a binary CFI rewriter with a soundness guarantee that eliminates the need for a second-step checker.
 \end{abstract}
 
+\comment{%
+•	Control-Flow Integrity (CFI) has become one of the most advanced and widely deployed defenses for protecting real-world production systems.
+o	However, despite its prominence, a critical aspect — *the correctness of its binary-level implementation and its impact on real-world effectiveness** — remains underexplored.
+•	In this work, we present the first formally verified CFI binary rewriter, ArmCFI, establishing its safety and security by machine-checked proofs of compliance for both:
+o	the real-world ISA (ARMv7), and
+o	a rigorously defined fine-grained CFI security specification.
+•	By doing so, our research eliminates reliance on costly and inherently incomplete post-instrumentation validation via dynamic testing.
+•	Our research is enabled by Picinae, which provides a principled ISA abstraction that supports symbolic reasoning over arbitrary binary inputs.
+o	This capability allows us to verify the rewriter once and guarantee correctness for all input binaries, ensuring both ISA conformity and adherence to CFI security requirements.
+•	Beyond the system itself, the paper contributes broader insights that bridge formal methods and binary-level security engineering:
+o	We derive design principles for building verifiable binary-level security mechanisms, and
+
+o	We demonstrate how formal verification exposes subtle, implementation-level bugs that are difficult to detect through testing alone.
+o	(Optional:) Despite full formal verification, ArmCFI achieves runtime overhead comparable to state-of-the-art CFI systems (XX%).
+•	More broadly, our research opens a new research avenue for general methodology for formally verified static binary rewriting exploring beyond CFI binary writer to a wider class of inlined reference monitor (IRM)-based security mechanisms.
+
+}
+
 \comment{
-Track justification draft:
+    Track justification draft:
 
-Our work on implementing a binary CFI-enforcing rewriter with a machine-checked proof of soundness belongs in Formal Methods and Programming Languages.
-Evaluating it requires a nuanced understanding of the difficulty of modeling binary execution traces of real ISAs in interactive theorem provers and an appreciation of the reduction in the trusted-computing base that comes as a result.
+    Our work on implementing a binary CFI-enforcing rewriter with a machine-checked proof of soundness belongs in Formal Methods and Programming Languages.
+    Evaluating it requires a nuanced understanding of the difficulty of modeling binary execution traces of real ISAs in interactive theorem provers and an appreciation of the reduction in the trusted-computing base that comes as a result.
 
-This work marks a paradigm shift in the way binary rewriters are secured.
-Whereas the SotA uses a small trusted checker to verify the outputs of inherently complicated rewriters adhere to a safe format,
-this work paves the way for verifying the rewriters themselves.
-Not only does this eliminate a computation step in the deployed product, it prevents the product from being deployed with logic errors that unnecessarily reduce the covered input space (e.g., binaries whose CFI could be enforced) and confound developers as to their origin.
+    This work marks a paradigm shift in the way binary rewriters are secured.
+    Whereas the SotA uses a small trusted checker to verify the outputs of inherently complicated rewriters adhere to a safe format,
+    this work paves the way for verifying the rewriters themselves.
+    Not only does this eliminate a computation step in the deployed product, it prevents the product from being deployed with logic errors that unnecessarily reduce the covered input space (e.g., binaries whose CFI could be enforced) and confound developers as to their origin.
 }
