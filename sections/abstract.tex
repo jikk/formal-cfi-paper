@@ -1,6 +1,10 @@
 %! root=./main.tex
 % NOTE (@kjee): 1/3 of a column.
 \begin{abstract}
-    This is for the abstract.
+Control flow integrity (CFI) has emerged as a cornerstone of binary defense, preventing a broad range of attacks and enabling other defense mechanisms.
+However, despite the thousands of publications since its 2008 debut, no CFI instrumentor is provably secure against the threat model it purports to thwart.
+Establishing such guarantees falls in the domain of formal methods, which have made many contributions to binary analysis and security, such as verifiabl lifting, symbolic execution, reachability analysis, and formal ISA semantics.
+Yet, despite Compcerts seminal demonstration that verified source-to-binary transformations are feasible, no one has combined the ingredients to create a formally sound binary-to-binary transformer---until now.
+\pname combinares binary lifting and sound symbolic reasoning in Rocq's expressive logic to deliver a binary CFI rewriter with a soundness guarantee that eliminates the need for a second-step checker.
 \end{abstract}
 
