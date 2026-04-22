@@ -8,3 +8,17 @@ Yet, despite Compcerts seminal demonstration that verified source-to-binary tran
 \pname combinares binary lifting and sound symbolic reasoning in Rocq's expressive logic to deliver a binary CFI rewriter with a soundness guarantee that eliminates the need for a second-step checker.
 \end{abstract}
 
+\comment{
+Track justification draft:
+
+Our work on implementing a binary CFI-enforcing rewriter with a machine-checked proof of soundness belongs in Formal Methods and Programming Languages.
+It requires a nuanced understanding of the difficulty of 
+1. formally modeling unstructured program semantics and
+2. proving complex trace based properties of unspecified code
+3. in a way that scales to realistic ISAs.
+
+This work marks a paradigm shift in the way binary rewriters are secured.
+Whereas the SotA uses a small trusted checker to verify the outputs of inherently complicated rewriters adhere to a safe format,
+this work paves the way for verifying the rewriters themselves.
+Not only does this eliminate a computation step in the deployed product, it prevents the product from being deployed with logic errors that unnecessarily reduce the covered input space (e.g., binaries whose CFI could be enforced) and confound developers as to their origin.
+}
