@@ -2,20 +2,17 @@
 % NOTE (@kjee): 1/3 of a column.
 \begin{abstract}
 Control flow integrity (CFI) has emerged as a cornerstone of binary defense, preventing a broad range of attacks and enabling other defense mechanisms.
-However, despite the thousands of publications since its 2008 debut, no CFI instrumentor is provably secure against the threat model it purports to thwart.
-Establishing such guarantees falls in the domain of formal methods, which have made many contributions to binary analysis and security, such as verifiabl lifting, symbolic execution, reachability analysis, and formal ISA semantics.
-Yet, despite Compcerts seminal demonstration that verified source-to-binary transformations are feasible, no one has combined the ingredients to create a formally sound binary-to-binary transformer---until now.
-\pname combinares binary lifting and sound symbolic reasoning in Rocq's expressive logic to deliver a binary CFI rewriter with a soundness guarantee that eliminates the need for a second-step checker.
+However, despite the thousands of publications since its 2005 debut, no CFI rewriter is provably secure against the threat model it purports to thwart.
+Establishing such guarantees falls within the domain of formal methods, which have made many contributions to binary analysis and security, such as verifiable lifting, symbolic execution, reachability analysis, and formal ISA semantics.
+Yet, despite Compcert's 2009 seminal demonstration that verified source-to-binary transformations are feasible, no one has combined the ingredients to create a formally sound binary-to-binary transformer---until now.
+\pname combines binary lifting and sound symbolic reasoning in Rocq's expressive logic to deliver a binary CFI rewriter with a soundness guarantee that eliminates the need for a second-step checker.
 \end{abstract}
 
 \comment{
 Track justification draft:
 
 Our work on implementing a binary CFI-enforcing rewriter with a machine-checked proof of soundness belongs in Formal Methods and Programming Languages.
-It requires a nuanced understanding of the difficulty of 
-1. formally modeling unstructured program semantics and
-2. proving complex trace based properties of unspecified code
-3. in a way that scales to realistic ISAs.
+Evaluating it requires a nuanced understanding of the difficulty of modeling binary execution traces of real ISAs in interactive theorem provers and an appreciation of the reduction in the trusted-computing base that comes as a result.
 
 This work marks a paradigm shift in the way binary rewriters are secured.
 Whereas the SotA uses a small trusted checker to verify the outputs of inherently complicated rewriters adhere to a safe format,
