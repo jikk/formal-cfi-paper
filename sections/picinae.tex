@@ -24,7 +24,7 @@
   \includegraphics[width=.95\linewidth]{figs/Detailed_Picinae_Overview_external_internal.drawio}
   %\includegraphics[width=.9\linewidth]{figs/Detailed_Picinae_Overview_CFI.drawio}
   \vspace{-10pt}
-  \caption{\Picinae{} Bottom-up formal methods architecture.\kjee{can we have two-liner/brief explanation here?}}\label{fig:picinae}
+  \caption{\Picinae{} binary verification architecture. Binaries are first lifted to PIL, then interactively verified.\kjee{can we have two-liner/brief explanation here?}\ixb{I think you and @KWH have different captioning approaches, leaving me confused about what to adopt in this paper and in my own writing beyond it. Can we discuss this here briefly?}}\label{fig:picinae}
   % https://drive.google.com/file/d/149Vu1NpUV6APaJQxOW_8LkdgVBFUkuiN/view?usp=sharing
 \end{figure}
 
@@ -34,11 +34,12 @@ Concrete binary code is first lifted to a low-level intermediate language (IL) t
 Lifting can be performed externally or internally.
 External lifting uses a separate binary reverse-engineering tool, such as NSA Ghidra~\cite{ghidra} or the Binary Analysis Platform (BAP)~\cite{brumley11cav}, to convert machine code to the tool's IL (P-code or BIL, respectively), which translates directly to \Picinae{}'s IL\@.
 Internal lifters implement this process within Rocq rather than using an external tool.
-\kwh{[KWH: Figure~\ref{fig:picinae} needs to change ``symbolic executor'' to ``symbolic interpreter''.]}
 
-To realize \pname, we implement an internal lifter for ARM7\@.
+To realize \pname, we implement an internal lifter for ARMv7\@.
+\ixb{@KWH, I rewrote ARM7 as ARMv7 to align it with the rest of this paper and what I see used online.}
 Internal lifting has the advantage that it need not be applied to concrete machine code.
-Each internal lifter is a Rocq Gallina function $\lceil\cdot\rceil:\mathbb{N}^*\rightharpoonup s$ that specifies the general process of translating bytes $\vec{b}\in\mathbb{N}^*$ to IL statements for a particular ISA\@.
+% caverill: Is this notation explained anywhere, or worth the space?
+Each internal lifter is a Gallina function $\lceil\cdot\rceil:\mathbb{N}^*\rightharpoonup s$ that specifies the general process of translating bytes $\vec{b}\in\mathbb{N}^*$ to IL statements for a particular ISA\@.
 Rocq theorems and proofs can thereby abstractly refer to the IL representation $\lceil\vec{b}\rceil$ of arbitrary (unknown) byte sequences $\vec{b}$.
 The lifter decodes bytes to assembly instructions and translates assembly instructions to IL without performing full disassembly or control-flow recovery (which are Turing-undecidable tasks on many architectures in the general case).
 This keeps the lifter small and amenable to abstract formal reasoning.
@@ -63,13 +64,13 @@ This keeps the lifter small and amenable to abstract formal reasoning.
 \end{align*}
 \vspace{-10pt}
 % \caption{An IL for expressing individual machine instruction operational semantics}
-\caption{\Picinae{} IR Specification.\kjee{@ixb please confirm it.}}\label{fig:picinae_il}
+\caption{\Picinae{} IR Specification.\kjee{@ixb please confirm it.}\ixb{Spec. looks complete; added typecast entry in the explanatory paragraph. Any specific question you had about it?}}\label{fig:picinae_il}
 \end{figure}
 
 Figure~\ref{fig:picinae_il} summarizes \Picinae{}'s IL, which is strategically chosen to bridge the semantic gap between real binary software and the formalisms expected by automated theorem provers.
 Each machine instruction is represented as a statement $s$ that explicitly encodes its semantic effects upon the machine state, including assignments of expression computations $e$ to machine state variables $v$ (e.g., cpu registers and memory), control-flow transfers ($\mathtt{jmp}$), hardware exceptions ($\mathtt{exn}$), sequences (\texttt{;}), conditionals (\texttt{?}), and bounded microcode loops ($s^e$).
-IL expressions $e$ range over variable-reads $v$, $w$-bit binary constants $n\ofwidth{w}$, $w$-width memory-reads and writes $e_1[e_2 (\coloneqq e_3)]\ofwidth{w}$, binary arithmetic and logical operations $\circledcirc$, local bindings ($\mathsf{let}$), and non-deterministic processor effects $*\ofwidth{w}$.
-Together, these form a Turing-complete computational language sufficient to express microarchitectural machine semantics with a minimal trusted computing base.
+IL expressions $e$ range over variable-reads $v$, $w$-bit binary constants $n\ofwidth{w}$, $w$-width memory-reads and writes $e_1[e_2 (\coloneqq e_3)]\ofwidth{w}$, binary arithmetic and logical operations $\circledcirc$, $w$-bit typecasts, local bindings ($\mathsf{let}$), and non-deterministic processor effects $*\ofwidth{w}$.
+Together, these form a type-safe Turing-complete computational language sufficient to express microarchitectural machine semantics with a minimal trusted computing base.
 
 %Since disassembly and decompilation for some architectures is provably undecidable in the general case, \Picinae{} does not rely upon perfect disassembly to lift binaries to its IL form.
 %It instead expresses lifted programs as an abstract function $p:\Sigma\rightarrow\mathbb{N}\rightharpoonup s$ from machine states $\sigma\in\Sigma$ and virtual addresses $a\in\mathbb{N}$ to the statement $s$ that encodes the machine instruction at $a$.
@@ -77,12 +78,20 @@ Together, these form a Turing-complete computational language sufficient to expr
 %Control-flow verification is undertaken by the theorem prover, not an obligation of the lifter, making it an untrusted, verified part of the system.
 %Code whose unreachability cannot be proved is verified to be safe irrespective of its reachability, ensuring soundness.
 
-\Picinae{} provides an array of powerful facilities for semi-automated, formal, machine-checked reasoning about the lifted IL, including a fully machine-verified symbolic interpreter, IL type-checker, binary arithmetic symbolic expression solver, and theories of modular arithmetic, memory safety, dynamic trace analysis, interprocedural analysis, binary data structures, mixed endianness and two's complement arithmetic, and temporal logics.
+% caverill: Have we ever reasoned about process isolation?
+\Picinae{} provides an array of powerful facilities for semi-automated, formal, machine-checked reasoning about the lifted IL, including a fully machine-verified symbolic interpreter, IL type-checker, binary arithmetic symbolic expression simplifier, and theories of modular arithmetic, memory safety, dynamic trace analysis, interprocedural analysis, binary data structures, mixed endianness and two's complement arithmetic, and temporal logics.
 This facilitates generation and verification of machine-checked proofs of binary code properties without source code, such as control-flow safety, memory safety, process isolation, timing leak-freedom, and even complete functional correctness for many concrete codes.
 
 Proof generation is semi-automated and human-guided.
-An expert user typically supplies a high-level structure for the proof, such as by asserting invariants at particular code points.
-\Picinae's tactic automation then generates a coinductive proof by slicing the code at invariant points, performing symbolic interpretation to infer control-flow paths, auto-solving or auto-simplifying many symbolic expressions and proof goals, and prompting the user for assistance with any remaining goals that cannot be solved automatically.
+An expert user typically supplies a high-level structure for the proof by asserting invariants at particular code points.
+\Picinae's tactic automation then generates a coinductive proof by slicing the code at invariant points, performing symbolic interpretation along all potential control-flow paths, auto-solving or auto-simplifying many symbolic expressions and proof goals, and prompting the user for assistance with any remaining goals that cannot be solved automatically.
 None of the automation is trusted; all tactics generate independently Rocq-verifiable proofs of soundness for all results, including symbolic interpretation, soundness and completeness of any control-flow recovery results, and all binary symbolic expression simplification.
 The result is a completely machine-checkable proof of each theorem.
 
+\cav{@ixb double check on the facts here would be appreciated}
+\ixb{Double checked, nothing jumped out at me as incorrect. Any specific concerns?}
+\cav{Sorry I hadn't finished writing it yet lol}
+\Picinae{} is uniquely capable of reasoning about binary rewriters due to its adoption of Rocq's support for dependent typing.
+Other frameworks for formally reasoning about machine code require that users select a single program to analyze, prohibiting them from reasoning about classes of binary programs (such as those emitted by a binary rewriter).
+This limitation arises from using proof languages with weaker type systems, such as Isabelle/HOL.
+\Picinae{} was designed with verifying implementations of binary rewriters in mind.

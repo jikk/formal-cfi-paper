@@ -173,19 +173,23 @@ but care must be taken during table construction to ensure the original program 
 Given a set of permitted destination indices $d = \{i_1, i_2, \dots\}$, we compute a table $t$ and hash function $H$ with the following properties:
 
 \mxz{this looks ugly}
+\ixb{Gave them keyword descriptions. I think we can drop the numbering, bold the descriptions, and elaborate in a paragraph if need be. @Charles is good at latex, maybe he can format this beautifully.}
 
 (1) $\forall i_j \in d, t\big[H(i_j)\big] = 4 \times i_j'$
-(the program can compute the translated address of a valid destination by indexing into the table)
+% (the program can compute the translated address of a valid destination by indexing into the table)
+(Completeness)
 
 (2) $\forall i_j \in d, t\big[H(i_j')\big] = 4 \times i_j'$
-(using a valid translated address to index the table gives back the same address)
+% (using a valid translated address to index the table gives back the same address)
+(Idempotency)
 
 % the previous two properties imply this one
 % (3) $\forall i_j, i_k \in d, i_j \ne i_k \implies H(i_j) \ne H(i_k) \land H(i_j') \ne H(i_k') \land H(i_j') \ne H(i_k)$
 % (there are no hash collisions, but we allow corresponding old and translated indices to have the same hash)
 
 (3) $\forall n, \nexists i_j \in d, H(i_j) = n \implies t\big[n\big] = 4 \times ai$
-(we fill unused slots in the table with the abort address)
+% (we fill unused slots in the table with the abort address)
+(Safety)
 
 For our implementation, we choose $H$ to be a function of the form $H(x) = \left\lfloor \frac{x}{2^{lsb}} \right\rfloor \bmod 2^w$ (bitsubstring),
 which can be performed with a single instruction on ARM (\texttt{UBFX}, unsigned bit field extract),
@@ -195,12 +199,22 @@ Unlike other policy enforcement schemes that require destination sets to form eq
 using instruction-specific policy tables allows us to enforce policies where a destination can belong to any number of distinct sets.
 Additionally, instructions that have the same destination set can share a table, minimizing space overhead.
 
-As an example, consider the instruction \texttt{BX r0}, which branches to the address in \texttt{r0},
-with an original destination set with indices \texttt{0x110}, \texttt{0x120}, and \texttt{0x130},
-and a traslated destination set with indices \texttt{0x200}, \texttt{0x220}, and \texttt{0x240}.
-The optimal parameters for $H$ are $lsb=4$ and $w=3$, extracting bits 4 to 6 from each index.
-The rewritten block and policy table for this instruction is as follows: \kjee{the following presentation can be improved.}
-\begin{table}[h]
+% As an example, consider the instruction \texttt{BX r0}, which branches to the address in \texttt{r0},
+% with an original destination set with indices \texttt{0x110}, \texttt{0x120}, and \texttt{0x130},
+% and a translated destination set with indices \texttt{0x200}, \texttt{0x220}, and \texttt{0x240}.
+% % The parameters for $H$ that minimize table size while mapping destinations to unique keys are $lsb=4$ and $w=3$, extracting bits 4 to 6 from each index.
+% The optimal parameters for $H$ are $lsb=4$ and $w=3$, extracting bits 4 to 6 from each index.
+% The rewritten block and policy table for this instruction is as follows: \kjee{the following presentation can be improved.}
+
+\autoref{fig:block_rewriter_demo} illustrates rewriting \texttt{BX r0}, a branch to \texttt{r0},
+with a policy-permitted original destination set of \texttt{0x110}, \texttt{0x120}, and \texttt{0x130},
+whose corresponding new indices are \texttt{0x200}, \texttt{0x220}, and \texttt{0x240} respectively.
+The parameters for $H$ that minimize table size while mapping destinations to unique keys are $lsb=4$ and $w=3$, extracting bits 4 to 6 from each index.
+\ixb{I think these two sentences may save readers some confusion; unsure if they're worth the space though:}
+Notice the new destination \texttt{0x220} only has one entry in the table, whereas the others have two.
+This is because it shares the same hash as its original destination, which is safe because jumps to the new and old destinations should both be routed to the new block.
+
+\begin{figure}[h]
     \definecolor{green}{rgb}{0.0, 0.6, 0.0}
     \centering
     \begin{tabular}{|c|c|c|c|}
@@ -223,9 +237,8 @@ The rewritten block and policy table for this instruction is as follows: \kjee{t
         6 & 4*ai \\ \hline
         7 & 4*ai \\ \hline
     \end{tabular}
-\end{table}
-
-\begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,caption={\texttt{BX r0} block where $a$ is the address of the table},label={lst:armv7},captionpos=b,xleftmargin=.3cm]
+    \vspace{8pt}
+\begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,label={lst:armv7},xleftmargin=.3cm]
 UBFX r0, r0, #6, #3      // r0 = H(dest) (r0 is an address, so we add 2 to lsb)
 LSL r0, r0, #2           // r0 = H(dest) * 4
 ADD r0, r0, #a           // r0 = &table[H(dest)]
@@ -235,6 +248,53 @@ BX r0                    // branch to table[H(dest)]
 \mxz{there isn't an instruction to add an arbitrary constant to a register, only certain constants are possible
 so there are actually 4 add instructions in this block to add each byte separately, but idk if it's necessary to say that here}
 \ixb{I bet it's not necessary.}
+
+\caption{Rewriting \texttt{BX r0}. The tables show the hash values and address translation for the permitted destinations. The listing shows the rewritten block.
+\ixb{The table diagram still is not beautiful, but I think it serves us well to combine the tables and listing in the same figure.
+It makes referring to it in a leading paragraph sentence easier.}}
+\label{fig:block_rewriter_demo}
+\end{figure}
+
+% \begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,caption={\texttt{BX r0} block where $a$ is the address of the table.},label={lst:armv7},captionpos=b,xleftmargin=.3cm]
+% UBFX r0, r0, #6, #3      // r0 = H(dest) (r0 is an address, so we add 2 to lsb)
+% LSL r0, r0, #2           // r0 = H(dest) * 4
+% ADD r0, r0, #a           // r0 = &table[H(dest)]
+% LDR r0, [r0]             // r0 = table[H(dest)]
+% BX r0                    // branch to table[H(dest)]
+% \end{lstlisting}
+% \begin{table}[h]
+%     \definecolor{green}{rgb}{0.0, 0.6, 0.0}
+%     \centering
+%     \begin{tabular}{|c|c|c|c|}
+%         \hline
+%         \textbf{i} & \textbf{i'} & \textbf{H(i)} & \textbf{H(i')} \\ \hline
+%         0x110 & \textcolor{red}{0x200} & \textcolor{red}{1} & \textcolor{red}{0} \\ \hline
+%         0x120 & \textcolor{green}{0x220} & \textcolor{green}{2} & \textcolor{green}{2} \\ \hline
+%         0x130 & \textcolor{blue}{0x240} & \textcolor{blue}{3} & \textcolor{blue}{4} \\ \hline
+%     \end{tabular}
+%     \quad
+%     \begin{tabular}{|c|c|}
+%         \hline
+%         \textbf{key} & \textbf{value} \\ \hline
+%         \textcolor{red}{0} & \textcolor{red}{4*0x200} \\ \hline
+%         \textcolor{red}{1} & \textcolor{red}{4*0x200} \\ \hline
+%         \textcolor{green}{2} & \textcolor{green}{4*0x220} \\ \hline
+%         \textcolor{blue}{3} & \textcolor{blue}{4*0x240} \\ \hline
+%         \textcolor{blue}{4} & \textcolor{blue}{4*0x240} \\ \hline
+%         5 & 4*ai \\ \hline
+%         6 & 4*ai \\ \hline
+%         7 & 4*ai \\ \hline
+%     \end{tabular}
+%     \caption{\kjee{anything to say here?}}
+% \end{table}
+
+% \begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,caption={\texttt{BX r0} block where $a$ is the address of the table.},label={lst:armv7},captionpos=b,xleftmargin=.3cm]
+% UBFX r0, r0, #6, #3      // r0 = H(dest) (r0 is an address, so we add 2 to lsb)
+% LSL r0, r0, #2           // r0 = H(dest) * 4
+% ADD r0, r0, #a           // r0 = &table[H(dest)]
+% LDR r0, [r0]             // r0 = table[H(dest)]
+% BX r0                    // branch to table[H(dest)]
+% \end{lstlisting}
 
 {% NOTE (@jee): somewhat length, feel redudant.
     \heading{Unsupported instructions.}
@@ -266,7 +326,7 @@ so there are actually 4 add instructions in this block to add each byte separate
         Means the behavior cannot be relied upon. \unpredictable{} behavior must not perform any function that cannot be performed at the current or a lower level of privilege using instructions that are not \unpredictable{}.
     \end{displayquote}
     Although in practice, these instructions usually just cause a hardware exception \mxz{maybe?}, this definition includes the possibility of performing unpermitted control flow.
-    Thus, the rewriter must detect and remove all such instructions. Most instruction types include at least a few \unpredictable{} variants, either from use of the PC register for instructions that do not support it or from the instruction encoding requiring certain bits to be 0 or 1. A couple of instructions are only \unpredictable{} at runtime, including dynamic control flow instructions when the destination address ends with the bits '10'. This issue is avoided the same way we prevent switching to Thumb mode, by enforcing that all hash table entries are divisible by four.
+    Thus, the rewriter must detect and remove all such instructions to guarantee safety for arbitrary ISA-conformant cpus. Most instruction types include at least a few \unpredictable{} variants, either from use of the PC register for instructions that do not support it or from the instruction encoding requiring certain bits to be 0 or 1. A couple of instructions are only \unpredictable{} at runtime, including dynamic control flow instructions when the destination address ends with the bits '10'. This issue is avoided the same way we prevent switching to Thumb mode, by enforcing that all hash table entries are divisible by four.
     }
 
 % python/ocaml extractor
@@ -275,15 +335,14 @@ The ELF editor is given the output of the CFI rewriter and adds new segments to 
 \subsection{Workflow}
 As we would like to formally verify the soundness of our CFI implementation,
 we implement the CFI rewriter as a function in Gallina,
-the specification language of Rocq, to allow us to write machine-checked proofs about its behavior.
+the implementation language of Rocq, to allow us to write machine-checked proofs about its behavior.
 The rewriter function is extracted into OCaml and compiled into an executable
 with some additional driver code for reading/writing files and argument parsing.
 The ELF editor is implemented as a Python script using the LIEF library.
-We do not formally verify the correctness of the extraction process
-the additional OCaml code, or the ELF editor,
+The extraction to OCaml is formally guaranteed to preserve the rewriter's semantics~\cite{fv_ocaml_extraction}.
+We do not formally verify the correctness of the the ELF editor,
 instead only focusing on the core rewriting logic that transforms the instruction bytes,
-as verification of the other components is not particularly interesting or
-has been covered by previous works in the case of verified extraction.
+as verification of other components is not particularly interesting.
 
 However, we are still left with a difficult problem.
 To prove the soundness of the rewriter,

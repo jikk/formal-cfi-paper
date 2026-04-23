@@ -8,7 +8,8 @@
 \setlist[itemize]{topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex,leftmargin=*}
 \setlist[enumerate]{label=(\arabic*),topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex,leftmargin=*}
 
-To prove that our CFI implementation is sound, we must formalize what it means to be sound.
+We begin by formalizing what it means for a binary CFI rewriter \emph{implementation} to be sound.
+% To prove that our CFI implementation is sound, we must formalize what it means to be sound.
 
 \heading{Safety of a single trace.}
 We define a proposition $Pol(i, j)$, which is true if stepping from index $i$
@@ -90,7 +91,7 @@ For a CFI implementation to be sound, all rewritten programs produced by the rew
 \end{figure}
 We prove that our CFI rewriter is sound in Rocq using \Picinae.
 For this, we create an ARMv7 decoder and lifter in Rocq that translates ARM instruction encodings
-into \Picinae{} IL, based on the specification in the official documentation,
+into \Picinae{} IL, based on the specification in the official documentation\ixb{add citation},
 and define a \Picinae{} program, \texttt{arm\_prog}, that reads memory of the
 given store at the given address and returns the IL produced by the decoder and lifter.
 For \unpredictable{} instructions, the corresponding IL sets all registers to an unknown value and
@@ -111,12 +112,14 @@ it will eventually
 (2) exit the new text segment
 or (3) raise a hardware exception, all while only taking permitted steps.
 We define a block to be safe if all such traces have this property.
+\ixb{last sentence is confusing: I thought we were discussing the safety of traces, but then it switches to blocks.}
 
-% hopefully satisfies_all will be explained earlier
-In \Picinae{}, we prove this using \texttt{satisfies\_all} by placing an invariant point
-at the start of each block that requires the head of the trace to satisfy our preconditions
+% In \Picinae{}, we prove this using \texttt{satisfies\_all} by placing an invariant point
+\Picinae{}'s co-inductive proof handles this by placing an invariant point
+at the start of each block requiring the head of the trace to satisfy our preconditions
 and all steps of the trace to be permitted, and by setting all addresses outside the new
 text segment as exit points that must also satisfy the same invariant.
+\ixb{I think this paragraph should be rewritten without satisfies\_all. And it should be a multi-sentence paragraph. I'm having trouble interpreting this one long sentence.}
 
 We can show that the invariants about memory will hold regardless of what happens in the rewritten code,
 so we do so now.

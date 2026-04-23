@@ -4,22 +4,14 @@
 Binary control flow integrity (CFI) has emerged as a cornerstone of software defense, with trusted implementations within VMs, OSes, hypervisors, web browsers, and many other security-critical products.
 However, no full-scale binary CFI rewriter \emph{implementation} is yet proven secure against the hijacking attacks it purports to thwart.
 Formal methods (FM) offer peak assurance for production software in a variety of domains, such as certified compilers, OS kernels, and networking stacks; but verifying binary-to-binary code rewriting software raises unique challenges that frustrate traditional FM\@.
-% Despite these powerful developments, no one has combined the ingredients to create a formally sound binary-to-binary transformer---until now.
 
 \pname bridges this gap by implementing the first fully verified binary-to-binary CFI system for a mainstream microarchitecture.
 A machine-checked proof in Rocq guarantees that rewriting generates policy-compliant binaries from near-arbitrary binary code inputs,
 and the program-proof co-development process fixes subtle yet dangerous logic bugs that evade unit testing and only become exposed by exhaustive proof.
-% \pname delivers a fine-grained CFI binary rewriter, proved to only emit policy-observing binaries.
-%Furthermore, it showcases the subtle and damning bugs that creep into implementations which can only be protected against by exhaustive formal verification, not inherently incomplete test-based approaches.
 Verification is facilitated by a new approach to formalizing proofs that universally quantify over arbitrary (non-concrete) binary code inputs, leading to design principles for provably secure binary hardening implementations.
-%As certified compilation did before it, \pname marks a trailhead for a new line of research into checker-free verified binary rewriting \emph{implementations}.
-% As with Compcert, this marks the trailhead for a new line of research into checker-free verified static binary rewriters.
 %[We should end with a sentence about experimental evaluation (to help reinforce that this is very practical --- important for CCS).]
 Evaluation on SPEC CPU benchmarks, software libraries, and malicious exploits demonstrates that \pname exhibits performance, compatibility, and security suitable for production deployments.
-%Empirical evidence shows \pname secures vulnerable binaries in our microbenchmark and achieves usable average performance overheads on the SPEC CPU 2017 benchmark.
 \end{abstract}
-
-%IXB: Gave it a go, but I think @MAX should too. Personally, I feel our experimental eval. is a bit rushed and minimal at this stage. Maybe my bar is uncalibrated. I need to close my eyes soon :)
 
 %KWH: I think I like this version.  Should see what Dr. Jee thinks.
 
