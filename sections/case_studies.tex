@@ -25,6 +25,9 @@ Since $i$ could be any index of the new text segment, the destination does not h
 If the end of a dynamic control flow block was at $i$, a trace could execute a dynamic branch without executing the guard code
 that constrains the instruction to permitted destinations. Thus, \itoip cannot leave new text segment indices alone
 and instead must choose a different policy permitted destination to place in the table, such as $ai$.
+%
+In the proof, this problem is detected when we try to prove that we reach an invariant point after jumping to a table entry.
+While we can prove that this step is always safe, it is not true that the destination is an invariant point unless we modify $i2i'$.
 
 \heading{Branching to PC.}
 Most instructions other than those in the data processing or load/store categories are defined to be \unpredictable{}
