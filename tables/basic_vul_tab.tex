@@ -1,19 +1,19 @@
 %! root=../main.tex
 \begin{table}[h]
   \centering
+  \resizebox{.8\linewidth}{!}{
+    \begin{tabular}{ll}
+      \toprule
+      \textbf{Attack family} & \textbf{Source file} \\
+      \midrule
+      Buffer overflow              & \texttt{examples/basic/bof.c}  \\
+      Return-oriented programming  & \texttt{examples/basic/rop.c}  \\
+      Jump-oriented programming    & \texttt{examples/basic/jop.c}  \\
+      Sigreturn-oriented programming & \texttt{examples/basic/srop.c} \\
+      Format string exploit        & \texttt{examples/basic/fmt.c}  \\
+      \bottomrule
+    \end{tabular}
+  }
   \caption{Proof-of-concept programs used for security evaluation.}
   \label{tab:poc-attacks}
-\resizebox{.8\linewidth}{!}{
-  \begin{tabular}{ll}
-    \toprule
-    \textbf{Attack family} & \textbf{Source file} \\
-    \midrule
-    Buffer overflow              & \texttt{examples/basic/bof.c}  \\
-    Return-oriented programming  & \texttt{examples/basic/rop.c}  \\
-    Jump-oriented programming    & \texttt{examples/basic/jop.c}  \\
-    Sigreturn-oriented programming & \texttt{examples/basic/srop.c} \\
-    Format string exploit        & \texttt{examples/basic/fmt.c}  \\
-    \bottomrule
-  \end{tabular}
-}
 \end{table}

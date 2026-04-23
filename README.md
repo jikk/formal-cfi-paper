@@ -52,6 +52,7 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 ## TODOs
 
 * [ ] better name for `ELF Editor`
+    - @kjee: `ELF Packager` is my current favorite
     - `ELF Repackager`, `ELF Composer`, `ELF Reconstructor`, `ELF Rebuilder`
 
 * [ ] Ilan, Shreya, Charles brainstorm
@@ -60,12 +61,17 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
     3. What are the design principles for making the next binary rewriter
         * Inductive structure of the proof/correctness specification
         * Do not shuffle registers on/off the stack (though this is more for concrete code than rewriters, discovered the annoyance of this during mitre eCTF)
-        * Do not use writable security state, our CFI implementation sets the security state to read-only. This abdicates us from reasoning about the possibility of incvalid security stats.
+        * Do not use writable security state, our CFI implementation sets the security state to read-only. This abdicates us from reasoning about the possibility of invalid security stats.
         * Want all goals involving resulting states to use universal quantification. Existential quantification requires building a witness state, which requires symbolically executing a step. The infrastructure is not ready for that (ixb: but I think lifting the arm_prog+decoder+lifter all to PIL will fix this). This excludes properties such as semantic transparency in the presence of non-deterministic instructions.
 * [ ] Basic examples
     1. Max completed bof, rop, fmt
     2. JOP: ixb tried and failed ot add jop by translating the example given in the tech. report. from x86 to ARMv7. Open problem. See Section 4.4 of the TR: https://www.academia.edu/909994/Jump_oriented_programming_A_new_class_of_code_reuse_attack
 * [ ] Advanced examples?
     1. We could use RecIPE, an "extensible and comprehensive benchmark for evaluating memory error defenses" (https://dl.acm.org/doi/pdf/10.1145/3488932.3524127)
+
+### Appendix
+* [ ] what do we want to have on appendix?
+  - Example proofs
+  - Counter example cases? (indirectly stating what theorems and lemmas want to prevent from happening)
 
 ##### tag: `pdli`,`max`, `cfi`, `formal verification`, `arm`
