@@ -336,7 +336,7 @@ It makes referring to it in a leading paragraph sentence easier.}}
 % python/ocaml extractor
 The ELF editor is given the output of the CFI rewriter and adds new segments to the original ELF for the rewritten instructions, the policy tables, and the abort handler that are loaded at the correct addresses and permissions. The original text segment is changed to be nonexecutable. Finally, the ELF editor uses the rewriter's \itoip function to update the entrypoint and symbol values.
 
-\subsection{Workflow}
+\subsection{Workflow\kjee{what workflow?}}
 As we would like to formally verify the soundness of our CFI implementation,
 we implement the CFI rewriter as a function in Gallina,
 the implementation language of Rocq, to allow us to write machine-checked proofs about its behavior.
@@ -361,3 +361,6 @@ it was produced by some input to the rewriter.
 by not proving an implementation}
 
 To solve this issue, we turn to the \Picinae{} framework, which we describe in the next section.
+
+\subsection{FM-friendly IRM Design Principles}\label{sec:fm_friendly}
+\kjee{@Max, @ixb: we need sth here.}
