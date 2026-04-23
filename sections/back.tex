@@ -12,6 +12,7 @@ The precise specification is universal to all binary code for the ISA; once writ
 2. proofs are maintenance burdens for changing codebases
 3. arbitrary binary input reasoning is out of reach}
 \ixb{It would help me if it was more explicit. This is my understanding of your point: by proving properties of the rewriter's output rather than reproving it for each output, we can reasonably assign the specification tasks to the best and most trusted experts and then trust the specs are valid.}
+\kwh{I'm saying that once the best and most trusted experts have specified control-flow integrity for ARM (i.e., whitelisting flows to a CFG), that formal specification works for all future CFI implementations (rewriters, checkers, etc.). This addresses point 1 of the intro paragraph that starts, ``Despite these unparalleled advantages ...'', which claims that FM hasn't been widely adopted because it's hard to write specifications. Our specification is universal in this case, so whatever difficulty may have been posed by writing it never needs to be faced again.}
 
 Formal reasoning about static binary rewriting (or binary-to-binary transformations) presents fundamental challenges. The input space is vast and highly irregular, lacking the structural guarantees available at the source level. Verification requires precise modeling of low-level ISA semantics, including subtle architectural corner cases.
 %

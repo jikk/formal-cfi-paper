@@ -84,5 +84,5 @@ Proof generation is semi-automated and human-guided.
 An expert user typically supplies a high-level structure for the proof, such as by asserting invariants at particular code points.
 \Picinae's tactic automation then generates a coinductive proof by slicing the code at invariant points, performing symbolic interpretation to infer control-flow paths, auto-solving or auto-simplifying many symbolic expressions and proof goals, and prompting the user for assistance with any remaining goals that cannot be solved automatically.
 None of the automation is trusted; all tactics generate independently Rocq-verifiable proofs of soundness for all results, including symbolic interpretation, soundness and completeness of any control-flow recovery results, and all binary symbolic expression simplification.
-The result is a completely machine-checkable proof of the theorem.
+The result is a completely machine-checkable proof of each theorem.
 
