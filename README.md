@@ -70,6 +70,8 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
     1. We could use RecIPE, an "extensible and comprehensive benchmark for evaluating memory error defenses" (https://dl.acm.org/doi/pdf/10.1145/3488932.3524127)
 
 ### Appendix
+* [ ] Open science
+* [ ] Ethical considerations
 * [ ] what do we want to have on appendix?
   - Example proofs
   - Counter example cases? (indirectly stating what theorems and lemmas want to prevent from happening)
