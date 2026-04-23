@@ -108,8 +108,8 @@ Safe instructions are characterized by (1) never leading to an exit point, and (
 Individual lemmas establish that common instructions (e.g., loads, stores, arithmetic operations, and bit manipulations) satisfy this predicate by analyzing their PIL semantics.
 
 For static branches, the proof must relate the original branch target to its relocated counterpart.
-We define address mapping functions $i2i'$ and $i'2i$ that convert between original and relocated addresses.
-The key lemma shows that executing a rewritten static branch transfers control to an address $a'$ such that either $a' = a_\mathrm{abort}$, or the original block index $i'2i(\frac{a'}{4})$ is policy-permitted from the source block.
+We define address mapping functions \itoip and \iptoi that convert between original and relocated addresses.
+The key lemma shows that executing a rewritten static branch transfers control to an address $a'$ such that either $a' = a_\mathrm{abort}$, or the original block index $\iptoi(\frac{a'}{4})$ is policy-permitted from the source block.
 
 An important subtlety is handling conditional branches.
 The rewriter wraps conditional IRMs with a branch that skips the IRM body when the condition is false.
@@ -127,7 +127,7 @@ This collision tolerance is essential because runtime register values might cont
 
 Given valid hash parameters, we prove that the generated table maps each hash value to a safe destination.
 The proof proceeds by induction on the policy's destination list, showing that each table entry is either the abort address or a relocated destination corresponding to a policy-permitted original address.
-This requires establishing a predicate for \emph{safe exits}: an address $a$ is safe from source block $i$ if either $a = a_\mathrm{abort}$, or there exists an original destination $d$ such that $i2i'(d) = a$ and $d \in \mathit{pol}(i)$.
+This requires establishing a predicate for \emph{safe exits}: an address $a$ is safe from source block $i$ if either $a = a_\mathrm{abort}$, or there exists an original destination $d$ such that $\itoip(d) = a$ and $d \in \mathit{pol}(i)$.
 
 The table lookup sequence consists of hash computation, address scaling, table base addition, and load.
 The composition of these steps shows that the final loaded jump target satisfies the safe exit predicate.
@@ -213,13 +213,13 @@ It turns out that for symbolic execution, it is sufficient to know that the bloc
 
 % \begin{enumerate}
 %     \item prepXP - prepare the XP hypothesis to get it in normal form. Original hyp: \texttt{exec\_prog p (((Addr a', s') :: t1) ++ t0)}; new hyp: \texttt{exec\_prog p
-%     ((Addr a', s') :: t ++ [(Addr (Z.to\_N (i2i' i) * 4 + 4 * 0), s1)])}
+%     ((Addr a', s') :: t ++ [(Addr (Z.to\_N (\itoip i) * 4 + 4 * 0), s1)])}
 %     \item rireduceRI - reduce the rewriter output hypothesis to a concrete list of assembly instruction expressions, this note currently covers both rireduceRI and rireduceSplit.
 %     \begin{itemize}
 %         \item Original hyp: \texttt{  rewrite\_pc
 %     (ARM\_data\_r op Z14 S (unused\_reg 15 15 15) (unused\_reg 15 15 15) imm5
 %        type (unused\_reg 15 15 15)) (unused\_reg 15 15 15) tc
-%     (pol i) i2i' cond i ti ai = Some (irm', table, tc')};
+%     (pol i) \itoip cond i ti ai = Some (irm', table, tc')};
 %         \item     new hyp: \texttt{  arm\_assemble\_all
 %     [ARM\_B (invert\_cond cond) (Z.pos (Pos.of\_succ\_nat 13) - Z1);
 %      STR (unused\_reg 15 15 15) SP Z\_4;

@@ -5,25 +5,25 @@ In this section, we present three case studies highlighting subtle bugs introduc
 \kjee{For each case study item, we want to have (1) why this is overlooked in CFI writer implementation?; (2) How it is detected during the proof process?; and (3) How it is fixed?}
 
 \heading{Address translation.}
-Recall the \emph{unintuitive} behavior of $\mathit{i'2i}$~(\autoref{sec:formalization}): unchanged indices permit jumping to the old text segment.
+Recall the \emph{unintuitive} behavior of $\mathit{\iptoi}$~(\autoref{sec:formalization}): unchanged indices permit jumping to the old text segment.
 \ixb{@MAX: proposed rewrite of what you had before, though I'm not sure I captured the behavior correctly. The main point of the rewrite is to make it less wordy and highlight \emph{unintuitive} earlier to fuel reader interest.}
-% As we describe the $i'2i$ function in \autoref{sec:formalization}, we briefly mentioned an
+% As we describe the \iptoi function in \autoref{sec:formalization}, we briefly mentioned an
 % \emph{unintuitive} behavior that permits jumping to the old text segment since some of its indices are left unchanged.
 % but gave an explanation on why this is still fine.
 \kjee{In what case do we still need to preserve the control transfer (or data reference) to *the old text*. We need more detailed explanation/justification; Here or from somewhere in section 3.}
 \ixb{@MAX, perhaps repeat the point "the ARM Linux kernel provides helper functions that we cannot rewrite at fixed addresses" (\autoref{sec:cfi_design}) for the third time? Previously also in \autoref{sec:formalization}}
 %
-While this --- co-allocation of old and new text segments --- is necessary (or prevalent) design practice for sound and efficient implementation of CFI via static binary rewriting \mxz{not sure what this is trying to say. }, leaving the analogous behavior present in the $i2i'$ function used in the rewriter implementation would invalidate the proof.
+While this --- co-allocation of old and new text segments --- is necessary (or prevalent) design practice for sound and efficient implementation of CFI via static binary rewriting \mxz{not sure what this is trying to say. }, leaving the analogous behavior present in the \itoip function used in the rewriter implementation would invalidate the proof.
 \kjee{Why this invalidates the proof? Is it flagged during proof process? not clear what is an issue here.}
 \mxz{the following text explains why the proof would fail}
 %
-Instead, when any index (say $i'$) in the new text segment is provided as input to $i2i'$, we must translate it to $ai$.
-To show why this is necessary, consider a policy that permits an instruction to jump to an index $i$ \kjee{address?} outside the old text segment that happens to be part of the new text segment after rewriting.
-A policy table for this instruction would contain $i2i'(i)$ as one of its entries, which equals $i$ under the \naive{} definition, as $i$ is not in the old text segment.
+Instead, when any index $i'$ in the new text segment is provided as input to \itoip, we must translate it to $ai$.
+To show why this is necessary, consider a policy that permits an instruction to jump to an index $i$ \kjee{address?}\ixb{Index is technically correct, but I agree if you're saying this is hard for a skimmer to follow. Throughout the development and paper ``index'' by default refers to the word-aligned offset into memory. The address of index $i'$ is $4i'$.} outside the old text segment that happens to be part of the new text segment after rewriting.
+A policy table for this instruction would contain $\itoip(i)$ as one of its entries, which equals $i$ under the \naive{} definition, as $i$ is not in the old text segment.
 %
 Since $i$ could be any index of the new text segment, the destination does not have to be the start of another block.
 If the end of a dynamic control flow block was at $i$, a trace could execute a dynamic branch without executing the guard code
-that constrains the instruction to permitted destinations. Thus, $i2i'$ cannot leave new text segment indices alone
+that constrains the instruction to permitted destinations. Thus, \itoip cannot leave new text segment indices alone
 and instead must choose a different policy permitted destination to place in the table, such as $ai$.
 
 \heading{Branching to PC.}
