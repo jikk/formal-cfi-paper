@@ -195,8 +195,11 @@ For our implementation, we choose $H$ to be a function of the form $H(x) = \left
 which can be performed with a single instruction on ARM (\texttt{UBFX}, unsigned bit field extract),
 and find appropriate parameters to minimize the size of the table for a given destination set while maintaining the listed properties.
 
-Unlike other policy enforcement schemes that require destination sets to form equivalence classes such as in Abadi et al.,
+Unlike other policy enforcement schemes that require destination sets to form equivalence classes such as by inlining unique labels at destination addresses,
 using instruction-specific policy tables allows us to enforce policies where a destination can belong to any number of distinct sets.
+This also allows us to still be able to prove rewriter soundness without knowing every executable instruction in memory
+(the kernel-provided code mentioned earlier is an example),
+while label-based approaches require that the labels chosen do not appear anywhere in executable memory other than valid destinations.
 Additionally, instructions that have the same destination set can share a table, minimizing space overhead.
 
 % As an example, consider the instruction \texttt{BX r0}, which branches to the address in \texttt{r0},
@@ -302,6 +305,7 @@ It makes referring to it in a leading paragraph sentence easier.}}
     Some ARM instructions are predictable but out of scope (\eg floating point). 
     In these cases, we replace them with a branch to $ai$.
     \ixb{todo---fact check with Max.}
+    \mxz{floating point is not out of scope, this part was just a transition to talking about endianness/instruction mode/unpredictable}
     
     \heading{Endianness.}
     ARM supports both little and big endian memory operations, determined by the value of the E bit of the Current Program Status Register.
@@ -318,7 +322,7 @@ It makes referring to it in a leading paragraph sentence easier.}}
     Most notably, dynamic control flow instructions will change the instruction state to Thumb mode when the least significant bit of the destination address is 1.
     For this reason, we describe all addresses as indices, so no entry of the hash table will switch the instruction state.
     We omit the support for these additional instruction modes because Jazelle and ThumbEE are extremely niche, and
-    support for Thumb mainly just requires duplicating work to accommodate the different instruction encodings.
+    support for Thumb mainly just requires duplicating work to accommodate the different instruction encodings and Thumb-specific instructions.
 
     \heading{\unpredictable{} instructions.}
     Certain instructions are defined to be \unpredictable{}. The manual describes this term as:
@@ -340,9 +344,9 @@ The rewriter function is extracted into OCaml and compiled into an executable
 with some additional driver code for reading/writing files and argument parsing.
 The ELF editor is implemented as a Python script using the LIEF library.
 The extraction to OCaml is formally guaranteed to preserve the rewriter's semantics~\cite{fv_ocaml_extraction}.
+\mxz{i dont think so? e.g. we extract coq Z into ocaml int, which has a limited size and we dont prove that we never use a value that doesn't fit}
 We do not formally verify the correctness of the the ELF editor,
-instead only focusing on the core rewriting logic that transforms the instruction bytes,
-as verification of other components is not particularly interesting.
+instead only focusing on the core rewriting logic that transforms the instruction bytes.
 
 However, we are still left with a difficult problem.
 To prove the soundness of the rewriter,
