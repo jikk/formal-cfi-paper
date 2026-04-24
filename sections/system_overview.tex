@@ -72,7 +72,7 @@
     }~\label{fig:cfi_arch}
 \end{figure}
 
-\subsection{Design}\label{sec:cfi_design}
+\subsection{Rewriter Design}\label{sec:cfi_design}
 \mxz{TODO reference fig 1 here}
 We first describe the design of \pname, which consists of two components:
 the CFI rewriter, the component that turns a list of instructions into a rewritten list of instructions with CFI,
@@ -336,10 +336,10 @@ It makes referring to it in a leading paragraph sentence easier.}}
 % python/ocaml extractor
 The ELF editor is given the output of the CFI rewriter and adds new segments to the original ELF for the rewritten instructions, the policy tables, and the abort handler that are loaded at the correct addresses and permissions. The original text segment is changed to be nonexecutable. Finally, the ELF editor uses the rewriter's \itoip function to update the entrypoint and symbol values.
 
-\subsection{Workflow\kjee{what workflow?}}
+\subsection{Rewriter Soundness Proof Setup}
 As we would like to formally verify the soundness of our CFI implementation,
 we implement the CFI rewriter as a function in Gallina,
-the implementation language of Rocq, to allow us to write machine-checked proofs about its behavior.
+Rocq's programming language, to allow us to write machine-checked proofs about its behavior.
 The rewriter function is extracted into OCaml and compiled into an executable
 with some additional driver code for reading/writing files and argument parsing.
 The ELF editor is implemented as a Python script using the LIEF library.
@@ -364,3 +364,5 @@ To solve this issue, we turn to the \Picinae{} framework, which we describe in t
 
 \subsection{FM-friendly IRM Design Principles}\label{sec:fm_friendly}
 \kjee{@Max, @ixb: we need sth here.}
+
+\todo{}
