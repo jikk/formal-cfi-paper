@@ -3,6 +3,31 @@
 \section{Formal Verification of CFI Binary Rewriter}
 \label{sec:back}
 
+\comment{% NOTE (@kjee): re-working plan/outline.
+Full-stratch/end-to-end CFI rewriter correctness would comprise the following four subcomponents.
+
+* **Decoder conformity.**
+    - Formal specification exists.
+    - Formal specification possible.
+    - Research conducted by others (citation needed).
+    - Outside the scope of the work.
+
+* **CFI conformity.**
+    - We define the safety and security specification.
+    - Scope of the work.
+
+* **ISA conformity.**
+    - Formal specification exists (? not sure).
+    - Generic/trustworthy abstraction supported Picinae
+    - Scope of the work.
+
+* **ELF packager conformity.**
+    - Outside the scope of the work.
+    - Two potential directions
+        1. Formally verifying supply-chain components: Formal verification of Python-written programs, Rewriting/porting ELF manuplation libraries in Coq
+        2. Program loader verification (very ambitious and challenging research direction.)
+}
+
 \pname formally verifies a program transformation: a static binary rewriter that takes arbitrary binaries as input and produces security-hardened outputs guaranteed to satisfy a precise safety specification.
 The precise specification is universal to all binary code for the ISA; once written, it never needs to be specialized to a new rewriter.
 \kjee{so why this is cool?}
