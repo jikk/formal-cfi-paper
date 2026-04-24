@@ -36,7 +36,6 @@ External lifting uses a separate binary reverse-engineering tool, such as NSA Gh
 Internal lifters implement this process within Rocq rather than using an external tool.
 
 To realize \pname, we implement an internal lifter for ARMv7\@.
-\ixb{@KWH, I rewrote ARM7 as ARMv7 to align it with the rest of this paper and what I see used online.}
 Internal lifting has the advantage that it need not be applied to concrete machine code.
 % caverill: Is this notation explained anywhere, or worth the space?
 Each internal lifter is a Gallina function $\lceil\cdot\rceil:\mathbb{N}^*\rightharpoonup s$ that specifies the general process of translating bytes $\vec{b}\in\mathbb{N}^*$ to IL statements $s$ for a particular ISA\@.
@@ -89,8 +88,7 @@ None of the automation is trusted; all tactics generate independently Rocq-verif
 The result is a completely machine-checkable proof of each theorem.
 
 \cav{@ixb double check on the facts here would be appreciated}
-\ixb{Double checked, nothing jumped out at me as incorrect. Any specific concerns?}
-\cav{Sorry I hadn't finished writing it yet lol}
+\ixb{I don't think ``unique'' is right here, I think we discussed that in the meeting. Relational Hoare Logic For RMMC (CAV'25) is the only work I can think of that includes instruction-step semantics which may accommodate symbolic code. I'm not sure whether their framework scales to actually doing so. We're just the first.}
 \Picinae{} is uniquely capable of reasoning about binary rewriters due to its adoption of Rocq's support for dependent typing.
 Other frameworks for formally reasoning about machine code require that users select a single program to analyze, prohibiting them from reasoning about classes of binary programs (such as those emitted by a binary rewriter).
 This limitation arises from using proof languages with weaker type systems, such as Isabelle/HOL.
