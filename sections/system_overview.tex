@@ -371,25 +371,61 @@ To solve this issue, we turn to the \Picinae{} framework, which we describe in t
 
 With formal verification, the price of high assurance is the labor of proving.
 Can cut some of the costs by using FM-friendly design principles
-\subsubsection{Redundant operations} make doing x y and z more f g h.
 
-\subsubsection{Hash-property independence} make doing x y and z more f g h.
+\heading{Minimize conditionals.}
+Each conditional doubles the number of traces we must consider; we must reason about the case when the condition is true and false.
+In our design, we enforce the policy without using conditionals, as each indirect jump becomes a conditionless policy table lookup.
+We do not need to separately prove correct policy enforcement when the destination is permitted or prohibitted,
+since in both cases the destination becomes a value from the table, which only contains permitted destinations.
 
-\subsubsection{Branch independence} make doing x y and z more f g h.
+\heading{Code reuse.}
+Reusing code means we can reuse proofs about the code.
+We use the same sequence of instructions to load from a policy table in every indirect branch block,
+allowing us to only have to prove the code always results in a state with a permitted destination once.
 
-\subsubsection{\wc{Constant, Immutable, Non-writable} security state} make doing x y and z more f g h.
+\heading{Global state independence.}
+Some policy enforcement strategies require a property of the entire code space to be true.
+For example, the soundness of label-based approaches relies on the labels chosen not appearing anywhere
+in executable memory other than valid destinations.
+On the other hand, our table-based approach only requires us to consider the current block being executed and its corresponding policy table.
+It is a lot easier to reason about a single block at a time rather than the entire program.
+Additionally, in some cases we do not even know all of the executable code in memory
+(such as the kernel-provided code mentioned above).
 
-\subsubsection{Nondeterminism independence} 
+\heading{Minimize preconditions.}
+For every precondition needed for correctness, we must prove that it always holds when necessary.
+We can counter this by designing our code in a way that minimizes the necessary preconditions or makes proving them easy.
+As an example, before using a hash to perform a table lookup, it is necessary that the hash is less than the length of the table
+or else the value loaded will not be from the table.
+However, this is the only precondition we depend on;
+we do not need to prove any other property of our hash function
+such as uniformity or collision resilliance.
+
+We need the stack pointer to be word-aligned in some cases
+(we explain later in \S~\ref{sec:case_studies} why this is necessary).
+One way to enforce this would be to detect all instructions that could cause
+\texttt{SP} to become unaligned and realign it afterwards,
+while ignoring changes to \texttt{SP} that leave alignment intact.
+Instead, we choose to just always realign \texttt{SP} right before it is needed,
+making the proof significantly easier.
+
+\heading{Immutable security state.}
+Allowing security relevant state to change makes the proof much more difficult,
+as it both increases the number of possible states and requires us to prove that the state never becomes invalid.
+In our design, the rewriten code and policy tables are both non-writable, so we do not have to deal with this.
+
+\heading{Nondeterminism independence.} 
 Relying on the results of non-deterministic cpu operations, \eg XOR setting ZF to a random bit in x86, runs the risk of requiring the proof to reason about the execution of symbolic instructions at a granularity that is not readily supported.
 While feasible, this requires a careful sequence of destructs and inversion rules.
 For example, to prove semantic transparency one must show that a cpu state in a transformed program is reachable by the original program.
 For deterministic programs, this is easy.
 With the addition of non-determinism you must prove the non-deterministic operation could take a branch satisfying the state similarity property.
 
-\subsubsection{Stack independence} make doing x y and z more f g h.
+\heading{Stack independence.}
 
-\subsubsection{Inductive proof structure}
+\heading{Inductive proof structure.}
 
+\comment{
 \begin{itemize}
     \item Redundant security checks (and masking even if it is provably a no-op, just mask and then you do not have to prove)
     \item Hash-property independence (do not depend on deep properties of your hash function, you will need to prove them AND THEN use them to prove downstream properties)
@@ -399,7 +435,6 @@ With the addition of non-determinism you must prove the non-deterministic operat
     \item Stack shuffling (now you need to reason about stack properties and track register values)
 \end{itemize}
 
-\comment{
     3. What are the design principles for making the next binary rewriter
         * Inductive structure of the proof/correctness specification
         * Do not shuffle registers on/off the stack (though this is more for concrete code than rewriters, discovered the annoyance of this during mitre eCTF)
