@@ -91,13 +91,15 @@ The CFI rewriter is a function that takes the following inputs:
 \begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
 \item \heading{Text Segment ($txt$):}
 The rewriter is given the contents of the text segment of the program to rewrite, represented as a list of four-byte integers, the size of an ARM instruction.
-\item \heading{Addresses ($bi, bi', tbi, ai$):}
-The rewriter needs to know the addresses of various things\kjee{@Max what are various things here?} that we describe in more detail as they become relevant.
-These addresses are passed to the rewriter as their value divided by four, for reasons also explained later.
-\mxz{I',m not sure if I like deferring the explanation of these, but i don't know how else to structure this section}
-When referring to values that represent addresses divided by four, we will use the term "index", as if memory was an array of four-byte values.
-\item \heading{Policy ($pol$):}
-The CFI policy describes what destinations each instruction of the text segment is allowed to go to.
+\item \heading{Addresses ($\bi, \bip, \tbi, \mai$):}
+The rewriter needs to know the addresses of the original and new code sections (\bi{} and \bip), the dual-purpose policy and address translation table (\tbi) and the abort function (\mai).
+We often use \emph{indices} ($i$, $j$, \bi, \mai, etc.) instead of addresses to refer to the index of the 4-byte word in virtual memory, which is equal to its address divided by 4.
+% \kjee{@Max what are various things here?} that we describe in more detail as they become relevant.
+% These addresses are passed to the rewriter as their value divided by four, for reasons also explained later.
+% \mxz{I',m not sure if I like deferring the explanation of these, but i don't know how else to structure this section}
+% When referring to values that represent addresses divided by four, we will use the term "index", as if memory was an array of four-byte values.
+\item \heading{Policy (\pol):}
+The CFI policy describes which destinations each instruction of the text segment is allowed to go to.
 Our rewriter accepts policies as a function from source indices to lists of permitted destination indices.
 We do not impose any restriction on the destination sets; an index can belong to multiple distinct destination sets.
 \end{itemize}
@@ -377,9 +379,16 @@ Can cut some of the costs by using FM-friendly design principles
 
 \subsubsection{\wc{Constant, Immutable, Non-writable} security state} make doing x y and z more f g h.
 
-\subsubsection{Nondeterminism independence} make doing x y and z more f g h.
+\subsubsection{Nondeterminism independence} 
+Relying on the results of non-deterministic cpu operations, \eg XOR setting ZF to a random bit in x86, runs the risk of requiring the proof to reason about the execution of symbolic instructions at a granularity that is not readily supported.
+While feasible, this requires a careful sequence of destructs and inversion rules.
+For example, to prove semantic transparency one must show that a cpu state in a transformed program is reachable by the original program.
+For deterministic programs, this is easy.
+With the addition of non-determinism you must prove the non-deterministic operation could take a branch satisfying the state similarity property.
 
 \subsubsection{Stack independence} make doing x y and z more f g h.
+
+\subsubsection{Inductive proof structure}
 
 \begin{itemize}
     \item Redundant security checks (and masking even if it is provably a no-op, just mask and then you do not have to prove)
