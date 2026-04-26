@@ -97,7 +97,7 @@ For a CFI implementation to be sound, all rewritten programs produced by the rew
     \caption{Verification and extraction of the core rewriting logic.}~\label{fig:cfi_verif}
 \end{figure}
 We prove that our CFI rewriter is sound in Rocq using \Picinae.
-Because we reason about the safety of \wc{unspecified, symbolic, undetermined, quantified} programs we need an internal lifter to translate the program bytes to symbolically executable PIL statements.
+Because we reason about the safety of unspecified\wc{symbolic, undetermined, quantified} programs we need an internal lifter to translate the program bytes to symbolically executable PIL statements.
 To this end, we created the internal ARMv7 lifter, encoding the fetch-decode logic in the official documentation~\cite{ARMv7manual} as a Gallina function.
 %For this, we create an ARMv7 decoder and lifter in Rocq that translates ARM instruction encodings
 %into \Picinae{} IL, based on the specification in the official documentation\ixb{add citation},
@@ -125,11 +125,21 @@ we still have to prove the safety of every possible trace of every possible outp
 \mxz{some text explaining how our design minimizes state explosion through table lookup/block structure}
 \ixb{I think this point can be shifted into the \heading{Indirect control flow} section where it is more relevant.}
 
-We lean on Picin\ae{}'s theory library
+\ixb{Wordy, maybe still useful.}
+The soundness proof follows a co-inductive structure that boils down to proving each rewritten block is safe.
+The new text segment is sliced up by defining an invariant point at every rewritten block entrance, hardware interrupt, and instruction outside of the rewritten block, that requires the trace to be safe.
+Picin\ae{} slices the proof into two cases: the base case which requires us to reach and satisfy an invariant, and the inductive case which requires us to show that all internal invariants, execution reaches and satisfies a next invariant.
+For our purposes, only the invariants at the start of blocks are internal invariants, as we provide no guarantees after a program makes a permitted jump out of the instrumented code section.
+The inductive case gives us the invariant of the trace as a precondition, which means all steps in it are permitted.
+A helper lemma proves that the tail of a safe trace does not influence whether it reaches and satisfies an invariant;
+forgetting the tail we are left with a proof that starting at the beginning of a block we safely reach a next invariant.
+
+% \ixb{@Max: please look this over. I'm trying to polish the proof explanation but I am not certain this is correct.}
+We induct over the structure of the trace, which starts at the beginning of a block, and prove that it reaches an invariant point
 We can inductively prove that a trace is safe by proving that if
 the trace starts at the beginning of a block in a state that satisfies our preconditions,
 it will eventually
-(1) reach the start of another block in a state that also satifies our preconditions
+(1) reach the start of another block in a state that also satisfies our preconditions
 (2) exit the new text segment
 or (3) raise a hardware exception, all while only taking permitted steps.
 We define a block to be safe if all such traces have this property.
