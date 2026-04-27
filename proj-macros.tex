@@ -4,6 +4,12 @@
 \newcommand\Picinae{\texorpdfstring{{\sffamily Picin\ae}}{Picinae}\xspace}
 \newcommand\itoip{\ensuremath{\mathit{i2i'}}\xspace}
 \newcommand\iptoi{\ensuremath{\mathit{i'\kern-1.4pt2i}}\xspace}
+\newcommand{\bi}{\ensuremath{\mathit{bi}}\xspace}
+\newcommand{\bip}{\ensuremath{\mathit{bi'}}\xspace}
+\newcommand{\tbi}{\ensuremath{\mathit{tbi}}\xspace}
+\newcommand{\mai}{\ensuremath{\mathit{ai}}\xspace}
+\newcommand{\txt}{\ensuremath{\mathit{txt}}\xspace}
+\newcommand{\txtp}{\ensuremath{\mathit{txt'}}\xspace}
 
 \usepackage{fp}
 \usepackage{svg}
@@ -15,10 +21,10 @@
 \biblatextrue
 
 \newif\ifsubmitready{}
-\submitreadyfalse
+\submitreadytrue{}
 
 \newif\ifcomments{}
-\commentstrue{}
+\commentsfalse{}
 
 \ifcomments{}
 	\newcommand{\kjee}[1]{\noindent\textcolor{red}{[KJEE: #1]}}
@@ -53,21 +59,24 @@
 \usepackage{enumitem}
 \usepackage{mathtools}
 
-\newcommand{\OldText}{\mathit{OldText}}
-\newcommand{\NewText}{\mathit{NewText}}
-\newcommand{\DataSeg}{\mathit{DataSeg}}
-\newcommand{\InitMem}{\mathit{InitMem}}
-\newcommand{\flatten}{\mathit{flatten}}
-\newcommand{\block}{\mathit{block}}
-\newcommand{\itoi}{\mathit{i2i'}}
-\newcommand{\itoio}{\mathit{i'2i}}
-\newcommand{\Pol}{\mathit{Pol}}
-\newcommand{\Polp}{\mathit{Pol'}}
-\newcommand{\code}{\mathit{code}}
-\newcommand{\codep}{\mathit{code'}}
-\newcommand{\tables}{\mathit{tables}}
-\newcommand{\pol}{\mathit{pol}}
+\newcommand{\OldText}{\ensuremath{\mathit{OldText}}}
+\newcommand{\NewText}{\ensuremath{\mathit{NewText}}}
+\newcommand{\DataSeg}{\ensuremath{\mathit{DataSeg}}}
+\newcommand{\InitMem}{\ensuremath{\mathit{InitMem}}}
+\newcommand{\flatten}{\ensuremath{\mathit{flatten}}}
+\newcommand{\block}{\ensuremath{\mathit{block}}}
+\newcommand{\itoi}{\ensuremath{\mathit{i2i'}}}
+\newcommand{\itoio}{\ensuremath{\mathit{i'2i}}}
+\newcommand{\Pol}{\ensuremath{\mathit{Pol}}}
+\newcommand{\Polp}{\ensuremath{\mathit{Pol'}}}
+\newcommand{\code}{\ensuremath{\mathit{code}}}
+\newcommand{\codep}{\ensuremath{\mathit{code'}}}
+\newcommand{\tables}{\ensuremath{\mathit{tables}}}
+\newcommand{\pol}{\ensuremath{\mathit{pol}}}
+\newcommand{\addrs}{\ensuremath{\mathit{addrs}}}
+\newcommand{\tbls}{\ensuremath{\mathit{tbls}}}
 
 
 \newcommand{\safe}[1]{\mathit{Safe_{#1}}}
 \newcommand{\unpredictable}{{\footnotesize UNPREDICTABLE}}
+

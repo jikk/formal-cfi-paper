@@ -89,7 +89,10 @@ The result is a completely machine-checkable proof of each theorem.
 
 \cav{@ixb double check on the facts here would be appreciated}
 \ixb{I don't think ``unique'' is right here, I think we discussed that in the meeting. Relational Hoare Logic For RMMC (CAV'25) is the only work I can think of that includes instruction-step semantics which may accommodate symbolic code. I'm not sure whether their framework scales to actually doing so. We're just the first.}
-\Picinae{} is uniquely capable of reasoning about binary rewriters due to its adoption of Rocq's support for dependent typing.
-Other frameworks for formally reasoning about machine code require that users select a single program to analyze, prohibiting them from reasoning about classes of binary programs (such as those emitted by a binary rewriter).
-This limitation arises from using proof languages with weaker type systems, such as Isabelle/HOL.
-\Picinae{} was designed with verifying implementations of binary rewriters in mind.
+\cav{Rewrote to refer to DT co-induction rather than just DT, per Hamlen's suggestions}
+\Picinae{} is uniquely capable of reasoning about binary rewriters due to its adoption of Rocq's support for dependently-typed co-induction.
+Because machine code is an untyped language, it is very useful to attach proofs to program values to constrain them.
+Indeed, this technique is used extensively in \Picinae's robust reflexive simplification engine.
+Co-induction is a necessary component for reasoning about machine code as it is potentially non-terminating.
+Co-induction provides the ability to reason about non-terminating processes, which may be inputs to our CFI rewriter.
+Because Rocq is the only mature theorem prover that supports both dependent types and co-induction, implementing \Picinae{} in Rocq gives it capabilities for reasoning about binary rewriters that are unmatched by other binary analysis frameworks.

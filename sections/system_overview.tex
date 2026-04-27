@@ -61,7 +61,7 @@
     % \includegraphics[width=0.9\linewidth]{implementation.pdf}
     \includegraphics[width=0.9\linewidth]{figs/implementation_ixb_proposal.pdf}
     % maybe a bit too long
-    \caption{\pname architecture and dataflow showing instrumented instructions (highlighted red and green) and policy table construction (labels colored red and green).
+    \caption{\pname architecture and dataflow showing instrumented instructions (highlighted red and green) and policy table construction (labels colored red and green).\kjee{In overall, edges tell the story. Think more about out ``edges`` can be presented.}
     % Highlighted instructions are potentially dangerous (red) or their instrumented output (green).
     % The original text segment contains potentially dangerous instructions, in red.
     % The rewriter converts each instruction into a block of one or more instructions in the new text segment.
@@ -91,13 +91,15 @@ The CFI rewriter is a function that takes the following inputs:
 \begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
 \item \heading{Text Segment ($txt$):}
 The rewriter is given the contents of the text segment of the program to rewrite, represented as a list of four-byte integers, the size of an ARM instruction.
-\item \heading{Addresses ($bi, bi', tbi, ai$):}
-The rewriter needs to know the addresses of various things\kjee{@Max what are various things here?} that we describe in more detail as they become relevant.
-These addresses are passed to the rewriter as their value divided by four, for reasons also explained later.
-\mxz{I',m not sure if I like deferring the explanation of these, but i don't know how else to structure this section}
-When referring to values that represent addresses divided by four, we will use the term "index", as if memory was an array of four-byte values.
-\item \heading{Policy ($pol$):}
-The CFI policy describes what destinations each instruction of the text segment is allowed to go to.
+\item \heading{Addresses ($\bi, \bip, \tbi, \mai$):}
+The rewriter needs to know the addresses of the original and new code sections (\bi{} and \bip), the dual-purpose policy and address translation table (\tbi) and the abort function (\mai).
+We often use \emph{indices} ($i$, $j$, \bi, \mai, etc.) instead of addresses to refer to the index of the 4-byte word in virtual memory, which is equal to its address divided by 4.
+% \kjee{@Max what are various things here?} that we describe in more detail as they become relevant.
+% These addresses are passed to the rewriter as their value divided by four, for reasons also explained later.
+% \mxz{I',m not sure if I like deferring the explanation of these, but i don't know how else to structure this section}
+% When referring to values that represent addresses divided by four, we will use the term "index", as if memory was an array of four-byte values.
+\item \heading{Policy (\pol):}
+The CFI policy describes which destinations each instruction of the text segment is allowed to go to.
 Our rewriter accepts policies as a function from source indices to lists of permitted destination indices.
 We do not impose any restriction on the destination sets; an index can belong to multiple distinct destination sets.
 \end{itemize}
@@ -197,9 +199,6 @@ and find appropriate parameters to minimize the size of the table for a given de
 
 Unlike other policy enforcement schemes that require destination sets to form equivalence classes such as by inlining unique labels at destination addresses,
 using instruction-specific policy tables allows us to enforce policies where a destination can belong to any number of distinct sets.
-This also allows us to still be able to prove rewriter soundness without knowing every executable instruction in memory
-(the kernel-provided code mentioned earlier is an example),
-while label-based approaches require that the labels chosen do not appear anywhere in executable memory other than valid destinations.
 Additionally, instructions that have the same destination set can share a table, minimizing space overhead.
 
 % As an example, consider the instruction \texttt{BX r0}, which branches to the address in \texttt{r0},
@@ -254,7 +253,7 @@ so there are actually 4 add instructions in this block to add each byte separate
 
 \caption{Rewriting \texttt{BX r0}. The tables show the hash values and address translation for the permitted destinations. The listing shows the rewritten block.
 \ixb{The table diagram still is not beautiful, but I think it serves us well to combine the tables and listing in the same figure.
-It makes referring to it in a leading paragraph sentence easier.}}
+It makes referring to it in a leading paragraph sentence easier.}\kjee{How can we/readers associate tables and listing?}}
 \label{fig:block_rewriter_demo}
 \end{figure}
 
@@ -301,12 +300,12 @@ It makes referring to it in a leading paragraph sentence easier.}}
 
 {% NOTE (@jee): somewhat length, feel redudant.
     \heading{Unsupported instructions.}
-    % There are some ARM instructions that we do not support. 
-    Some ARM instructions are predictable but out of scope (\eg floating point). 
+    % There are some ARM instructions that we do not support.
+    Some ARM instructions are predictable but out of scope (\eg floating point).
     In these cases, we replace them with a branch to $ai$.
     \ixb{todo---fact check with Max.}
     \mxz{floating point is not out of scope, this part was just a transition to talking about endianness/instruction mode/unpredictable}
-    
+
     \heading{Endianness.}
     ARM supports both little and big endian memory operations, determined by the value of the E bit of the Current Program Status Register.
     While it does not matter which endianness we start in as long as the hash tables are also in the same endianness,
@@ -331,7 +330,7 @@ It makes referring to it in a leading paragraph sentence easier.}}
     \end{displayquote}
     Although in practice, these instructions usually just cause a hardware exception \mxz{maybe?}, this definition includes the possibility of performing unpermitted control flow.
     Thus, the rewriter must detect and remove all such instructions to guarantee safety for arbitrary ISA-conformant cpus. Most instruction types include at least a few \unpredictable{} variants, either from use of the PC register for instructions that do not support it or from the instruction encoding requiring certain bits to be 0 or 1. A couple of instructions are only \unpredictable{} at runtime, including dynamic control flow instructions when the destination address ends with the bits '10'. This issue is avoided the same way we prevent switching to Thumb mode, by enforcing that all hash table entries are divisible by four.
-    }
+}
 
 % python/ocaml extractor
 The ELF editor is given the output of the CFI rewriter and adds new segments to the original ELF for the rewritten instructions, the policy tables, and the abort handler that are loaded at the correct addresses and permissions. The original text segment is changed to be nonexecutable. Finally, the ELF editor uses the rewriter's \itoip function to update the entrypoint and symbol values.
@@ -344,7 +343,9 @@ The rewriter function is extracted into OCaml and compiled into an executable
 with some additional driver code for reading/writing files and argument parsing.
 The ELF editor is implemented as a Python script using the LIEF library.
 The extraction to OCaml is formally guaranteed to preserve the rewriter's semantics~\cite{fv_ocaml_extraction}.
+%
 \mxz{i dont think so? e.g. we extract coq Z into ocaml int, which has a limited size and we dont prove that we never use a value that doesn't fit}
+\cav{The extract inlined constants that we include in our setup are trusted, the actual piece of code that does extraction from Rocq to OCaml is formally verified. I think we should lean on this and maybe just include that there are trusted components to the pipeline. Also, we could just extract to a BigInt representation and then it's even more trustworthy}
 We do not formally verify the correctness of the the ELF editor,
 instead only focusing on the core rewriting logic that transforms the instruction bytes.
 
@@ -369,28 +370,70 @@ To solve this issue, we turn to the \Picinae{} framework, which we describe in t
 
 With formal verification, the price of high assurance is the labor of proving.
 Can cut some of the costs by using FM-friendly design principles
-\subsubsection{Redundant operations} make doing x y and z more f g h.
 
-\subsubsection{Hash-property independence} make doing x y and z more f g h.
+\heading{Minimize conditionals.}
+Each conditional doubles the number of traces we must consider; we must reason about the case when the condition is true and false.
+In our design, we enforce the policy without using conditionals, as each indirect jump becomes a conditionless policy table lookup.
+We do not need to separately prove correct policy enforcement when the destination is permitted or prohibited,
+since in both cases the destination becomes a value from the table, which only contains permitted destinations.
 
-\subsubsection{Branch independence} make doing x y and z more f g h.
+\heading{Code reuse.}
+Reusing code means we can reuse proofs about the code.
+We use the same sequence of instructions to load from a policy table in every indirect branch block,
+allowing us to only have to prove the code always results in a state with a permitted destination once.
 
-\subsubsection{\wc{Constant, Immutable, Non-writable} security state} make doing x y and z more f g h.
+\heading{Global state independence.}
+Some policy enforcement strategies require a property of the entire code space to be true.
+For example, the soundness of label-based approaches relies on the labels chosen not appearing anywhere
+in executable memory other than valid destinations.
+On the other hand, our table-based approach only requires us to consider the current block being executed and its corresponding policy table.
+It is a lot easier to reason about a single block at a time rather than the entire program.
+Additionally, in some cases we do not even know all of the executable code in memory
+(such as the kernel-provided code mentioned above).
 
-\subsubsection{Nondeterminism independence} make doing x y and z more f g h.
+\heading{Minimize preconditions.}
+For every precondition needed for correctness, we must prove that it always holds when necessary.
+We can counter this by designing our code in a way that minimizes the necessary preconditions or makes proving them easy.
+As an example, before using a hash to perform a table lookup, it is necessary that the hash is less than the length of the table
+or else the value loaded will not be from the table.
+However, this is the only precondition we depend on;
+we do not need to prove any other property of our hash function
+such as uniformity or collision resilience.
 
-\subsubsection{Stack independence} make doing x y and z more f g h.
+We need the stack pointer to be word-aligned in some cases
+(we explain later in \autoref{sec:case_studies} why this is necessary).
+One way to enforce this would be to detect all instructions that could cause
+\texttt{SP} to become unaligned and realign it afterwards,
+while ignoring changes to \texttt{SP} that leave alignment intact.
+Instead, we choose to just always realign \texttt{SP} right before it is needed,
+making the proof significantly easier.
 
-\begin{itemize}
-    \item Redundant security checks (and masking even if it is provably a no-op, just mask and then you do not have to prove)
-    \item Hash-property independence (do not depend on deep properties of your hash function, you will need to prove them AND THEN use them to prove downstream properties)
-    \item Branch independence (do not make the soundness depend on branch conditions)
-    \item Constant security state (set it non-writable, any changes to it result in a contradiction)
-    \item existential goals NAND non-determinism (having existential goals AND non-determinism, as in semantic transparency, requires constructing a witness, which requires the unsupported task of manually interpreting symbolic instructions)
-    \item Stack shuffling (now you need to reason about stack properties and track register values)
-\end{itemize}
+\heading{Immutable security state.}
+Allowing security relevant state to change makes the proof much more difficult,
+as it both increases the number of possible states and requires us to prove that the state never becomes invalid.
+In our design, the rewritten code and policy tables are both non-writable, so we do not have to deal with this.
 
-\comment{
+\heading{Nondeterminism independence.}
+Relying on the results of non-deterministic cpu operations, \eg XOR setting ZF to a random bit in x86, runs the risk of requiring the proof to reason about the execution of symbolic instructions at a granularity that is not readily supported.
+While feasible, this requires a careful sequence of destructs and inversion rules.
+For example, to prove semantic transparency one must show that a cpu state in a transformed program is reachable by the original program.
+For deterministic programs, this is easy.
+With the addition of non-determinism you must prove the non-deterministic operation could take a branch satisfying the state similarity property.
+
+\heading{Stack independence.}
+
+\heading{Inductive proof structure.}
+
+\comment{%
+    \begin{itemize}
+        \item Redundant security checks (and masking even if it is provably a no-op, just mask and then you do not have to prove)
+        \item Hash-property independence (do not depend on deep properties of your hash function, you will need to prove them AND THEN use them to prove downstream properties)
+        \item Branch independence (do not make the soundness depend on branch conditions)
+        \item Constant security state (set it non-writable, any changes to it result in a contradiction)
+        \item existential goals NAND non-determinism (having existential goals AND non-determinism, as in semantic transparency, requires constructing a witness, which requires the unsupported task of manually interpreting symbolic instructions)
+        \item Stack shuffling (now you need to reason about stack properties and track register values)
+    \end{itemize}
+
     3. What are the design principles for making the next binary rewriter
         * Inductive structure of the proof/correctness specification
         * Do not shuffle registers on/off the stack (though this is more for concrete code than rewriters, discovered the annoyance of this during mitre eCTF)
