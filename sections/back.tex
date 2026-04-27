@@ -28,8 +28,10 @@ A CFI binary rewriter performs inherently complex transformations on executable 
 \comment{%
 In formally verifying a binary CFI rewriter, at a high level, we consider the following subcomponents:
 
+  The rewriter operates on well-formed ELF. For a given ELF binary, it extracts the `.text` section, decodes the byte sequence into machine instructions to be provided to the rewriter program.
+    - the rewriter program originally implemented in Gallina, the specification language of Rocq to be (1) formally verified, (2) once verification succeeds, then extract to the Ocaml sources (.ML) to be compiled into the writer program.
+
 - **Front-end processing (decoding and lifting).**
-  The rewriter operates on arbitrary inputs, including well-formed ELF binaries and potentially malformed binaries. For well-formed ELF inputs, it extracts the `.text` section, decodes the byte sequence into machine instructions, and lifts them into an intermediate representation.
 
   - We acknowledge that the correctness and safety of the front-end components—the machine code decoder and instruction lifter—are critical. However, this work does not attempt to verify these components, as this problem has received substantial attention in prior work.
   - Instead, we focus on the ARM ISA, which provides a formal specification. This choice enables more tractable formal reasoning than ISAs such as Intel x86, whose complexity and irregular semantics make full formalization significantly more challenging.
