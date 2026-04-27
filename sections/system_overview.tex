@@ -61,7 +61,7 @@
     % \includegraphics[width=0.9\linewidth]{implementation.pdf}
     \includegraphics[width=0.9\linewidth]{figs/implementation_ixb_proposal.pdf}
     % maybe a bit too long
-    \caption{\pname architecture and dataflow showing instrumented instructions (highlighted red and green) and policy table construction (labels colored red and green).
+    \caption{\pname architecture and dataflow showing instrumented instructions (highlighted red and green) and policy table construction (labels colored red and green).\kjee{In overall, edges tell the story. Think more about out ``edges`` can be presented.}
     % Highlighted instructions are potentially dangerous (red) or their instrumented output (green).
     % The original text segment contains potentially dangerous instructions, in red.
     % The rewriter converts each instruction into a block of one or more instructions in the new text segment.
@@ -253,7 +253,7 @@ so there are actually 4 add instructions in this block to add each byte separate
 
 \caption{Rewriting \texttt{BX r0}. The tables show the hash values and address translation for the permitted destinations. The listing shows the rewritten block.
 \ixb{The table diagram still is not beautiful, but I think it serves us well to combine the tables and listing in the same figure.
-It makes referring to it in a leading paragraph sentence easier.}}
+It makes referring to it in a leading paragraph sentence easier.}\kjee{How can we/readers associate tables and listing?}}
 \label{fig:block_rewriter_demo}
 \end{figure}
 
@@ -300,12 +300,12 @@ It makes referring to it in a leading paragraph sentence easier.}}
 
 {% NOTE (@jee): somewhat length, feel redudant.
     \heading{Unsupported instructions.}
-    % There are some ARM instructions that we do not support. 
-    Some ARM instructions are predictable but out of scope (\eg floating point). 
+    % There are some ARM instructions that we do not support.
+    Some ARM instructions are predictable but out of scope (\eg floating point).
     In these cases, we replace them with a branch to $ai$.
     \ixb{todo---fact check with Max.}
     \mxz{floating point is not out of scope, this part was just a transition to talking about endianness/instruction mode/unpredictable}
-    
+
     \heading{Endianness.}
     ARM supports both little and big endian memory operations, determined by the value of the E bit of the Current Program Status Register.
     While it does not matter which endianness we start in as long as the hash tables are also in the same endianness,
@@ -330,7 +330,7 @@ It makes referring to it in a leading paragraph sentence easier.}}
     \end{displayquote}
     Although in practice, these instructions usually just cause a hardware exception \mxz{maybe?}, this definition includes the possibility of performing unpermitted control flow.
     Thus, the rewriter must detect and remove all such instructions to guarantee safety for arbitrary ISA-conformant cpus. Most instruction types include at least a few \unpredictable{} variants, either from use of the PC register for instructions that do not support it or from the instruction encoding requiring certain bits to be 0 or 1. A couple of instructions are only \unpredictable{} at runtime, including dynamic control flow instructions when the destination address ends with the bits '10'. This issue is avoided the same way we prevent switching to Thumb mode, by enforcing that all hash table entries are divisible by four.
-    }
+}
 
 % python/ocaml extractor
 The ELF editor is given the output of the CFI rewriter and adds new segments to the original ELF for the rewritten instructions, the policy tables, and the abort handler that are loaded at the correct addresses and permissions. The original text segment is changed to be nonexecutable. Finally, the ELF editor uses the rewriter's \itoip function to update the entrypoint and symbol values.
@@ -343,6 +343,7 @@ The rewriter function is extracted into OCaml and compiled into an executable
 with some additional driver code for reading/writing files and argument parsing.
 The ELF editor is implemented as a Python script using the LIEF library.
 The extraction to OCaml is formally guaranteed to preserve the rewriter's semantics~\cite{fv_ocaml_extraction}.
+%
 \mxz{i dont think so? e.g. we extract coq Z into ocaml int, which has a limited size and we dont prove that we never use a value that doesn't fit}
 \cav{The extract inlined constants that we include in our setup are trusted, the actual piece of code that does extraction from Rocq to OCaml is formally verified. I think we should lean on this and maybe just include that there are trusted components to the pipeline. Also, we could just extract to a BigInt representation and then it's even more trustworthy}
 We do not formally verify the correctness of the the ELF editor,
@@ -400,7 +401,7 @@ we do not need to prove any other property of our hash function
 such as uniformity or collision resilience.
 
 We need the stack pointer to be word-aligned in some cases
-(we explain later in \S~\ref{sec:case_studies} why this is necessary).
+(we explain later in \autoref{sec:case_studies} why this is necessary).
 One way to enforce this would be to detect all instructions that could cause
 \texttt{SP} to become unaligned and realign it afterwards,
 while ignoring changes to \texttt{SP} that leave alignment intact.
@@ -412,7 +413,7 @@ Allowing security relevant state to change makes the proof much more difficult,
 as it both increases the number of possible states and requires us to prove that the state never becomes invalid.
 In our design, the rewritten code and policy tables are both non-writable, so we do not have to deal with this.
 
-\heading{Nondeterminism independence.} 
+\heading{Nondeterminism independence.}
 Relying on the results of non-deterministic cpu operations, \eg XOR setting ZF to a random bit in x86, runs the risk of requiring the proof to reason about the execution of symbolic instructions at a granularity that is not readily supported.
 While feasible, this requires a careful sequence of destructs and inversion rules.
 For example, to prove semantic transparency one must show that a cpu state in a transformed program is reachable by the original program.
@@ -423,15 +424,15 @@ With the addition of non-determinism you must prove the non-deterministic operat
 
 \heading{Inductive proof structure.}
 
-\comment{
-\begin{itemize}
-    \item Redundant security checks (and masking even if it is provably a no-op, just mask and then you do not have to prove)
-    \item Hash-property independence (do not depend on deep properties of your hash function, you will need to prove them AND THEN use them to prove downstream properties)
-    \item Branch independence (do not make the soundness depend on branch conditions)
-    \item Constant security state (set it non-writable, any changes to it result in a contradiction)
-    \item existential goals NAND non-determinism (having existential goals AND non-determinism, as in semantic transparency, requires constructing a witness, which requires the unsupported task of manually interpreting symbolic instructions)
-    \item Stack shuffling (now you need to reason about stack properties and track register values)
-\end{itemize}
+\comment{%
+    \begin{itemize}
+        \item Redundant security checks (and masking even if it is provably a no-op, just mask and then you do not have to prove)
+        \item Hash-property independence (do not depend on deep properties of your hash function, you will need to prove them AND THEN use them to prove downstream properties)
+        \item Branch independence (do not make the soundness depend on branch conditions)
+        \item Constant security state (set it non-writable, any changes to it result in a contradiction)
+        \item existential goals NAND non-determinism (having existential goals AND non-determinism, as in semantic transparency, requires constructing a witness, which requires the unsupported task of manually interpreting symbolic instructions)
+        \item Stack shuffling (now you need to reason about stack properties and track register values)
+    \end{itemize}
 
     3. What are the design principles for making the next binary rewriter
         * Inductive structure of the proof/correctness specification
