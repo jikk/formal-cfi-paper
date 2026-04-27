@@ -12,11 +12,12 @@ mainly about (apparent) limitations
     \item does not protect from srop
     \item protection limited to binaries that make no system calls, rare
     \item assumes no concurrency or shared memory, rare
+    \item 
 \end{itemize}
 
 \pname takes a big step towards high assurance binary defense by formally verifying the binary rewriter, but it still trusts other components of the system.
 Underlying the rewriter is the internal lifter, a manual implementation of the ARMv7 ISA semantics as a Gallina function translating code bytes to PIL statements.
-Creating trustworthy mechanized semantics of ISAs is a subject of ongoing research~\cite{arm}
+Creating trustworthy mechanized semantics of ISAs is a subject of ongoing research~\cite{isla,islaris,archsem,armstrong19isasem,liblisa,goel17x86isa}
 
 While \pname represents a big step towards high assurance binary defenses, there are still many weaknesses left to address.
 First, the entire work rests on our trusted internal lifter, the Gallina function translating code bytes to PIL statements.
