@@ -12,7 +12,7 @@ mainly about (apparent) limitations
     \item does not protect from srop
     \item protection limited to binaries that make no system calls, rare
     \item assumes no concurrency or shared memory, rare
-    \item 
+    \item
 \end{itemize}
 
 \pname takes a big step towards high assurance binary defense by formally verifying the binary rewriter, but it still trusts other components of the system.
@@ -48,17 +48,11 @@ To bring that part of the system into scope requires the availalability of a for
     - decoder
     - merger (???)
 
-\subsection{Coverage}
-\comment{%
-- **Limited scope of verification.** Current work focuses only on the `.text` section (ARMv7 instruction streams), leaving other components of the binary lifecycle unverified.
+\subsection{Formal Verification of ELF Packager}\label{sec:elf_packager_fm}
+\kjee{Tentative text; need refinement and text tightening.}
 
-- **Unverified dependencies in end-to-end rewriting.** Extending coverage to the full pipeline, such as ELF packaging and program loading, requires external tools whose correctness we do not verify.
-  - For example, the rewriting pipeline relies on libraries such as `lief` for ELF manipulation.
-  - These dependencies fall outside the formal model, weakening end-to-end guarantees.
+Although \pname{} is, to our knowledge, the first formally verified binary CFI rewriter, its guarantees do not yet extend to the entire binary rewriting pipeline. In particular, the ELF packaging component lies outside the scope of the current formal model. Extending formal verification to this stage presents nontrivial challenges and can be approached along two possible directions.
 
-- **Challenge of full-stack formalization.** Rewriting and verifying the entire dependency chain in a formally verifiable language would be prohibitively complex.
-  - Formal verification of systems implemented in general-purpose languages remains difficult and resource-intensive.
+One approach is \emph{supply-chain verification}, which would require formally verifying the existing Python implementation or reimplementing the ELF manipulation logic (e.g., the LIEF library) within a proof assistant such as Rocq. However, this direction is likely impractical due to the substantial engineering effort required to formalize and maintain large, general-purpose codebases. A second, more ambitious direction is \emph{program loader verification}, which aims to formally verify the correctness of the binary loading process against a well-defined security specification. This approach would provide stronger end-to-end guarantees but remains a challenging open research problem.
 
-- **Alternative design direction.** One could instead formally verify the program loader against a well-defined security specification.
-  - However, this approach also introduces significant complexity and remains a challenging open problem.
-}
+More broadly, our current formalization focuses on the \texttt{.text} section, the executable instruction stream, and treats other components of the binary, including ELF metadata, relocation entries, and dynamic linking structures, as trusted. Extending formal guarantees to cover the full pipeline, including ELF packaging and loading, remains an important direction for future work.

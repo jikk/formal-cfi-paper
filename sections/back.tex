@@ -3,31 +3,6 @@
 \section{Formal Verification of CFI Binary Rewriter}
 \label{sec:back}
 
-\comment{% NOTE (@kjee): re-working plan/outline.
-Full-stratch/end-to-end CFI rewriter correctness would comprise the following four subcomponents.
-
-* **Decoder conformity.**
-    - Formal specification exists.
-    - Formal specification possible.
-    - Research conducted by others (citation needed).
-    - Outside the scope of the work.
-
-* **CFI conformity.**
-    - We define the safety and security specification.
-    - Scope of the work.
-
-* **ISA conformity.**
-    - Formal specification exists (? Not sure).
-    - Generic/trustworthy abstraction supported Picinae
-    - Scope of the work.
-
-* **ELF packager conformity.**
-    - Outside the scope of the work.
-    - Two potential directions
-        1. Formally verifying supply-chain components: Formal verification of Python-written programs, Rewriting/porting ELF manuplation libraries in Coq
-        2. Program loader verification (very ambitious and challenging research direction.)
-}
-
 \pname formally verifies a program transformation: a static binary rewriter that takes arbitrary binaries as input and produces security-hardened outputs guaranteed to satisfy a precise safety specification.
 \kjee{Specifically, CFI specification and ISA specification.}
 The precise specification is universal to all binary code for the ISA; once written, it never needs to be specialized to a new rewriter.
@@ -51,32 +26,27 @@ A proof that $c$ is safe can therefore analyze $r$ to exclude from consideration
 A CFI binary rewriter performs inherently complex transformations on executable code.
 %
 \comment{%
-In formally verifying a binary CFI rewriter, we decompose the system at a high level into the following subcomponents:
+In formally verifying a binary CFI rewriter, at a high level, we consider the following subcomponents:
 
 - **Front-end processing (decoding and lifting).**
-  The rewriter operates on arbitrary binary inputs in ELF format, extracts the `.text` section, and decodes and lifts the byte sequence into machine instructions.
+  The rewriter operates on arbitrary inputs, including well-formed ELF binaries and potentially malformed binaries. For well-formed ELF inputs, it extracts the `.text` section, decodes the byte sequence into machine instructions, and lifts them into an intermediate representation.
 
-  - The correctness of the front-end components—the machine code decoder and the instruction lifter—is critical to overall soundness. We treat them as trusted and out of scope: formal verification of binary decoders has been extensively studied by prior work, and we build on that foundation.
-  - Our focus on ARMv7 is deliberate. A formal specification for the ARMv7 decoder exists and has been the subject of prior verification work, providing a solid semantic basis. This contrasts with ISAs such as Intel x86, whose specifications are less amenable to formal reasoning.
-  - Formal verification of the decoder and lifter components remains future work.
+  - We acknowledge that the correctness and safety of the front-end components—the machine code decoder and instruction lifter—are critical. However, this work does not attempt to verify these components, as this problem has received substantial attention in prior work.
+  - Instead, we focus on the ARM ISA, which provides a formal specification. This choice enables more tractable formal reasoning than ISAs such as Intel x86, whose complexity and irregular semantics make full formalization significantly more challenging.
+  - We leave the formal verification of decoder and lifter components as future work.
 
 - **Core rewriter (ArmCFI).**
-  ArmCFI takes as input (1) a decoded and lifted instruction stream and (2) a policy specification derived from static analysis or dynamic profiling. It instruments CFI enforcement logic into the instruction stream, producing a security-hardened `.text` segment together with a corresponding policy table.
+  ArmCFI takes as input (1) a decoded and lifted instruction stream and (2) a policy specification (e.g., allowed control-flow targets) derived from static analysis or dynamic profiling. It analyzes the input and instruments CFI enforcement logic, producing security-hardened `.text` segments along with a corresponding policy table.
 
-  - This component is the central contribution of the work.
-  - Verification addresses two complementary properties:
-    - **CFI compliance:** the rewritten program satisfies the specified control-flow integrity policy.
-    - **ISA compliance:** every instruction sequence in the rewritten binary conforms to ARMv7 semantics.
-  - We formally define these safety and security specifications in Section~XX.
-  - To reason about ISA compliance, we leverage the ARMv7 abstraction provided by the Picinae framework.
+  - This component forms the core contribution of our work.
+  - Our verification focuses on two aspects:
+    - **CFI compliance:** ensuring the rewritten program satisfies the specified control-flow integrity properties.
+    - **ISA compliance:** ensuring the rewritten binary preserves well-defined ISA semantics and does not introduce invalid or undefined behaviors.
+  - We formally define the safety and security specifications for the binary CFI rewriter in Section XX.
+  - To reason about ISA compliance (ARMv7), we leverage the ISA abstraction provided by the Picinae framework.
 
 - **ELF packaging.**
-  The final stage reassembles the rewritten code into a loadable executable. We implement this as a standalone script using the LIEF Python module; it is out of scope for formal verification.
-
-  - Two directions could in principle extend verification to this component:
-    1. **Supply-chain verification:** formally verifying the Python implementation, or reimplementing the ELF manipulation logic in Coq.
-    2. **Program loader verification:** formally verifying the loading process itself---a significantly more ambitious direction.
-  - The first is likely impractical given the substantial engineering burden; the second remains an open research problem.
+  The final stage packages the rewritten code into an executable. We implement this step as a separate script using the LIEF Python library and treat it as outside the scope sof this work. We will discuss further on this issue from Section XX.
 }
 
 These include rewriting control-flow instructions (\eg branches), relocating and
