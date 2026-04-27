@@ -1,6 +1,18 @@
 %! root=../main.tex
 \section{Discussion and Future Work}~\label{sec:disc}
 
+\ixb{Embarrassing first draft is fine!}
+
+While \pname represents a big step towards high assurance binary defenses, there are still many weaknesses left to address.
+First, the entire work rests on our trusted internal lifter, the Gallina function translating code bytes to PIL statements.
+Verified and trustworthy lifting are subjects of ongoing research, but verifying PIL lifters is an open problem.
+Second, the extraction is trusted.
+The OCaml extractor is verified~\wc{trustworthy}, but in our extraction we extracted Rocq's unbounded integer type \texttt{Z} to OCaml's bounded \texttt{int}.
+This opens the door to integer overflow and underflow bugs in the extracted code, but it makes the rewriter usable.
+Extracting it without this optimization, that is an OCaml variant \texttt{Z} with the same structure as Rocq's, results in XXx longer rewrite times.
+Rocq offers the capability of proving that this optimization is sound, i.e., that no over/underflows are possible, but we leave it to future work/industrial adoption.
+Third, the ELF Packager
+
 \todo{Future work
 \begin{itemize}
     \item call-return semantics for trace properties
