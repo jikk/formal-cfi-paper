@@ -27,7 +27,7 @@ In contrast, \pname operates directly on existing binaries, verifying the correc
 %\kjee{I want to say sth about \Picinae{} here.}
 To achieve this, it leverages \Picinae's capability to specify theorems and write proofs about symbolic binary codes that appear in specifications as variables $c$ with constraints $P(c)$.
 For example, constraint $P(c)\equiv(\exists c_0,\ r(c_0)\,{=}\,c)$ specifies that code $c$ is an output of rewriter $r$.
-A proof that $c$ is safe can therefore exclude from consideration any code that it can prove $r$ never generates.
+A proof that $c$ is safe can therefore analyze $r$ to exclude from consideration any code that it can prove $r$ never generates.
 
 In the following, we motivate the problem with a class of bugs that elude even experienced developers and resist exhaustive dynamic testing, then discuss our research scope and threat model.
 
