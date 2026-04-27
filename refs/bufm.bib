@@ -13,9 +13,9 @@
 @STRING{ofthe = of # the}
 
 #PREAMBLE{ "\newcommand\cnum[1]{\ignorespaces}" }
-@PREAMBLE{ "\newcommand\cnum[1]{#1}" }
+#PREAMBLE{ "\newcommand\cnum[1]{#1}" }
 #PREAMBLE{ "\newcommand\nym[1]{\unskip}" }
-@PREAMBLE{ "\newcommand\nym[1]{(#1)}" }
+#PREAMBLE{ "\newcommand\nym[1]{(#1)}" }
 
 % https://ssrg.ece.vt.edu/papers/ccs24.pdf
 @inproceedings{formally_verified_lifting,
@@ -434,4 +434,34 @@
   month = jun,
   articleno = {149},
   numpages = {24},
+}
+
+@inproceedings{scalable_binary_lifter_validation,
+author = {Dasgupta, Sandeep and Dinesh, Sushant and Venkatesh, Deepan and Adve, Vikram S. and Fletcher, Christopher W.},
+title = {Scalable validation of binary lifters},
+year = {2020},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3385412.3385964},
+doi = {10.1145/3385412.3385964},
+booktitle = {Proceedings of the 41st ACM SIGPLAN Conference on Programming Language Design and Implementation},
+pages = {655–671},
+numpages = {17},
+keywords = {Compiler Optimizations, Formal Semantics, Graph Isomorphism, LLVM IR, Translation Validation, x86-64},
+location = {London, UK},
+series = {PLDI 2020}
+}
+
+@InProceedings{holba_sound_transpilation,
+author="Metere, Roberto
+and Lindner, Andreas
+and Guanciale, Roberto",
+editor="Cavalheiro, Simone
+and Fiadeiro, Jos{\'e}",
+title="Sound Transpilation from Binary to Machine-Independent Code",
+booktitle="Formal Methods: Foundations and Applications",
+year="2017",
+publisher="Springer International Publishing",
+address="Cham",
+pages="197--214",
 }
