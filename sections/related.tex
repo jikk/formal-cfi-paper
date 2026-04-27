@@ -40,6 +40,8 @@ A more recent CFI project most similar to ours, muCFI, uses formal verification,
 
 \kjee{Similarly, We'd better use the subsection to further illustrate the technical preliminary necessary in understanding binary instrumentation via software re-writing. I am not so sure yet, what would be appropriate, but we can look up some of the previous research papers to find something relevant.}
 
+\svs{Not sure why this section wont just be part of the CFI section. What's the story we're trying to tell here?}
+
 Secure IRMs take an untrusted binary as input and produce a hardened, rewritten binary augmented with additional security checks. By weaving security logic into the original binary, IRMs partition program execution into two distinct contexts: the guest context, which runs the original program, and the monitor context, which enforces the security policy.
 
 IRMs vary considerably in their statefulness. \kwh{Static} binary CFI is an instance of a stateless IRM, in which the control-flow policy remains fixed throughout program execution and does not require persistent monitor state. Stateful IRMs, by contrast, maintain internal monitoring state across execution, such as shadow memory for dynamic information flow tracking, allocation and deallocation histories for memory leak detection, and similar policies.
