@@ -76,4 +76,8 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
   - Example proofs
   - Counter example cases? (indirectly stating what theorems and lemmas want to prevent from happening)
 
+### Terms/keywards
+
+* [ ] ISA or microarchitecture?
+
 ##### tag: `pdli`,`max`, `cfi`, `formal verification`, `arm`
