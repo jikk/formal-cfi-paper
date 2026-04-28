@@ -31,13 +31,6 @@ First, the guarantees \FMs deliver are only as strong as the specifications they
 Second, proofs bind tightly to specific implementations and verification contexts, making it difficult to scale verification across large, heterogeneous, and evolving codebases.
 Third, formally verifying software designed to accommodate \emph{arbitrary} binary codes as input has remained largely out of reach because the community has lacked a mature, formally verified abstraction layer of sufficient generality to serve as a foundation for such verification.
 
-%\kwh{[KWH] If we merely say that verifying "binary software" is out of reach, most FM reviewers will retort that it's not out of reach because we can verify compilers and let the compilers produce the verified binary software.  Rather than that claim, the central problem is that software that's expected to accept arbitrary binary code as input can't be verified. It can't be verified because source-level FM can't even specify its correctness, much less verify such a property.}\kjee{@KWH: I turned `arbitrary' as italic, not sure it would be enough...}
-%\ixb{@KWH, I'm uncomfortable about the Third claim after reading RockSalt and being convinced that they did reason about arbitrary code.}
-%\kwh{[@IXB, RockSalt did not reason about arbitrary code. They implement a unit tester that conservatively rejects almost all code. It only accepts code that has been \cfi-hardened in a very specific way, and conservatively rejects almost anything else (e.g., any instruction not in a whitelist).  Their proof verifies the algorithm that the unit tester is intended to implement, but does not verify that the unit tester actually implements that algorithm, and does not verify that the code-rewriter actually produces code that the unit tester accepts.  All of those things are left to dynamic testing.]}
-%\ixb{I agree on all points but the first. Their proof verifies the algorithm, which takes in arbitrary binary inputs and checks they conform to the specific \cfi-hardened format (whitelisted instructions, 32-byte aligned instructions, masks before indirect branches). I don't see how they could verify the binary checker algorithm without quantifying over all binary inputs.}
-%\kwh{[Because they prove is soundness but not completeness just like us, and soundness of a checker only requires accurate reasoning about code that came from one particular source (their rewriter).  Everything else can be conservatively rejected irrespective of whether it actually satisfies the control-flow safety policy, so they don't need to reason about it. In contrast, we need to accurately process near-arbitrary input binaries undergoing rewriting. Think of it this way: Your argument concludes that even a checker that rejects everything has ``accommodated arbitrary binary codes as input'' because the proof of its soundness does technically quantify over arbitrary binaries.  But the proof is trivial and I don't think any reader would agree that such a checker (or proof) accommodates arbitrary binary codes.]}
-%\ixb{Yes, that's how I am thinking about it. In general, I take a pessimistic adversarial view---reviewers can and will use whichever interpretation disadvantages us the most. The bar for saying other work has done what we claim to do is low, making assertions of novelty difficult. Simultaneously, the bar for saying we did the same thing is very high. I guess I'll learn to calibrate what claims are noncontraversion to the moving target of academic publishing.}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Our story begins; formally-verified, machine-checked \cfi.
 %
@@ -47,10 +40,15 @@ Third, formally verifying software designed to accommodate \emph{arbitrary} bina
 
 % TODO (@kjee): we need a killer setence here; summarizing two-folds (\cfi implementation accuracy concern, FM scalability on arbitary binaries inputs) as a connecting/strong/motivational statement.
 Our research takes a step toward closing that gap. We present \pname, the first machine-checked \cfi implementation built on a static binary rewriting framework\kjee{the first machine-check binary \cfi rewriter} for a widely deployed, real-world architecture, providing formally verified compliance with the design specification and runtime correctness beyond the incomplete assurances of dynamic testing.
-%\ixb{I'm confused by the ``built on a static binary rewriting framework''. My first interpretation is that we're introducing Picin\ae{} as a framework for building static binary rewriters.}
-%\kwh{[@IXB: The static binary rewriting framework is what Max implemented; it's not Picinae.  I don't think a non-Picinae reader will be confused by this.  An average \cfi-aware reader knows right away what a static binary rewriting framework is in the context of \cfi.]}
-%\ixb{Okay; I see it as a function, it's hard for me to see the framework.}
 %
+{% NOTE (@kjee): 1st attempts to explicity answer the three reseach challenges above.
+  \kjee{@KWH: Would you have a look?}
+  We address the first challenge by defining precise specifications for CFI safety and security properties, together with ISA-level specifications for ARMv7 compliance. Once established, these specifications are reusable: they can be validated, shared across the community, and extended to support other architectures and security-sensitive binary rewriting tasks.
+  %
+  We address the second challenge by formally verifying the CFI binary rewriter itself. This core component embeds security enforcement into rewritten binaries, enabling security guarantees to scale across the entire input space of programs.
+  %
+  We address the third challenge by building on the \Picinae{} framework, which provides a mature, machine-checked abstraction for modeling arbitrary binary code and its execution semantics. This foundation enables verification results that generalize beyond fixed inputs to unbounded classes of binaries.
+}
 %
 % NOTE (@kjee): specificiation to formally verifiying \cfi can be straightforward.
 % Binary \cfi is a well-established and well-specified defense.
@@ -65,18 +63,6 @@ Binary-level \cfi, built on static binary rewriting techniques~\cite{rewriter0, 
 The core difficulty is semantic generality: rewriter soundness must hold for all possible input binaries, whether compiled, hand-written, or otherwise, not merely those drawn from a particular toolchain or restricted to a compiler-sanctioned\wc{compiler-respected, compiler-preserved, allowed by compilers} subset of the ISA\@.
 Prior work has been largely confined to verifying concrete, fixed binaries, falling short of this bar. RockSalt~\cite{rocksalt}, for instance, successfully verifies outputs from a specific \sfi algorithm on a per-case basis, but does not verify that any \sfi implementation always produces verifiably safe executable code, or that the full verifier implementation correctly implements all details of the design-level verification algorithm.
 These implementation assurances are left to software quality control processes (\eg dynamic testing) that cannot comprehensively cover the input space of all possible binaries.
-
-%\kwh{[KWH rewrote the above paragraph based on the discussion below.]}
-%\ixb{but isn't our rewriter limited to binaries over the ISA subset we model?}
-%\kwh{[@IXB: Yes, but our goal is to model as much of the ISA as possible, whereas the alternative works we're talking about only try to model the portion of the ISA emitted by a particular toolchain or compiler.]}
-%\ixb{Why are we picking on RockSalt not extending to other ISAs? We don't extend to other ISAs, specifically stating that we intentionally limit ourselves to fixed-width instruction set in this development. I know that we can extend this, but it won't be trivial.}
-%\kwh{%
-%  [KWH:] Should we also observe here that RockSalt only verifies a loadtime verifier for their system?  It doesn't verify that the rewriter that produces the binaries always yields binaries that pass the loadtime verifier's checks.  RockSalt therefore doesn't solve the problem of creating a machine-verified binary rewriter.
-%}\kjee{I need helps from others for this part.}
-%\ixb{To mention RockSalt not verifying the rewriter, I think we'd need to rewrite this paragraph. Right now it focuses on domain coverage (ISA subset supported, binary origin). Maybe it would be better to add another paragraph dedicated to arguing why verifying the verifier is insufficient and pick on RockSalt again.
-%% RockSalt verified a Rocq impl. of their verifier, but instead of extracting it like we did, they manually translated it to C and then tested that impl. against Google's NaCl verifier.
-%% Seems like it reasons over arbitrary binaries for which RockSalt returns True.
-%}
 
 \optional{%
   Formal verification directly targets this challenge by reasoning over all possible inputs rather than sampled executions, enabling universal correctness guarantees that dynamic testing cannot provide. These guarantees hold regardless of binary provenance, compiler, or ISA quirk, making formal methods particularly well suited to establishing that a \cfi implementation soundly enforces its policy across the full space of binaries it may encounter.

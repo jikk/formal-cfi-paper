@@ -51,10 +51,7 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 
 ## TODOs
 
-* [ ] better name for `ELF Editor`
-    - @kjee: `ELF Packager` is my current favorite
-    - `ELF Repackager`, `ELF Composer`, `ELF Reconstructor`, `ELF Rebuilder`
-
+* [ ] set up anonymous github repo for paper code
 * [ ] Ilan, Shreya, Charles brainstorm
     1. Formal verification friendly design decisions
     2. Bugs caught only because of the proof obligations
@@ -76,8 +73,9 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
   - Example proofs
   - Counter example cases? (indirectly stating what theorems and lemmas want to prevent from happening)
 
-### Terms/keywards
+### Terms/keywords
 
 * [ ] ISA or microarchitecture?
+* [ ] ELF editor -> ELF packager
 
 ##### tag: `pdli`,`max`, `cfi`, `formal verification`, `arm`
