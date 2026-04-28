@@ -408,3 +408,912 @@ IGNOREpages="197--214",
   year         = {2026},
   IGNOREurl          = {https://doi.org/10.1007/978-3-032-15700-3\_8},
 }
+
+
+@STRING{comps = " Computers "}
+@String{amps = " \& "}
+@String{sec = " Security "}
+@String{auto = " Automated "}
+@String{reason = " Reasoning "}
+@string{fm = " Formal Methods "}
+@string{cad = " Computer-Aided Design "}
+@string{proglang = " Programming Language "}
+@string{proglangs = " Programming Language "}
+
+@INPROCEEDINGS{hamlen19feast,
+  author = "Kevin W. Hamlen and Dakota Fisher and Gilmore R. Lundquist",
+  title = "Source-free Machine-checked Validation of Native Code in {Coq}",
+  booktitle = proc # ofthe # "\nym{3}" # work # on # " Forming an Ecosystem Around Software Transformation \nym{FEAST}",
+  year = "2019",
+  IGNOREurl = {https://doi.org/10.1145/3338502.3359759},
+}
+
+@article{smc_taxonomy,
+  author       = {Nikos Mavrogiannopoulos and Nessim Kisserli and Bart Preneel},
+  title        = {A taxonomy of self-modifying code for obfuscation},
+  journal      = {comps # amps # sec},
+  IGNOREvolume       = {30},
+  number       = {8},
+  pages        = {679--691},
+  year         = {2011},
+  IGNOREurl          = {https://doi.org/10.1016/j.cose.2011.08.007},
+}
+
+@INPROCEEDINGS{xu19usenix,
+  author = "Xiaoyang Xu and Masoud Ghaffarinia and Wenhao Wang and Kevin W. Hamlen and Zhiqiang Lin",
+  title = "{ConFIRM}: Evaluating Compatibility and Relevance of Control-flow Integrity Protections for Modern Software",
+  IGNOREbooktitle = "Proceedings of the 28th USENIX Security Symposium",
+  booktitle = proc # ofthe # "\cnum{28} USENIX" # sec # sym,
+  year = 2019,
+  pages = "1805--1821",
+  month = "August",
+  address = "Santa Clara, California",
+  IGNOREurl = {https://www.usenix.org/conference/usenixsecurity19/presentation/xu-xiaoyang},
+}
+
+
+
+@inproceedings{islaris,
+  author       = {Michael Sammler and Angus Hammond and Rodolphe Lepigre and Brian Campbell and Jean Pichon{-}Pharabod and Derek Dreyer and Deepak Garg and Peter Sewell},
+  title        = {Islaris: verification of machine code against authoritative {ISA} semantics},
+  booktitle    = "\nym{PLDI} \cnum{43} \nym{ACM} \nym{SIGPLAN}" # int # conf # on # prog,
+  pages        = {825--840},
+  year         = {2022},
+  IGNOREurl          = {https://doi.org/10.1145/3519939.3523434},
+}
+
+@inproceedings{isabil,
+  author       = {Matt Griffin and Brijesh Dongol and Azalea Raad},
+  title        = {IsaBIL: {A} Framework for Verifying (In)correctness of Binaries in Isabelle/HOL},
+  booktitle    = "\cnum{39} European " # conf # on # "{Object-Oriented}" # prog # " \nym{ECOOP}",
+  IGNOREseries       = {LIPIcs},
+  IGNOREvolume       = {333},
+  IGNOREpages        = {14:1--14:30},
+  pages        = {1--30},
+  IGNOREpublisher    = {Schloss Dagstuhl - Leibniz-Zentrum f{\"{u}}r Informatik},
+  year         = {2025},
+  IGNOREurl          = {https://doi.org/10.4230/LIPIcs.ECOOP.2025.14},
+}
+@article{laporte_smc,
+  author       = {Sandrine Blazy and Vincent Laporte and David Pichardie},
+  title        = {Verified Abstract Interpretation Techniques for Disassembling Low-level Self-modifying Code},
+  journal      = j # of # auto # reason,
+  IGNOREvolume       = {56},
+  number       = {3},
+  pages        = {283--308},
+  year         = {2016},
+  IGNOREurl          = {https://doi.org/10.1007/s10817-015-9359-8},
+}
+
+@TechReport{myreen_machine-code,
+  author =	 {Magnus O. Myreen},
+  title = 	 {{Formal verification of machine-code programs}},
+  year = 	 2009,
+  month = 	 dec,
+  IGNOREurl = 	 {https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-765.pdf},
+  institution =  {University of Cambridge, Computer Laboratory},
+  IGNOREdoi = 	 {10.48456/tr-765},
+  IGNOREnumber = 	 {UCAM-CL-TR-765}
+}
+
+@inproceedings{myreen_machine_code_multiple_architectures,
+  author       = {Magnus O. Myreen and Michael J. C. Gordon and Konrad Slind},
+  title        = {Machine-Code Verification for Multiple Architectures - An Application of Decompilation into Logic},
+  booktitle    = fm # in # cad # "\nym{FMCAD}",
+  pages        = {1--8},
+  IGNOREpublisher    = {{IEEE}},
+  year         = {2008},
+  IGNOREurl          = {https://doi.org/10.1109/FMCAD.2008.ECP.24},
+}
+
+@inproceedings{myreen_hoare_rmmc,
+  author       = {Magnus O. Myreen and Michael J. C. Gordon},
+  title        = {Hoare Logic for Realistically Modelled Machine Code},
+  booktitle = "Tools and Algorithms " # for # the # "Construction and Analysis" # of # "Systems \nym{TACAS}",
+  IGNOREseries       = {Lecture Notes in Computer Science},
+  IGNOREvolume       = {4424},
+  pages        = {568--582},
+  IGNOREpublisher    = {Springer},
+  year         = {2007},
+  IGNOREurl          = {https://doi.org/10.1007/978-3-540-71209-1\_44},
+}
+
+@inproceedings{certified_smc,
+  author       = {Hongxu Cai and Zhong Shao and Alexander Vaynberg},
+  title        = {Certified self-modifying code},
+  booktitle    = proc # ofthe # "\nym{ACM} \nym{SIGPLAN}" # conf # on # proglang # "Design and Implementation \nym{PLDI}",
+  pages        = {66--77},
+  IGNOREpublisher    = {{ACM}},
+  year         = {2007},
+  IGNOREurl          = {https://flint.cs.yale.edu/shao/papers/smc.html},
+}
+
+@inproceedings{state_enhanced_cfg,
+  author       = {Bertrand Anckaert and Matias Madou and Koen De Bosschere},
+  title        = {A Model for Self-Modifying Code},
+  booktitle    = "Information Hiding, \cnum{8}" # int # work,
+  IGNOREseries       = {Lecture Notes in Computer Science},
+  IGNOREvolume       = {4437},
+  pages        = {232--248},
+  IGNOREpublisher    = {Springer},
+  year         = {2006},
+  IGNOREurl          = {https://doi.org/10.1007/978-3-540-74124-4\_16},
+}
+
+@inproceedings{smodic,
+  author       = {Tayssir Touili and Xin Ye},
+  title        = {{SMODIC:} {A} Model Checker for Self-modifying Code},
+  booktitle    = {{ARES} 2022: The 17th International Conference on Availability, Reliability and Security, Vienna,Austria, August 23 - 26, 2022},
+  booktitle = "\cnum{17}" # int # conf # on # "Availability, Reliability and Security \nym{ARES}",
+  pages        = {1--6},
+  IGNOREpages        = {20:1--20:6},
+  IGNOREpublisher    = {{ACM}},
+  year         = {2022},
+  IGNOREurl          = {https://doi.org/10.1145/3538969.3538978},
+}
+
+@inproceedings{relational_hoare_logic_rmmc,
+  author       = {Denis Mazzucato and Abdalrhman Mohamed and Juneyoung Lee and Clark W. Barrett and Jim Grundy and John Harrison and Corina S. Pasareanu},
+  title        = {Relational Hoare Logic for Realistically Modelled Machine Code},
+  booktitle    = "\cnum{37}" # int # conf # on # " Computer Aided Verification \nym{CAV}",
+  IGNOREseries       = {Lecture Notes in Computer Science},
+  IGNOREvolume       = {15931},
+  pages        = {389--413},
+  IGNOREpublisher    = {Springer},
+  year         = {2025},
+  IGNOREurl          = {https://doi.org/10.1007/978-3-031-98668-0\_19},
+}
+
+@inproceedings{verified_jit,
+  author       = {Magnus O. Myreen},
+  title        = {Verified just-in-time compiler on x86},
+  booktitle    = proc # ofthe # "\cnum{37} \nym{ACM} \nym{SIGPLAN-SIGACT}" # sym # on # "Principles" # of # proglangs # " \nym{POPL}",
+  pages        = {107--118},
+  IGNOREpublisher    = {{ACM}},
+  year         = {2010},
+  IGNOREurl          = {https://doi.org/10.1145/1706299.1706313},
+}
+
+@inproceedings{hol4,
+  author       = {Konrad Slind and Michael Norrish},
+  title        = {A Brief Overview of {HOL4}},
+  booktitle    = {Theorem Proving in Higher Order Logics, 21st International Conference,
+                  TPHOLs 2008, Montreal, Canada, August 18-21, 2008. Proceedings},
+  IGNOREseries       = {Lecture Notes in Computer Science},
+  IGNOREvolume       = {5170},
+  pages        = {28--32},
+  IGNOREpublisher    = {Springer},
+  year         = {2008},
+  IGNOREurl          = {https://doi.org/10.1007/978-3-540-71067-7\_6},
+}
+
+@article{hiep_collatz,
+  title={Can the Collatz conjecture be proven, or not?},
+  author={Hans-Dieter Hiep},
+  year={2023},
+  IGNOREurl={https://www.drheap.nl/articles/2023/can-the-collatz-conjecture-be-proven-or-not/main.pdf},
+  note = {[Accessed Nov. 30, 2025]}
+}
+
+@article{reachability_analysis_smc,
+  author       = {Tayssir Touili and Xin Ye},
+  title        = {Reachability Analysis of Self Modifying Code},
+  journal      = int # j # of # "Foundations" # of # "Computer Science",
+  IGNOREvolume       = {34},
+  number       = {5},
+  pages        = {507--536},
+  year         = {2023},
+  IGNOREurl          = {https://doi.org/10.1142/S0129054122500290},
+}
+
+@inbook{xavier_leroy_control_structures,
+  title={Control structures in programming languages: From goto to algebraic effects},
+  url={https://xavierleroy.org/control-structures/book/main003.html},
+  IGNOREjournal={Xavierleroy.org},
+  author={Xavier Leroy},
+  IGNOREpublisher={Cambridge University Press},
+  year={2025},
+  chapter=1,
+  note="Accessed February 23, 2025 prior to publication."
+}
+
+@article{hoare_logics_journal,
+  title = {Hoare-style logic for unstructured programs},
+  journal = j # of # "Logical and Algebraic Methods" # in # "Programming",
+  IGNOREvolume = {149},
+  pages = {101099},
+  year = {2026},
+  IGNOREissn = {2352-2208},
+  IGNOREurl = {https://www.sciencedirect.com/science/article/pii/S2352220825000653},
+  author = {Didrik Lundberg and Roberto Guanciale and Andreas Lindner and Mads Dam},
+}
+
+@article{trabin,
+  title = {TrABin: Trustworthy analyses of binaries},
+  journal = "Science" # of # "Computer Programming",
+  IGNOREvolume = {174},
+  pages = {72-89},
+  year = {2019},
+  IGNOREissn = {0167-6423},
+  IGNOREurl = {https://www.sciencedirect.com/science/article/pii/S0167642318301667},
+  author = {Andreas Lindner and Roberto Guanciale and Roberto Metere},
+}
+
+@article{qed_at_large,
+  author       = {Talia Ringer and Karl Palmskog and Ilya Sergey and Milos Gligoric and Zachary Tatlock},
+  title        = {{QED} at Large: {A} Survey of Engineering of Formally Verified Software},
+  journal      = {CoRR},
+  IGNOREvolume       = {abs/2003.06458},
+  year         = {2020},
+  IGNOREurl          = {https://arxiv.org/abs/2003.06458},
+  eprinttype    = {arXiv},
+  eprint       = {2003.06458},
+  timestamp    = {Wed, 07 Jun 2023 07:54:21 +0200},
+  biburl       = {https://dblp.org/rec/journals/corr/abs-2003-06458.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{ksplice,
+author = {Jeff Arnold and M. Frans Kaashoek},
+title = {Ksplice: automatic rebootless kernel updates},
+year = {2009},
+IGNOREurl = {https://doi.org/10.1145/1519065.1519085},
+booktitle = proc # ofthe # "\cnum{4} ACM European" # conf # on # "Computer Systems",
+pages = {187–198},
+IGNOREseries = {EuroSys '09}
+}
+
+@inproceedings{dynamic_loading_experience,
+author = {Nico Weichbrodt and Joshua Heinemann and Lennart Almstedt and  Pierre-Louis Aublin and R\"{u}diger Kapitza},
+title = {Experience Paper: sgx-dl: dynamic loading and hot-patching for secure applications},
+year = {2021},
+IGNOREurl = {https://doi.org/10.1145/3464298.3476134},
+booktitle = proc # ofthe # "\cnum{22}" # int # "Middleware" # conf,
+pages = {91–103},
+IGNOREseries = {Middleware '21}
+}
+
+@INPROCEEDINGS{hotpatching_web_server_case_study,
+  author={Mathias Payer and  Thomas R. Gross},
+  booktitle= "\cnum{11} Annual" # conf # on # "Privacy, Security and Trust",
+  title={Hot-patching a web server: A case study of ASAP code repair}, 
+  year={2013},
+  pages={143-150},
+  IGNOREurl = "https://ieeexplore.ieee.org/document/6596048",
+  }
+
+ @misc{norheim_2019, 
+ title={Hot Patching SQL Server Engine in Azure SQL Database}, 
+ url={https://techcommunity.microsoft.com/blog/azuresqlblog/hot-patching-sql-server-engine-in-azure-sql-database/849700}, 
+ journal={microsoft.com}, 
+ author={norheim}, 
+ year={2019},
+ }
+
+@inproceedings{kintsugi,
+  author       = {Philipp Mackensen and
+                  Christian Niesler and
+                  Roberto Blanco and
+                  Lucas Davi and
+                  Veelasha Moonsamy},
+  title        = {Kintsugi: Secure Hotpatching for Code-Shadowing Real-Time Embedded
+                  Systems},
+  booktitle    = "\cnum{34} USENIX" # sec # sym,
+  pages        = {1847--1866},
+  IGNOREpublisher    = {{USENIX} Association},
+  year         = {2025},
+  IGNOREurl          = {https://www.usenix.org/conference/usenixsecurity25/presentation/mackensen},
+}
+
+@inproceedings {opus,
+author = {Gautam Altekar and Ilya Bagrak and Paul Burstein and Andrew Schultz},
+title = {{OPUS}: Online Patches and Updates for Security},
+booktitle = "\cnum{14} USENIX" # sec # sym,
+year = {2005},
+IGNOREurl = {https://www.usenix.org/conference/14th-usenix-security-symposium/opus-online-patches-and-updates-security},
+IGNOREpublisher = {USENIX Association},
+}
+
+
+@article{fm_in_hotpatch,
+  author       = {Razika Lounas and
+                  Mohamed Mezghiche and
+                  Jean{-}Louis Lanet},
+  title        = {Formal methods in dynamic software updating: a survey},
+  journal      = int # j # of # "Critical Computer Based Systems",
+  pages        = {76--114},
+  year         = {2019},
+  IGNOREurl          = {https://doi.org/10.1504/IJCCBS.2019.098794},
+}
+
+
+% https://ssrg.ece.vt.edu/papers/ccs24.pdf
+@INPROCEEDINGS{formally_verified_lifting,
+  author = "Freek Verbeek and Joshua A. Bockenek and Zhoulai Fu and Binoy Ravindran",
+  title = "Formally Verified Lifting of {C}-compiled {x86-64} Binaries",
+  booktitle = proc # ofthe # "\cnum{43rd} ACM SIGPLAN" # conf # on # "Programming Language Design and Implementation \nym{PLDI}",
+  pages = "934--949",
+  year = 2022,
+}
+
+@MISC{verified_pointers,
+  author = "Freek Verbeek and Ali Shokri and Daniel Engel and Binoy Ravindran",
+  title = "Formally Verified Binary-level Pointer Analysis",
+  howpublished = "\url{https://arxiv.org/abs/2501.17766}",
+  year = 2025,
+}
+
+@ARTICLE{isla,
+  author = "Alasdair Armstrong and Brian Campbell and Ben Simner and Christopher Pulte and Peter Sewell",
+  title = "{Isla}: Integrating Full-scale {ISA} Semantics and Axiomatic Concurrency Models (extended version)",
+  journal = "Formal Methods in System Design",
+  volume = 63,
+  number = 1,
+  pages = "110--133",
+  year = 2024,
+}
+
+@INPROCEEDINGS{hoare_style_logic_unstructured,
+  author = "Didrik Lundberg and Roberto Guanciale and Andreas Lindner and Mads Dam",
+  title = "Hoare-style Logic for Unstructured Programs",
+  booktitle = proc # ofthe # "\cnum{18th}" # int # conf # on # "Software Engineering and Formal Methods \nym{SEFM}",
+  volume = 12310,
+  pages = "193--213",
+  year = 2020,
+}
+
+@ARTICLE{goto_semantics_and_deduction,
+  author = "Arie de Bruin",
+  title = "Goto Statements: Semantics and Deduction Systems",
+  journal = "Acta Informatica",
+  volume = 15,
+  pages = "385--424",
+  year = 1981,
+}
+
+@INPROCEEDINGS{relational_realistic,
+  author = "Denis Mazzucato and Abdalrhman Mohamed and Juneyoung Lee and Clark W. Barrett and Jim Grundy and John Harrison and Corina S. Pasareanu",
+  title = "Relational Hoare Logic for Realistically Modelled Machine Code",
+  booktitle = proc # ofthe # "\cnum{37th}" # int # conf # on # "Computer Aided Verification \nym{CAV}",
+  pages = "389--413",
+  year = 2025,
+}
+
+@ARTICLE{sail,
+  author = "Alasdair Armstrong and Thomas Bauereiss and Brian Campbell and Alastair Reid and Kathryn E. Gray and Robert M. Norton and Prashanth Mundkur and Mark Wassell and Jon French and Christopher Pulte and Shaked Flur and Ian Stark and Neel Krishnaswami and Peter Sewell",
+  title = "{ISA} Semantics for {ARMv8-a}, {RISC-V}, and {CHERI-MIPS}",
+  journal = proc # ofthe # "\cnum{46th} ACM-SIGACT" # sym # on # "Principles of Programming Languages \nym{POPL}",
+  number = "{POPL}",
+  pages = "71:1--71:31",
+  year = 2019,
+}
+
+@INPROCEEDINGS{bap,
+  author = "David Brumley and Ivan Jager and Thanassis Avgerinos and Edward J. Schwartz",
+  title = "{BAP:} {A} Binary Analysis Platform",
+  booktitle = proc # ofthe # "\cnum{23rd}" # int # conf# on # "Computer Aided Verification \nym{CAV}",
+  pages = "463--469",
+  year = 2011,
+}
+
+@MISC{ghidra2019blackhat,
+  author = "Chris Delikat Brian Knighton",
+  title = "{Ghidra}~-- Journey From Classified {NSA} Tool to Open Source",
+  howpublished = "Black Hat",
+  year = 2019,
+}
+
+@ARTICLE{hacms,
+  author = "Kathleen Fisher",
+  title = "{HACMS}: High Assurance Cyber Military Systems",
+  journal = "ACM SIGAda Ada Letters",
+  volume = 32,
+  number = 3,
+  pages = "51--52",
+  year = 2012,
+}
+
+@INBOOK{compass,
+  author = "Marco Bozzano and Harold Bruintjes and Alessandro Cimatti and Joost-Pieter Katoen and Thomas Noll and Stefano Tonetta",
+  title = "Formal Methods for Aerospace Systems",
+  editor = "Shin Nakajima and Jean-Pierre Talpin and Masumi Toyoshima and Huafeng Yu",
+  pages = "133--159",
+  year = 2017,
+  publisher = "Springer Singapore",
+}
+
+@ARTICLE{compcert,
+  author = "Xavier Leroy",
+  title = "Formal Verification of a Realistic Compiler",
+  journal = "Communications" # ofthe # "ACM \nym{CACM}",
+  volume = 52,
+  number = 7,
+  pages = "107â€“115",
+  year = 2009,
+}
+
+@INPROCEEDINGS{verif_openssl,
+  author = "Jingjing Guan and Hui Li and XiangDong Li and XiaoLei Wang and Binghan Wang and Qiuye Wang and Shengchao Qin and Mengda He and Md Armanuzzaman and Ziming Zhao",
+  title = "Formally Verifying the State Machine of {TLS} 1.3 Handshake in {OpenSSL}",
+  booktitle = proc # ofthe # "\cnum{44th} IEEE" # conf # on # "Computer Communications \nym{INFOCOM}",
+  year = 2025,
+}
+
+@PHDTHESIS{mc_state_space_explosion,
+  author = "Sergey Berezin",
+  title = "Model Checking and Theorem Proving: A Unified Framework",
+  school = "Carnegie Mellon University",
+  year = 2002,
+}
+
+@MISC{heartbleed,
+  author = "David Wheeler",
+  title = "How to Prevent the Next {Heartbleed}",
+  howpublished = "\url{https://dwheeler.com/essays/heartbleed.html}",
+  month = "April",
+  year = 2024,
+}
+
+@INPROCEEDINGS{sel4,
+  author = "Gerwin Klein and Kevin Elphinstone and Gernot Heiser and June Andronick and David Cock and Philip Derrin and Dhammika Elkaduwe and Kai Engelhardt and Rafal Kolanski and Michael Norrish and Thomas Sewell and Harvey Tuch and Simon Winwood",
+  title = "{seL4}: Formal Verification of an {OS} Kernel",
+  booktitle = proc # ofthe # "ACM SIGOPS \cnum{22nd}" # sym # on # "Operating Systems Principles \nym{SOSP}",
+  pages = "207--220",
+  year = 2009,
+}
+
+@INPROCEEDINGS{cakeml,
+  author = "Ramana Kumar and Magnus O. Myreen and Michael Norrish and Scott Owens",
+  title = "{CakeML}: A Verified Implementation of {ML}",
+  booktitle = proc # ofthe # "\cnum{42nd} ACM" # sym # on # "Principles Of Programming Languages \nym{POPL}",
+  pages = "179--191",
+  year = 2014,
+}
+
+@ARTICLE{tmr,
+  author = "Robert E. Lyons and Wouter Vanderkulk",
+  title = "The Use of Triple-modular Redundancy to Improve Computer Reliability",
+  journal = "IBM" # j # of # "Research and Development",
+  volume = 6,
+  number = 2,
+  pages = "200--209",
+  year = 1962,
+}
+
+@ARTICLE{nmr,
+  author = "Eric P. Kim and Naresh R. Shanbhag",
+  title = "Soft N-modular Redundancy",
+  journal = "IEEE" # trans # on # "Computers",
+  volume = 61,
+  number = 3,
+  pages = "323--336",
+  year = 2010,
+}
+
+@INPROCEEDINGS{compiler_ft,
+  author = "Alejandro Serrano-Cases and Jos{\'e} Isaza-Gonz{\'a}lez and Sergio Cuenca-Asensi and Antonio Mart{\'i}nez-{\'A}lvarez",
+  title = "On the Influence of Compiler Optimizations in the Fault Tolerance of Embedded Systems",
+  booktitle = "IEEE \cnum{22nd}" # int # sym # on # "On-line Testing and Robust System Design (IOLTS)",
+  pages = "207--208",
+  year = 2016,
+}
+
+@ARTICLE{fitest,
+  author = "Dimiter Avresky and Jean Arlat and Jean-Claude Laprie and Yves Crouzet",
+  title = "Fault Injection for Formal Testing of Fault Tolerance",
+  journal = "IEEE" # trans # on # "Reliability",
+  volume = 45,
+  number = 3,
+  pages = "443--455",
+  year = 1996,
+}
+
+@INPROCEEDINGS{picinae,
+  author = "Kevin W. Hamlen and Dakota Fisher and Gilmore R. Lundquist",
+  title = "Source-free Machine-checked Validation of Native Code in {Coq}",
+  booktitle = proc # ofthe # "\cnum{3rd} ACM" # work # on # "Forming an Ecosystem Around Software Transformation \nym{FEAST}",
+  pages = "25--30",
+  year = 2019,
+}
+
+@INPROCEEDINGS{interproc_analysis,
+  author = "Joshua Bockenek and Freek Verbeek and Binoy Ravindran",
+  title = "Exceptional Interprocedural Control Flow Graphs for {x86-64} Binaries",
+  booktitle = proc # ofthe # "\cnum{21st}" # int # conf # on # "Detection" # of # "Intrusions and Malware, and Vulnerability Assessment \nym{DIMVA}",
+  pages = "3--22",
+  year = 2024,
+}
+
+@INPROCEEDINGS{pangolin,
+  author = "Lu Zhang and Steven Swanson",
+  title = "{Pangolin}: A Fault-Tolerant Persistent Memory Programming Library",
+  booktitle = proc # ofthe # "USENIX Annual Technical" # conf # "\nym{USENIX ATC}",
+  pages = "897--912",
+  year = 2019,
+}
+
+@ARTICLE{redundant_data_structures,
+  author = "David J. Taylor and David E. Morgan and John P. Black",
+  title = "Redundancy in Data Structures: Improving Software Fault Tolerance",
+  journal = "IEEE" # trans # on # "Software Engineering \nym{TSE}",
+  volume = 6,
+  number = 6,
+  pages = "585--594",
+  year = 1980,
+}
+
+@ARTICLE{low_spatial_precision,
+  author = "Roua Boulifa and Giorgio Di Natale and Paolo Maistri",
+  title = "Countermeasures Against Fault Injection Attacks in Processors: A Review",
+  journal = "Information",
+  volume = 16,
+  number = 4,
+  pages = "293",
+  year = 2025,
+}
+
+@INPROCEEDINGS{dram_row_size,
+  author = "Thomas Moscibroda Onur Mutlu",
+  title = "Memory Performance Attacks: Denial of Memory Service in Multi-core Systems",
+  booktitle = proc # ofthe # "\cnum{16th} USENIX Security" # sym,
+  year = 2007,
+}
+
+@PHDTHESIS{no_register_corruption,
+  author = "Flore Q. Yuan",
+  title = "Formal Framework and Tools to Derive Efficient Application-level Detectors Against Memory Corruption Attacks",
+  school = "University of Illinois at Urbana-Champaign",
+  year = 2010,
+}
+
+@ARTICLE{general_instruction_skips,
+  author = "Huilong Jiang and Xiang Zhu and Jianwei Han",
+  title = "Instruction-fetching Attack and Practice in Collision Fault Attack on {AES}",
+  journal = "Symmetry",
+  volume = 14,
+  number = 10,
+  pages = 2201,
+  year = 2022,
+}
+
+@MISC{rocq,
+  author = "{Rocq}",
+  title = "{Rocq}: A Trustworthy, Industrial-strength Interactive Theorem Prover and Dependently-typed Programming Language for Mechanised Reasoning in Mathematics, Computer Science and More",
+  howpublished = "\url{https://rocq-prover.org}",
+  year = 2025,
+}
+
+@INPROCEEDINGS{fi_sok,
+  author = "Tinghung Chiu and Wenjie Xiong",
+  title = "{SoK}: Fault Injection Attacks on Cryptosystems",
+  booktitle = proc # ofthe # "\cnum{44th} IEEE" # sym # on # "Security \& Privacy \nym{S\&P}",
+  pages = "64--72",
+  year = 2023,
+}
+
+@ARTICLE{how_practical,
+  author = "Jakub Breier and Xiaolu Hou",
+  title = "How Practical Are Fault Injection Attacks, Really?",
+  journal = "IEEE Access",
+  volume = 10,
+  pages = "113122--113130",
+  year = 2022,
+}
+
+@INPROCEEDINGS{laser_emfi,
+  author = "Mahmoud A. Elmohr and Haohao Liao and Catherine H. Gebotys",
+  title = "{EM} Fault Injection on {ARM} and {RISC-V}",
+  booktitle = proc # ofthe # "\cnum{21st}" # int # sym # on # "Quality Electronic Design \nym{ISQED}",
+  pages = "206--212",
+  year = 2020,
+}
+
+@ARTICLE{iot_fi,
+  author = "Aakash Gangolli and Qusay H. Mahmoud and Akramul Azim",
+  title = "A Systematic Review of Fault Injection Attacks on {IoT} Systems",
+  journal = "Electronics",
+  volume = 11,
+  number = 13,
+  pages = 2023,
+  year = 2022,
+}
+
+@INPROCEEDINGS{aes_fi,
+  author = "Amine Dehbaoui and Jean-Max Dutertre and Bruno Robisson and Assia Tria",
+  title = "Electromagnetic Transient Faults Injection on a Hardware and a Software Implementations of {AES}",
+  booktitle = proc # ofthe # work # on # "Fault Diagnosis and Tolerance in Cryptography \nym{FDTC}",
+  pages = "7--15",
+  year = 2012,
+}
+
+@ARTICLE{rsa_fi,
+  author = "Andrey Sidorenko and Joachim van den Berg and Remko Foekema and Michiel Grashuis and Jaap de Vos",
+  title = "Bellcore Attack in Practice",
+  journal = "IACR Cryptology {ePrint} Archive",
+  pages = "553",
+  year = 2012,
+}
+
+@ARTICLE{ecc_fi,
+  author = "Kevin Schneider and Lukas Auer and Alexander Wagner",
+  title = "Fault Attacks on {ECC} Signature Verification",
+  journal = "IACR" # trans # on # "Cryptographic Hardware and Embedded Systems \nym{CHES}",
+  volume = 2025,
+  number = 4,
+  pages = "1010--1052",
+  year = 2025,
+}
+
+@ARTICLE{formal_dmr,
+  author = "Nicolas Moro and Karine Heydemann and Emmanuelle Encrenaz and Bruno Robisson",
+  title = "Formal Verification of a Software Countermeasure Against Instruction Skip Attacks",
+  journal = j # of # "Cryptographic Engineering",
+  volume = 4,
+  number = 3,
+  pages = "145--156",
+  year = 2014,
+}
+
+@INPROCEEDINGS{hol_correctness,
+  author = "Denis Mazzucato and Abdalrhman Mohamed and Juneyoung Lee and Clark Barrett and Jim Grundy and John Harrison and Corina S P{\u{a}}s{\u{a}}reanu",
+  title = "Relational {Hoare} Logic for Realistically Modelled Machine Code",
+  booktitle = proc # ofthe # "\cnum{37th}" # int # conf # on # "Computer Aided Verification \nym{CAV}",
+  pages = "389--413",
+  year = 2025,
+}
+
+@INPROCEEDINGS{pesin_formally,
+  author = "Basile Pesin and Sylvain Boulm{\'e} and David Monniaux and Marie-Laure Potet",
+  title = "Formally Verified Hardening of {C} Programs Against Hardware Fault Injection",
+  booktitle = proc # ofthe # "\cnum{14th} ACM SIGPLAN" # int # conf # on # "Certified Programs and Proofs \nym{CPP}",
+  pages = "140--155",
+  year = 2025,
+}
+
+@ARTICLE{richter_fiver,
+  author = "Jan Richter-Brockmann and Aein Rezaei Shahmirzadi and Pascal Sasdrich and Amir Moradi and Tim G{\"u}neysu",
+  title = "{FIVER}~-- Robust Verification of Countermeasures Against Fault Injections",
+  journal = "IACR" # trans # on # "Cryptographic Hardware and Embedded Systems \nym{CHES}",
+  pages = "447--473",
+  year = 2021,
+}
+
+@ARTICLE{christofi_formal,
+  author = "Maria Christofi and Boutheina Chetali and Louis Goubin and David Vigilant",
+  title = "Formal Verification of a {CRT-RSA} Implementation Against Fault Attacks",
+  journal = j # of # "Cryptographic Engineering \nym{JCEN}",
+  volume = 3,
+  number = 3,
+  pages = "157--167",
+  year = 2013,
+}
+
+@ARTICLE{tan_sat,
+  author = "Huiyu Tan and Pengfei Gao and Fu Song and Taolue Chen and Zhilin Wu",
+  title = "{SAT}-based Formal Verification of Fault Injection Countermeasures for Cryptographic Circuits",
+  journal = "IACR" # trans # on # "Cryptographic Hardware and Embedded Systems \nym{CHES}",
+  volume = 2024,
+  number = 4,
+  pages = "1--39",
+  year = 2024,
+}
+
+@ARTICLE{lu_soc,
+  author = "Huaixi Lu and Yue Xing and Aarti Gupta and Sharad Malik",
+  title = "{SOC} Protocol Implementation Verification Using Instruction-level Abstraction Specifications",
+  journal = "ACM" # trans # on # "Design Automation" # of # "Electronic Systems \nym{TODAES}",
+  volume = 28,
+  number = 6,
+  pages = "1--24",
+  year = 2023,
+}
+
+@INPROCEEDINGS{potet_lazart,
+  author = "Marie-Laure Potet and Laurent Mounier and Maxime Puys and Louis Dureuil",
+  title = "{Lazart}: A Symbolic Approach for Evaluation the Robustness of Secured Codes Against Control Flow Injections",
+  booktitle = proc # ofthe # "IEEE \cnum{7th}" # int # conf # on # "Software Testing, Verification and Validation \nym{ICST}",
+  pages = "213--222",
+  year = 2014,
+}
+
+@MISC{bearssl,
+  author = "Thomas Pornin",
+  title = "{BearSSL}",
+  howpublished = "\url{https://bearssl.org}",
+  year = 2018,
+}
+
+@MISC{bearssl_ctc,
+  author = "Thomas Pornin",
+  title = "{BearSSL}: Why Constant-Time Crypto?",
+  howpublished = "\url{https://bearssl.org/constanttime.html}",
+  year = 2018,
+}
+
+@MISC{tls_common,
+  author = "Georgy Moshkin and Dmitry Ivanov",
+  title = "{OpenSSL}: {tls\_common.c}",
+  howpublished = "GitHub",
+  year = 2025,
+}
+
+@MISC{crypto_memcmp,
+  author = "{OpenSSL}",
+  title = "{CRYPTO\_memcmp}",
+  howpublished = "\url{https://docs.openssl.org/3.3/man3/CRYPTO_memcmp}",
+  year = 2026,
+}
+
+@ARTICLE{fang2025efficient,
+  author = "Yuzhou Fang and Chenyu Zhou and Jingbo Wang and Chao Wang",
+  title = "Efficient Symbolic Execution of Software Under Fault Attacks",
+  journal = "arXiv Preprint arXiv:2503.15825",
+  year = 2025,
+}
+
+@ARTICLE{khuat2024software,
+  author = "Vanthanh Khuat and Jean-Max Dutertre and Jean-Luc Danger",
+  title = "Software Countermeasures Against the Multiple Instructions Skip Fault Model",
+  journal = "Microelectronics Reliability",
+  volume = 155,
+  pages = 115370,
+  year = 2024,
+}
+
+@INPROCEEDINGS{patranabis2015fault,
+  author = "Sikhar Patranabis and Abhishek Chakraborty and Debdeep Mukhopadhyay",
+  title = "Fault Tolerant Infective Countermeasure for {AES}",
+  booktitle = proc # ofthe # int # conf # on # "Security, Privacy, and Applied Cryptography Engineering \nym{SPACE}",
+  pages = "190--209",
+  year = 2015,
+}
+
+@INPROCEEDINGS{buhren2021one,
+  author = "Robert Buhren and Hans-Niklas Jacob and Thilo Krachenfels and Jean-Pierre Seifert",
+  title = "One Glitch to Rule Them All: Fault Injection Attacks Against Amd's Secure Encrypted Virtualization",
+  booktitle = proc # ofthe # "\cnum{28th} ACM SIGSAC" # conf # on # "Computer and Communications Security \nym{CCS}",
+  pages = "2875--2889",
+  year = 2021,
+}
+
+@INPROCEEDINGS{kazemi2019low,
+  author = "Zahra Kazemi and Athanasios Papadimitriou and Ioanna Souvatzoglou and Ehsan Aerabi and Mosabbah Mushir Ahmed and David Hely and Vincent Beroulle",
+  title = "On a Low Cost Fault Injection Framework for Security Assessment of Cyber-physical Systems: Clock Glitch Attacks",
+  booktitle = proc # ofthe # "IEEE \cnum{4th}" # int # "Verification and Security" # work # "\nym{IVSW}",
+  pages = "7--12",
+  year = 2019,
+}
+
+@INPROCEEDINGS{sass2023oops,
+  author = "Xhani Marvin Sa{\ss} and Richard Mitev and Ahmad-Reza Sadeghi",
+  title = "Oops..! {I} Glitched it Again! {H}ow to Multi-Glitch the Glitching-Protections on {ARM} {TrustZone-M}",
+  booktitle = proc # ofthe # "\cnum{32nd} USENIX Security" # sym,
+  pages = "6239--6256",
+  year = 2023,
+}
+
+@ARTICLE{bozzato2019shaping,
+  author = "Claudio Bozzato and Riccardo Focardi and Francesco Palmarini",
+  title = "Shaping the Glitch: Optimizing Voltage Fault Injection Attacks",
+  journal = "IACR" # trans # on # "Cryptographic Hardware and Embedded Systems \nym{CHES}",
+  pages = "199--224",
+  year = 2019,
+}
+
+@ARTICLE{persistent_aes_fault,
+  author = "Viet Sang Nguyen and Vincent Grosso and Pierre-Louis Cayrel",
+  title = "Practical Persistent Fault Attacks on {AES} with Instruction Skip",
+  journal = "{IACR} Communications in Cryptology",
+  volume = 2,
+  number = 1,
+  year = 2025,
+}
+
+@INPROCEEDINGS{leapfrog,
+  author = "Andrew Adiletta and M. Caner Tol and Kemal Derya and Berk Sunar and Saad Islam",
+  title = "{LeapFrog}: The Rowhammer Instruction Skip Attack",
+  booktitle = proc # ofthe # "IEEE \cnum{10th} European" # sym # on # "Security and Privacy \nym{EuroS\&P}",
+  year = 2025,
+}
+
+@MISC{espressif_2019,
+  author = "{Espressif}",
+  title = "{Espressif} Security Advisory Concerning Fault Injection and Secure Boot ({CVE}-2019-15894)",
+  howpublished = "\url{https://www.espressif.com/en/news/Espressif_Security_Advisory_Concerning_Fault_Injection_and_Secure_Boot}",
+  month = "September",
+  year = 2019,
+}
+
+@INPROCEEDINGS{ducousso2023adversarial,
+  author = "Soline Ducousso and S{\'e}bastien Bardin and Marie-Laure Potet",
+  title = "Adversarial Reachability for Program-level Security Analysis.",
+  booktitle = proc # ofthe # "\cnum{32nd} European" # sym # on # "Programming \nym{ESOP}",
+  pages = "59--89",
+  year = 2023,
+}
+
+@article{liblisa,
+  author       = {Jos Craaijo and Freek Verbeek and Binoy Ravindran},
+  title        = {{libLISA}: Instruction Discovery and Analysis on {x86-64}},
+  journal      = proc # ofthe # "{ACM}" # on # "Programming Languages",
+  volume       = {8},
+  number       = {{OOPSLA2}},
+  pages        = {333--361},
+  year         = {2024},
+  IGNOREurl    = {https://doi.org/10.1145/3689723},
+}
+
+
+@inproceedings{lustre_compiler,
+author = {Timothy Bourke and L\'{e}lio Brun and Pierre-\'{E}variste Dagand and Xavier Leroy and Marc Pouzet and Lionel Rieg},
+title = {A formally verified compiler for Lustre},
+year = {2017},
+IGNOREurl = {https://doi.org/10.1145/3062341.3062358},
+IGNOREbooktitle = {Proceedings of the 38th ACM SIGPLAN Conference on Programming Language Design and Implementation},
+booktitle = proc # ofthe # "\cnum{38} ACM SIGPLAN" # conf # on # "Programming Language Design and Implementation",
+pages = {586–601},
+numpages = {16},
+}
+
+@InProceedings{certi_crypto_comp,
+author={Jos{\'e} Bacelar Almeida and Manuel Barbosa and Gilles Barthe and Vincent Laporte and Tiago Oliveira},
+title="Certified Compilation for Cryptography: Extended x86 Instructions and Constant-Time Verification",
+booktitle="INDOCRYPT",
+year="2020",
+pages="107--127",
+}
+
+@inproceedings{certicoq_wasm,
+author = {Wolfgang Meier and Martin Jensen and Jean Pichon-Pharabod and Bas Spitters},
+title = {CertiCoq-Wasm: A Verified WebAssembly Backend for CertiCoq},
+year = {2025},
+IGNOREurl = {https://doi.org/10.1145/3703595.3705879},
+IGNOREbooktitle = {Proceedings of the 14th ACM SIGPLAN International Conference on Certified Programs and Proofs},
+booktitle = proc # ofthe # "\cnum{14} ACM SIGPLAN" # int # conf # on # "Certified Programs and Proofs",
+pages = {127--139},
+}
+
+@inproceedings{compcerto,
+author = {J\'{e}r\'{e}mie Koenig and Zhong Shao},
+title = {CompCertO: compiling certified open C components},
+year = {2021},
+IGNOREurl = {https://doi.org/10.1145/3453483.3454097},
+IGNOREbooktitle = {Proceedings of the 42nd ACM SIGPLAN International Conference on Programming Language Design and Implementation},
+booktitle = proc # ofthe # "\cnum{42} ACM SIGPLAN" # int # conf # on # "Programming Language Design and Implementation",
+pages = {1095--1109},
+}
+
+@article{rocq_compilers_alacarte,
+author = {Oghenevwogaga Ebresafe and Ian Zhao and Ende Jin and Arthur Bright and Charles Jian and Yizhou Zhang},
+title = {Certified Compilers \`{a} la Carte},
+year = {2025},
+volume = {9},
+IGNOREurl = {https://doi.org/10.1145/3729261},
+journal = proc # ofthe # "\nym{ACM}" # on # "Programming Languages",
+}
+
+@article{design_impl_certifying_compiler,
+author = {George C. Necula and Peter Lee},
+title = {The design and implementation of a certifying compiler},
+year = {1998},
+volume = {33},
+IGNOREurl = {https://doi.org/10.1145/277652.277752},
+journal = proc # ofthe # "\nym{ACM} \nym{SIGPLAN}" # conf # on # "Programming Language Design and Implementation",
+pages = {333--344},
+}
+
+@InProceedings{certified_choreographies,
+author={Lu{\'i}s Cruz-Filipe and Lovro Lugovi{\'{c}} and Fabrizio Montesi},
+title="Certified Compilation of Choreographies with hacc",
+booktitle="Formal Techniques for Distributed Objects, Components, and Systems",
+year="2023",
+pages="29--36",
+}
+
+@InProceedings{holbase,
+author={Andreas Lindner and Karl Palmskog and Scott Constable and Mads Dam and Roberto Guanciale and Hamed Nemati},
+title="Forward Symbolic Execution for Trustworthy Automation of Binary Code Verification",
+booktitle="Verification, Model Checking, and Abstract Interpretation",
+year="2026",
+pages="147--172",
+}
