@@ -3,8 +3,8 @@
 
 \ixb{Embarrassing first draft is fine!}
 
+\comment{
 mainly about (apparent) limitations
-
 \begin{itemize}
     \item Lifter is handwritten and trusted; mitigated by related work (verified lifting)
     \item Extraction to OCaml, trusted, uses ints; mitigated by related work (verified extraction) and future work
@@ -12,41 +12,67 @@ mainly about (apparent) limitations
     \item does not protect from srop
     \item protection limited to binaries that make no system calls, rare
     \item assumes no concurrency or shared memory, rare
-    \item
-\end{itemize}
-
-\pname takes a big step towards high assurance binary defense by formally verifying the binary rewriter, but it still trusts other components of the system.
-Underlying the rewriter is the internal lifter, a manual implementation of the ARMv7 ISA semantics as a Gallina function translating code bytes to PIL statements.
-Creating trustworthy mechanized semantics of ISAs is a subject of ongoing research~\cite{isla,islaris,archsem,armstrong19isasem,liblisa,goel17x86isa}
-
-While \pname represents a big step towards high assurance binary defenses, there are still many weaknesses left to address.
-First, the entire work rests on our trusted internal lifter, the Gallina function translating code bytes to PIL statements.
-Verified and trustworthy lifting are subjects of ongoing research, but verifying PIL lifters is an open problem.
-Second, the extraction is trusted.
-The OCaml extractor is verified~\wc{trustworthy}, but in our extraction we extracted Rocq's unbounded integer type \texttt{Z} to OCaml's bounded \texttt{int}.
-This opens the door to integer overflow and underflow bugs in the extracted code, but it makes the rewriter usable.
-Extracting it without this optimization, that is an OCaml variant \texttt{Z} with the same structure as Rocq's, results in XXx longer rewrite times.
-Rocq offers the capability of proving that this optimization is sound, i.e., that no over/underflows are possible, but we leave it to future work/industrial adoption.
-Third, the ELF Packager is beyond the scope of formal verification because any specification of its correctness relies on the behavior of the loader.
-To bring that part of the system into scope requires the availalability of a formally verified loader.
-
-
-\todo{Future work
-\begin{itemize}
-    \item call-return semantics for trace properties
-    \item call-return semantics for overlapping code?
-    \item total correctness?
-    \item position independent proofs?
+    \item Policy-adhering weird control flows still possible
 \end{itemize}
 }
 
+\pname takes a big step towards high assurance binary defense by formally verifying the binary rewriter, but it still trusts other components of the system.
+Underlying the rewriter is the internal lifter, a manual implementation of the ARMv7 ISA semantics as a Gallina function translating code bytes to PIL statements.
+Creating trustworthy mechanized semantics of ISAs is a subject of ongoing research~\cite{isla,islaris,archsem,armstrong19isasem,liblisa,goel17x86isa}.
+While extraction from Rocq to OCaml is verified~\cite{fv_ocaml_extraction}, the extracted code makes one undermining translation to make the rewriter run faster.
+It translates Rocq's unbounded integer type \texttt{Z} to OCaml's bounded machine integers \texttt{int}.
+Rocq offers facilities for proving the soundness of this extraction choice, but we leave it as future work.
+The ELF Packager is trusted, but its verification relies on the behavior of the loader that loads the binary and as such requires a formally verified loader.
+Creating such a component is an open problem, thus verifying the ELF Packager is out of scope.
+
+Besides the trusted components, our ISA semantics model does not account for concurrent execution, shared memory, nor system calls.
+Thus, the security guarantees of our rewriter are restricted to programs executed in isolation without interacting with the OS.
+Systems that do call out to the OS, for instance, are vulnerable to sigreturn-oriented programming attacks.
+Its architecture also limits it to a single contiguous code section.
+
+% While \pname represents a big step towards high assurance binary defenses, there are still many weaknesses left to address.
+% First, the entire work rests on our trusted internal lifter, the Gallina function translating code bytes to PIL statements.
+% Verified and trustworthy lifting are subjects of ongoing research, but verifying PIL lifters is an open problem.
+% Second, the extraction is trusted.
+% The OCaml extractor is verified~\wc{trustworthy}, but in our extraction we extracted Rocq's unbounded integer type \texttt{Z} to OCaml's bounded \texttt{int}.
+% This opens the door to integer overflow and underflow bugs in the extracted code, but it makes the rewriter usable.
+% Extracting it without this optimization, that is an OCaml variant \texttt{Z} with the same structure as Rocq's, results in XXx longer rewrite times.
+% Rocq offers the capability of proving that this optimization is sound, i.e., that no over/underflows are possible, but we leave it to future work/industrial adoption.
+% Third, the ELF Packager is beyond the scope of formal verification because any specification of its correctness relies on the behavior of the loader.
+% To bring that part of the system into scope requires the availalability of a formally verified loader.
+
+
+% \todo{Future work
+% \begin{itemize}
+%     \item call-return semantics for trace properties
+%     \item call-return semantics for overlapping code?
+%     \item total correctness?
+%     \item position independent proofs?
+% \end{itemize}
+% }
+
 \subsection{Generalizability}
+
+Our verification approach to other architectures, but at a cost.
+Each architecture requires an internal lifter that formalizes its instruction-decoding and instruction semantics in Gallina.
+Extending our work to ARMv8 is straightforward as it is similar to ARMv7.
+Extending to other RISC architectures requires more work, but doable as the instruction sets are manageable.
+Extending to CISC architectures is a line of future research.
+
+The formal verification approach and the design principles outlined in~\autoref{sec:fm_friendly} generalizes to other binary rewriting applications.
+For example, emulators, dynamic patchers, and profilers.
+In each case our design principles help reduce the formal verification burden, but do not act as constraints.
+For example, \pname{} is not stack independent because it uses the stack to save registers.
+Rewriters that introduce mutable security state are verifiable in principle, but likely to require more human effort.
+
+\comment{%
 - beyond armv7 to armv8 (maybe)
 - beyond RISC to CISC
 
 (scope aspect) formal verification of
     - decoder
     - merger (???)
+}
 
 \subsection{Formal Verification of ELF Packager}\label{sec:elf_packager_fm}
 \kjee{Tentative text; need refinement and text tightening.}
@@ -55,4 +81,13 @@ Although \pname{} is, to our knowledge, the first formally verified binary CFI r
 
 One approach is \emph{supply-chain verification}, which would require formally verifying the existing Python implementation or reimplementing the ELF manipulation logic (e.g., the LIEF library) within a proof assistant such as Rocq. However, this direction is likely impractical due to the substantial engineering effort required to formalize and maintain large, general-purpose codebases. A second, more ambitious direction is \emph{program loader verification}, which aims to formally verify the correctness of the binary loading process against a well-defined security specification. This approach would provide stronger end-to-end guarantees but remains a challenging open research problem.
 
-More broadly, our current formalization focuses on the \texttt{.text} section, the executable instruction stream, and treats other components of the binary, including ELF metadata, relocation entries, and dynamic linking structures, as trusted. Extending formal guarantees to cover the full pipeline, including ELF packaging and loading, remains an important direction for future work.
+- **Alternative design direction.** One could instead formally verify the program loader against a well-defined security specification.
+  - However, this approach also introduces significant complexity and remains a challenging open problem.
+}
+
+\pname{}'s formal guarantees cover only a portion of the system.
+First, the proof assumes, and thus integrity holds, only if the old text section, new text section, policy tables, and abort are all situated in memory in their proper positions and execution begins at the beginning of a block.
+The rest of the \pname{} and ELF pipelines between rewriting and execution is not verified.
+This includes the OCaml ELF parser, the Python ELF Packager from \pname{}, and the system's ELF loader.
+
+Verifying the entire pipeline would be a tremendous work, involving 3 languages, a file format without a formal specification, and an OS component that has hereto evaded the inspection of the FM community.

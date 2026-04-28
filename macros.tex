@@ -118,6 +118,14 @@ citecolor={winered},
 allcolors={winered}
 }
 
+\newcommand{\Autoref}[1]{%
+  \begingroup
+  \def\sectionautorefname{Section}%
+  \def\figureautorefname{Figure}%
+  \autoref{#1}%
+  \endgroup
+}
+
 %%%
 %%% list Settings
 %%%
