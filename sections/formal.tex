@@ -67,7 +67,7 @@ We can define a rewritten program to be safe if all traces that meet the followi
 (1) the trace starts in the ARM instruction mode
 (2) the new text segment is placed in memory at the correct location \bip
 (3) the table segment is placed in memory at the correct location \tbi in the correct endianness
-(4) the new text and table segments are nonwritable 
+(4) the new text and table segments are nonwritable
 and
 (5) the starting address of the trace is the start of a block.
 
@@ -91,11 +91,6 @@ For a CFI implementation to be sound, all rewritten programs produced by the rew
 \end{align*}
 
 \subsection{Safety Proof}
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.9\linewidth]{verification.pdf}
-    \caption{Verification and extraction of the core rewriting logic.}~\label{fig:cfi_verif}
-\end{figure}
 We prove that our CFI rewriter is sound in Rocq using \Picinae.
 Because we reason about the safety of unspecified\wc{symbolic, undetermined, quantified} programs we need an internal lifter to translate the program bytes to symbolically executable PIL statements.
 To this end, we created the internal ARMv7 lifter, encoding the fetch-decode logic in the official documentation~\cite{ARMv7manual} as a Gallina function.
