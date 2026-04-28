@@ -158,14 +158,14 @@ This is because it shares the same hash as its original destination, which is sa
     \begin{tabular}{|c|c|}
         \hline
         \textbf{key} & \textbf{value} \\ \hline
-        \textcolor{red}{0} & \textcolor{red}{4*0x200} \\ \hline
-        \textcolor{red}{1} & \textcolor{red}{4*0x200} \\ \hline
-        \textcolor{green}{2} & \textcolor{green}{4*0x220} \\ \hline
-        \textcolor{blue}{3} & \textcolor{blue}{4*0x240} \\ \hline
-        \textcolor{blue}{4} & \textcolor{blue}{4*0x240} \\ \hline
-        5 & 4*ai \\ \hline
-        6 & 4*ai \\ \hline
-        7 & 4*ai \\ \hline
+        \textcolor{red}{0} & \textcolor{red}{$4(0\mathrm{x}200)$} \\ \hline
+        \textcolor{red}{1} & \textcolor{red}{$4(0\mathrm{x}200)$} \\ \hline
+        \textcolor{green}{2} & \textcolor{green}{$4(0\mathrm{x}220)$} \\ \hline
+        \textcolor{blue}{3} & \textcolor{blue}{$4(0\mathrm{x}240)$} \\ \hline
+        \textcolor{blue}{4} & \textcolor{blue}{$4(0\mathrm{x}240)$} \\ \hline
+        5 & $4\mai$ \\ \hline
+        6 & $4\mai$ \\ \hline
+        7 & $4\mai$ \\ \hline
     \end{tabular}
     \vspace{8pt}
 \begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,label={lst:armv7},xleftmargin=.3cm]
@@ -176,10 +176,10 @@ LDR r0, [r0]             // r0 = table[H(dest)]
 BX r0                    // branch to table[H(dest)]
 \end{lstlisting}
 \mxz{there isn't an instruction to add an arbitrary constant to a register, only certain constants are possible
-so there are actually 4 add instructions in this block to add each byte separately, but idk if it's necessary to say that here}
+so there are actually 4 add instructions in this \Block to add each byte separately, but idk if it's necessary to say that here}
 \ixb{I bet it's not necessary.}
 
-\caption{Rewriting \texttt{BX r0}. The tables show the hash values and address translation for the permitted destinations. The listing shows the rewritten block.
+\caption{Rewriting \texttt{BX r0}. The tables show the hash values and address translation for the permitted destinations. The listing shows the rewritten \Block.
 \ixb{The table diagram still is not beautiful, but I think it serves us well to combine the tables and listing in the same figure.
 It makes referring to it in a leading paragraph sentence easier.}\kjee{How can we/readers associate tables and listing?}}
 \label{fig:block_rewriter_demo}
@@ -303,15 +303,15 @@ since in both cases the destination becomes a value from the table, which only c
 
 \heading{Code reuse.}
 Reusing code means we can reuse proofs about the code.
-We use the same sequence of instructions to load from a policy table in every indirect branch block,
+We use the same sequence of instructions to load from a policy table in every indirect branch \Block,
 allowing us to only have to prove the code always results in a state with a permitted destination once.
 
 \heading{Global state independence.}
 Some policy enforcement strategies require a property of the entire code space to be true.
 For example, the soundness of label-based approaches relies on the labels chosen not appearing anywhere
 in executable memory other than valid destinations.
-On the other hand, our table-based approach only requires us to consider the current block being executed and its corresponding policy table.
-It is a lot easier to reason about a single block at a time rather than the entire program.
+On the other hand, our table-based approach only requires us to consider the current \Block being executed and its corresponding policy table.
+It is a lot easier to reason about a single \Block at a time rather than the entire program.
 Additionally, in some cases we do not even know all of the executable code in memory
 (such as the kernel-provided code mentioned above).
 

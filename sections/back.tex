@@ -50,11 +50,11 @@ In the following, we motivate the problem with a class of bugs that elude even e
   A proof that $c$ is safe can therefore analyze rewriter $r$ to prove that executions of unknown code $c$ exclude unsafe behaviors.
 }
 
-\subsection{Motivation}
+\subsection{Motivation: ISA and CFI Compliancies}
 
 %\kjee{first two paragraphs are not strictly about \unpredictable{} behavior.}
 A CFI binary rewriter performs inherently complex transformations on executable code.
-
+%
 These include rewriting control-flow instructions (\eg branches), relocating and
 reassembling both original and newly generated code segments, and embedding auxiliary
 structures such as policy tables. As a result, producing a rewritten binary that is

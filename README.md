@@ -52,7 +52,8 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 ## TODOs
 
 * [ ] set up anonymous github repo for paper code
-* [ ] Ilan, Shreya, Charles brainstorm
+    - https://anonymous.4open.science/
+* [X] Ilan, Shreya, Charles brainstorm
     1. Formal verification friendly design decisions
     2. Bugs caught only because of the proof obligations
     3. What are the design principles for making the next binary rewriter
