@@ -93,6 +93,6 @@ The result is a completely machine-checkable proof of each theorem.
 \Picinae{} is uniquely suited for reasoning about binary rewriters because it leverages Rocq's support for dependently-typed co-induction.
 Dependent types attach provable properties to the untyped binary values that populate machine code programs, allowing tactic automation to generate proofs programmatically from values during symbolic interpretation.
 Co-induction affords formal reasoning about potentially non-terminating code, avoiding difficult termination proof obligations for machine code with unstructured control-flows and unbounded loops.
-This facilitates principled, automated reasoning about underconstrained codes drawn from an untyped, unstructured target language.
+This facilitates principled, automated reasoning about underconstrained codes drawn from the untyped, unstructured target language.
 %Because Rocq is the only mature theorem prover that supports both dependent types and co-induction, implementing \Picinae{} in Rocq gives it capabilities for reasoning about binary rewriters that are unmatched by other binary analysis frameworks.
 %% I'm avoiding this last sentence because some overzealous PhD student reviewer will complain that some theorem prover somewhere has an experimental branch that adds dependent co-induction.  We've said what we need to say --- that Rocq is a great choice because it supports those features.
