@@ -6,10 +6,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \cfi is the king of modern security defense.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Binary \cfi is well-established as a principled defense against control-hijacking attacks, achieving widespread deployment with near-native overhead. However, the community has largely focused on design-level guarantees, runtime overhead, and policy generation, offering relatively weak assurance of full implementation correctness (\eg via dynamic testing)~\cite{cfi0, cfi1, cfi2, cfi3}. A more fundamental approach to \cfi implementation --- formal soundness, safety, and security verification of a full \emph{binary-to-binary} \cfi code rewriter --- has remained beyond reach.
+Binary \cfi is well-established as a principled defense against control-hijacking attacks, achieving widespread deployment with near-native overhead. However, the community has largely focused on design-level guarantees, runtime overhead, and policy generation, offering relatively weak assurance of full implementation correctness (\eg via dynamic testing)~\cite{bincfi, ccfir, kbouncer, ropecker}. A more fundamental approach to \cfi implementation --- formal soundness, safety, and security verification of a full \emph{binary-to-binary} \cfi code rewriter --- has remained beyond reach.
 %\kwh{[KWH] We need to be careful here to identify the overlooked problem as developing guaranteed-correct \cfi implementations, not merely the problem of finding bugs in deployed \cfi implementations.  The latter is extensively studied in the literature; the former is not.}\kjee{@KWH; tried to address; would you have a look?}
 
-This gap underscores a broader challenge in security engineering: translating sound designs into correct, deployable systems is difficult and costly. Even rigorously designed systems often contain subtle flaws that emerge only after deployment~\cite{hearbleed, shellshock}. In security-critical settings, these flaws do more than degrade functionality; they undermine the trusted computing base, create false confidence, and expose exploitable weaknesses~\cite{solarwinds}.
+This gap underscores a broader challenge in security engineering: translating sound designs into correct, deployable systems is difficult and costly. Even rigorously designed systems often contain subtle flaws that emerge only after deployment~\cite{heartbleed, shellshock}. In security-critical settings, these flaws do more than degrade functionality; they undermine the trusted computing base, create false confidence, and expose exploitable weaknesses~\cite{solarwinds}.
 
 To mitigate these risks, the community relies primarily on dynamic testing techniques, such as fuzzing and symbolic execution~\cite{fuzzing,symbolic_execution, model_checking}. While effective for anecdotally uncovering bugs, these approaches face dangerous incompleteness limitations when applied to software with vast input spaces, such as software that rewrites arbitrary untrusted code. The limitations stem not from engineering shortcomings, but from the inherent limitation of dynamic analysis.
 
@@ -56,7 +56,7 @@ Our research takes a step toward closing that gap. We present \pname, the first 
   A \cfi rewriter is \emph{sound} if all possible execution traces of every rewritten binary obey the policy.
 
 % NOTE (@kjee): FM of binary writer itself is a difficult, unexplored, open challenge.
-Binary-level \cfi, built on static binary rewriting techniques~\cite{rewriter0, rewriter1, rewriter2}, is a well-studied and mature area. Yet formally verifying the correctness of a binary \cfi implementation, let alone the broader class of binary rewriters, remains an open challenge despite the long-standing availability of mature proof assistants such as Coq/Rocq\cite{coq} and Isabelle/HOL~\cite{hol}.
+Binary-level \cfi, built on static binary rewriting techniques~\cite{rewriter0, rewriter1, rewriter2}, is a well-studied and mature area. Yet formally verifying the correctness of a binary \cfi implementation, let alone the broader class of binary rewriters, remains an open challenge despite the long-standing availability of mature proof assistants such as Coq/Rocq\cite{rocq} and Isabelle/HOL~\cite{hol}.
 % \ixb{eliminated references to Coq, rename happened March 2025. Should save us some space and confusion. Hopefully the CCS community is up to date on this development in FMs?}
 %\kjee{I still think ``Coq'' is more known to the general audiences.}
 
@@ -92,7 +92,7 @@ Building on \Picinae's \isa{} abstractions, \pname accurately models the archite
 No prior work has explored this space, despite its direct relevance to closing the assurance gap in widely deployed \cfi systems. As a result, this work makes the following contributions:
 
 \begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
-  \item  We present \pname, a machine-checked binary \cfi framework that formalizes and verifies its correctness. We implement it as the first\kjee{overstatement?} machine-checked \cfi rewriter for ARMv7 and achieve near-native overhead (XX~\% average on SPEC 2017).
+  \item  We present \pname, a machine-checked binary \cfi framework that formalizes and verifies its correctness. We implement it as the first\kjee{overstatement?} machine-checked \cfi rewriter for ARMv7 and achieve near-native overhead (19~\% average on SPEC 2017).
   % We introduce \pname, a machine-checked binary \cfi framework that formally defines the security and safety conditions required for a correct \cfi rewriter and verifies them against a real-world implementation. \pname is the first machine-checked binary \cfi rewriter for the ARMv7 ISA, demonstrating the generality of our approach while incurring near-native runtime overhead (XX~\% average on SPEC 2017).
 
   \item Built on \Picinae, \pname analyzes arbitrary binaries, overcoming prior \FM limitations that require concrete inputs and enabling verification over unbounded binary spaces.

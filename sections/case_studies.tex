@@ -31,7 +31,7 @@ While we can prove that this step is always safe, it is not true that the destin
 
 \heading{Branching to PC.}
 Most instructions other than those in the data processing or load/store categories are defined to be \unpredictable{}
-when using PC (\ie r15) as a register operand, as there is no practical reason to use PC in these instructions~\cite{unpredictable_bx_pc}.
+when using PC (\ie r15) as a register operand, as there is no practical reason to use PC in these instructions~\cite{unpredictable_pc}.
 It is reasonable to assume that \texttt{BX pc} (branch to the program counter) would be included, but it is actually
 a valid instruction used in Thumb mode.
 %
@@ -43,6 +43,7 @@ If the rewriter mistakenly handles this instruction like other \texttt{BX} instr
 
 
 \heading{Unaligned (Misaligned) PC Load.}
+\ixb{Do we really mean loading an address from an address? As in, an indirect jump by reading from VMEM?}
 When loading an address into the program counter, the behavior is \unpredictable{} if the address being loaded from is
 not word-aligned~\cite{unpredictable_misaligned_pc}. Some blocks produced by our rewriter use the stack to store the destination and end by loading this address. However, if the stack pointer was unaligned before the block began execution, this load would be \unpredictable{}.
 Even though the ARM calling convention mandates that the stack pointer is always aligned\kjee{4 bytes?}, it is still possible to set its value to an unaligned value~\kjee{address}. To ensure that this does not~\wc{prevent from} happen at runtime, a block must realign the stack pointer before loading from it.

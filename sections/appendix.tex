@@ -52,3 +52,10 @@ Here we categorize all ARMv7 user-mode instructions based on their control-flow 
     \caption{Caption}
     \label{tab:placeholder}
 \end{figure}
+
+\section{Hash Function Replacement}
+
+This appendix outlines the work needed to replace the hash function with one that decreases the space overhead seen in \autoref{fig:spec2017_size} without compromising the soundness of the rewriter.
+In \autoref{sec:fm_friendly} we list FM friendly design principles.
+Another design principle that helps in this case is making the desired soundness/correctness properties independent of deep properties of the implementation.
+For instance, the soundness of the rewriter does not depend on the cryptographic security or collision avoidance of the hash function.

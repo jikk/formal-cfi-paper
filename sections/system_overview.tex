@@ -21,28 +21,21 @@
 \end{figure}
 
 \subsection{Rewriter Design}\label{sec:cfi_design}
-\mxz{TODO reference fig 1 here}
-\pname's design consists of two components:
-(1) the CFI rewriter, which turns a list of instructions into a rewritten, CFI-instrumented list of instructions;
-and (2) the ELF editor, which performs the modifications to the ELF file based on the output of the CFI rewriter.
-This work focuses on CFI rewriter soundness.
 
-\ixb{(Proposal)
-Figure~\ref{fig:cfi_arch} depicts the design of \pname.
-The core CFI rewriter function is implemented in Rocq and its soundness is verified as described in \S\ref{sec:verification}.
-The Rocq code is extracted to OCaml, which is linked with minimal wrapper code for file IO and compiled into the executable that performs the binary rewriting.
-The ELF editor is a python script that stitches together the rewritten and original ELF files.
-The rest of this section focuses on the design of the CFI rewriter function.
-}
+Figure~\ref{fig:cfi_arch} depicts the design of \pname, consisting of two main components:
+(1) the CFI rewriter, which transforms a list of instructions into a rewritten, CFI-instrumented list of instructions;
+and (2) the ELF editor, which packages the new instruction list into an ELF file.
+The former is implemented in Rocq and its soundness is verified in \S\ref{sec:verification}.
+The verified Rocq code is extracted to OCaml, linked with minimal wrapper code for file IO, and compiled into the executable that performs the binary rewriting.
+The ELF editor is a python script that packages the rewritten code into an ELF file.
 
-% inputs
-The CFI rewriter is a function that takes the following inputs:
+The rest of this section details the design of the CFI rewriter, which is expressed in Rocq as a function from the following inputs:
 \begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
-\item \heading{Text Segment ($\mathit{txt}$):}
-The rewriter receives the contents of the text segment of the program to rewrite, represented as a list of four-byte integers.
+\item \heading{Text Segment ($\ell$):}
+The rewriter receives the contents of the text segment of the original program as a list $\ell$ of 4-byte integers.
 \item \heading{Addresses ($\bi, \bip, \tbi, \mai$):}
-The rewriter also receives the addresses of the original and new code sections (\bi{} and \bip), the address-translation table (\tbi), and the abort function (\mai).
-Indices ($i$, $j$, \bi, \mai, etc.) refer to the index of each 4-byte word in virtual memory, which is equal to its virtual address divided by 4.
+The rewriter also receives the locations of the original and new code sections (\bi{} and \bip, resp.), the address-translation table (\tbi), and the safe abort code (\mai).
+Locations (\bi, \bip, etc.) are indexes of each 4-byte address in virtual memory, which equals its virtual address divided by 4.
 % \kjee{@Max what are various things here?} that we describe in more detail as they become relevant.
 % These addresses are passed to the rewriter as their value divided by four, for reasons also explained later.
 % \mxz{I',m not sure if I like deferring the explanation of these, but i don't know how else to structure this section}
@@ -50,23 +43,23 @@ Indices ($i$, $j$, \bi, \mai, etc.) refer to the index of each 4-byte word in vi
 \item \heading{Policy (\pol):}
 The CFI policy specifies the set of permitted destinations of each instruction in the text segment.
 Our rewriter accepts policies as a function from source indices to lists of permitted destination indices.
-We do not impose any restriction on the destination sets; an index may belong to multiple distinct destination sets.
+Policies may specifiy arbitrary destination sets; non-disjoint sets are supported.
 \end{itemize}
 
 % block structure
 The rewriter translates each instruction of the original text segment into a \emph{\Block} of one or more new instructions.
-Thus, a \Block is a list of instruction encodings (list of ints) and the rewriter returns a list of \Blocks (\ie, a list of lists).
+Thus, a \Block is a list of instruction encodings (list of ints) and the rewriter returns a list of \Blocks (\ie a list of lists).
 The flattened list is the rewritten text segment of the output binary.
 
 % index translation
-We preserve the old text segment at its original location in the new binary to preserve static data.
+We preserve the old text segment as a non-executable data section at its original location in the new binary to preserve static data.
 All executable code is therefore relocated during rewriting.
-The rewriter translates between each original instruction address and its rewritten \Block address using their respective base addresses ($\bi$ and $\bip$) and a function \itoip that performs this translation.
+The rewriter implements a function \itoip that maps each original instruction address to its rewritten \Block address using their respective base addresses ($\bi$ and $\bip$).
 
 Rewritten code must sometimes jump to regions outside its new text segment.
 For example, the ARM Linux kernel provides helper functions that cannot be relocated to fixed addresses.
 Therefore, \itoip returns the input index when it does not fall within the original text segment range.
-Otherwise, $\itoip(n)$ is the index of the first instruction of the $n$th rewritten \Block.
+Otherwise, $\itoip(4n)$ is the address of the first instruction of the $n$th rewritten \Block.
 
 % abort handler
 When a rewritten program detects an impending invalid control-flow transfer,
@@ -352,8 +345,13 @@ For deterministic programs, this is easy.
 With the addition of non-determinism you must prove the non-deterministic operation could take a branch satisfying the state similarity property.
 
 \heading{Stack independence.}
+Using the stack introduces the obligation of proving the rewriter is correct despite changes to memory.
+We use the stack anyways, because our immutable security state makes safety-violating memory changes trivially unreachable.
+Any rewriter whose correctness relies on a predictable \emph{mutable} memory region should minimize spurious memory modifications.
 
 \heading{Inductive proof structure.}
+Breaking the proof into invariant points and applying inductive reasoning is a well known way of simplifying program verification to its necessary subcomponents.
+\Picinae{} offers facilities for doing this that work just as well on symbolic code as they do on concrete.
 
 \comment{%
     \begin{itemize}

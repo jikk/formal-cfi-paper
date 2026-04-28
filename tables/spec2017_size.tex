@@ -10,6 +10,7 @@
             ymin=0,
             width=\columnwidth,
             height=6cm,
+            yticklabel=$\pgfmathprintnumber{\tick}\times$,
             symbolic x coords={
                 perlbench,
                 gcc,
@@ -90,6 +91,6 @@
         \legend{Original, New Text, Filled Table, Unfilled Table}
         \end{axis}
     \end{tikzpicture}
-    \caption{Space overhead for each benchmark showing the contributions of the new text and table segments. Unfilled table entries can be decreased with a better hash function.}
+    \caption{Space overhead for each benchmark showing the contributions of the new text and table segments. Unfilled table entries can be decreased with a better hash function.\ixb{Notice that 2 benchmarks with little unfilled data have really high overheads (leela~34\%, xalancbkm~20\%)}}
     \label{fig:spec2017_size}
 \end{figure}

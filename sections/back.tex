@@ -64,7 +64,17 @@ safety requirements is nontrivial.
 %In particular, establishing an assurance CFI-enforcing binary rewriter must guarantee that every generated instruction sequence remains fully compliant with the target ISA through dynamic testing alone is fundamentally limited.
 %\kwh{The above sentence is not grammatical; I'm unable to parse it.}
 
-For example, the ARM ISA specification defines certain encodings of the \texttt{STR} immediate instruction as \unpredictable{}~\cite{unpredictable_behaviors,examiner2024asplos}: the execution outcome is deliberately unspecified and may differ between implementations.
+\ixb{trainwreck attempt to address @KWH's comment.}
+For instance, some instructions rarely produced by compilers, and other instructions in rare contexts, may exhibit \unpredictable{} behavior~\cite{unpredictable_behaviors,examiner2024asplos}: their execution outcome is deliberately unspecified and may differ between implementations.
+Two examples for this are the BX PC instruction and unaligned PC loads, both of which were encountered and corrected through the verification process (see~\autoref{sec:case_studies}).
+BX PC is an instruction that is only meaningful in ThumbEE mode, which we do not cover, but is still valid in ARM.
+However, dynamic testing is unlikely to catch logic bugs that appear in such rare contexts without.
+
+For example, load and store instructions are the only ones that need to use PC as an operand, for most other instructions using PC is \unpredictable{}
+However, the BX PC instruction is a rare exception.
+Mishandling it results in unsafe, attacker hijackable programs.
+
+For example, the ARM ISA specification defines certain encodings of the \texttt{STR} immediate instruction and the \texttt{LDR} instruction as \unpredictable{}~\cite{unpredictable_behaviors,examiner2024asplos}: the execution outcome is deliberately unspecified and may differ between implementations.
 Most ARM implementations execute the instruction identically, but a few raise exceptions that change the program's control-flow.
 Dynamic testing of a CFI rewriter that preserves \texttt{STR} immediate instructions as security-irrelevant may therefore incorrectly conclude that such a rewriter is safe until tested on a rare implementation of the ISA\@.
 Even when all current implementations behave consistently, future ARM processors might differ, making the rewriter unsafe for long-term deployment.
@@ -79,7 +89,7 @@ This unverified implementation passed all dynamic tests until our attempts to fo
 a maliciously crafted input binary with many densely packed function entry points could overflow the available space for the jump table, causing rewritten code to reference non-table bytes as policy data and break out of the sandbox.
 Our failed attempts to formally prove soundness of this early version uncovered the bug and allowed us to fix it.
 
-These experiences illustrate the difficulties that dynamic testing approaches face when the input space is large and complex (\eg, arbitrary binary code).
+These experiences illustrate the difficulties that dynamic testing approaches face when the input space is large and complex (\eg arbitrary binary code).
 In contrast, FM approaches reliably detect such bugs because the proof does not rely on input testing.
 Theorems are universally quantified over arbitrary input binaries, not merely those produced by well-behaved tools;
 and analysis of arbitrary code within a proof environment entails abstract symbolic evaluation against an ISA specification, not any particular implementation of the ISA\@.
@@ -125,7 +135,7 @@ Under \pname's CFI enforcement, any control-flow transfer that violates the poli
 
 \heading{Research scope.}
 We target the ARMv7 ISA for three reasons. First, ARMv7 represents one of the most
-widely deployed architectures by installed base~\cite{armv7_iot_market_share}, particularly in low-powered embedded
+widely deployed architectures by installed base~\cite{arm_field_growth}, particularly in low-powered embedded
 and IoT devices that are commonly deployed without modern security defenses, making
 binary hardening for this platform practically important. Second, a formal
 specification for the ARMv7 instruction decoder has been the subject of

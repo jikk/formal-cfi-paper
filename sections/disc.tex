@@ -16,7 +16,7 @@ mainly about (apparent) limitations
 \end{itemize}
 }
 
-\pname takes a big step towards high assurance binary defense by formally verifying the binary rewriter, but it still trusts other components of the system.
+In order to provide a high-assurance binary defense by formally verifying the binary rewriter, \pname{} trusts other components of the system.
 Underlying the rewriter is the internal lifter, a manual implementation of the ARMv7 ISA semantics as a Gallina function translating code bytes to PIL statements.
 Creating trustworthy mechanized semantics of ISAs is a subject of ongoing research~\cite{isla,islaris,archsem,armstrong19isasem,liblisa,goel17x86isa}.
 While extraction from Rocq to OCaml is verified~\cite{fv_ocaml_extraction}, the extracted code makes one undermining translation to make the rewriter run faster.
@@ -53,14 +53,14 @@ Its architecture also limits it to a single contiguous code section.
 
 \subsection{Generalizability}
 
-Our verification approach to other architectures, but at a cost.
-Each architecture requires an internal lifter that formalizes its instruction-decoding and instruction semantics in Gallina.
-Extending our work to ARMv8 is straightforward as it is similar to ARMv7.
-Extending to other RISC architectures requires more work, but doable as the instruction sets are manageable.
-Extending to CISC architectures is a line of future research.
+Our verification approach generalizes to all other architectures supported by \Picinae{}.
+% , but requires an up front investment. % first sentence of the section shouldn't be a negative
+An internal lifter written in Gallina decodes ISA instructions and returns their representation in PIL.
+% Each architecture requires an internal lifter that formalizes its instruction-decoding in Gallina and instruction semantics in PIL.
+Given an internal lifter, similar proofs to those discussed in this work are constructed to provide similar security guarantees.
 
-The formal verification approach and the design principles outlined in~\autoref{sec:fm_friendly} generalizes to other binary rewriting applications.
-For example, emulators, dynamic patchers, and profilers.
+The formal verification approach and the design principles outlined in~\autoref{sec:fm_friendly} generalizes to other binary rewriting applications,
+\eg emulators, dynamic patchers, and profilers.
 In each case our design principles help reduce the formal verification burden, but do not act as constraints.
 For example, \pname{} is not stack independent because it uses the stack to save registers.
 Rewriters that introduce mutable security state are verifiable in principle, but likely to require more human effort.
