@@ -1,3 +1,20 @@
 %! root=../main.tex
 \section{Conclusion}
 
+\ixb{My responsibility.}
+
+\pname{} offers the first binary CFI rewriter whose implementation is formally verified to produce policy-adhering binaries.
+Its proof of correctness relied on \Picinae{}, a bottom-up binary analysis platform in Rocq capable of reasoning about non-concrete binary code.
+The rewriter design was guided by several design policies for making it easier to formally verify, such policies include immutable security state, global state independence, and minimizing conditionals.
+The program-proof co-development cycle yielded several critical logic bugs that were revealed only because they halted the proof effort.
+That is, we claim no reasonable dynamic testing suite would have caught the bugs prior to deployment.
+
+This work also highlights the trusted components left to secure.
+% Among these is the internal lifter, used to translate code bytes to their computational semantics in PIL.
+This includes the internal lifter and the ELF Packager.
+The internal lifter is ISA specific, and so far we only support ARMv7 and RISC-V.
+Creating a lifter for another ISA requires formalizing its instruction decoders and instruction semantics in Gallina, an especially daunting task for CISC architectures.
+The ELF Packager combines the secured text section with the original ELF executable.
+At present, its correctness specification is impossible to formulate as it requires a formal correct implementation of a system loader, which has not been achieved.
+
+Future directions can also expand on the binary features supported by CFI (\eg system calls, dynamic linking) and apply this technique to other binary rewriting applications (\eg instrumentation, dynamic patching).
