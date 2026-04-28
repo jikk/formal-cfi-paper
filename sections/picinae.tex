@@ -87,9 +87,9 @@ An expert user typically supplies a high-level structure for the proof by assert
 None of the automation is trusted; all tactics generate independently Rocq-verifiable proofs of soundness for all results, including symbolic interpretation, soundness and completeness of any control-flow recovery results, and all binary symbolic expression simplification.
 The result is a completely machine-checkable proof of each theorem.
 
-\cav{@ixb double check on the facts here would be appreciated}
-\ixb{I don't think ``unique'' is right here, I think we discussed that in the meeting. Relational Hoare Logic For RMMC (CAV'25) is the only work I can think of that includes instruction-step semantics which may accommodate symbolic code. I'm not sure whether their framework scales to actually doing so. We're just the first.}
-\cav{Rewrote to refer to DT co-induction rather than just DT, per Hamlen's suggestions}
+% \cav{@ixb double check on the facts here would be appreciated}
+% \ixb{I don't think ``unique'' is right here, I think we discussed that in the meeting. Relational Hoare Logic For RMMC (CAV'25) is the only work I can think of that includes instruction-step semantics which may accommodate symbolic code. I'm not sure whether their framework scales to actually doing so. We're just the first.}
+% \cav{Rewrote to refer to DT co-induction rather than just DT, per Hamlen's suggestions}
 \Picinae{} is uniquely suited for reasoning about binary rewriters because it leverages Rocq's support for dependently-typed co-induction.
 Dependent types attach provable properties to the untyped binary values that populate machine code programs, allowing tactic automation to generate proofs programmatically from values during symbolic interpretation.
 Co-induction affords formal reasoning about potentially non-terminating code, avoiding difficult termination proof obligations for machine code with unstructured control-flows and unbounded loops.

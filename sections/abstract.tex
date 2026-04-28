@@ -5,6 +5,7 @@ Binary \cfi has emerged as a cornerstone of software defense, with trusted imple
 However, no full-scale binary CFI rewriter \emph{implementation} is yet proven secure against the hijacking attacks it purports to thwart.
 Formal methods (FM) offer peak assurance for production software in a variety of domains, such as certified compilers, OS kernels, and networking stacks; but verifying binary-to-binary code rewriting software raises unique challenges that frustrate traditional FM\@.
 
+\cav{Name suggestion: VFCFI? (VeriFied) Catchy}
 \pname bridges this gap by implementing the first fully verified binary-to-binary CFI system for a mainstream microarchitecture.
 A machine-checked proof in Rocq guarantees that rewriting generates policy-compliant binaries from near-arbitrary binary code inputs,
 and the program-proof co-development process fixes subtle yet dangerous logic bugs that evade dynamic testing and only become exposed by exhaustive proof.

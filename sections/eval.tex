@@ -7,6 +7,7 @@
 \kjee{@Max: We need more text here. (1) could \pname cover all benchmark items?; (2) what are fast? why? (3) what are slow? why?}
 \kjee{@Shreya: we may want to have a SOTA comparsion for the CFI efficiency}
 \ixb{@Shreya: my suggestions for the SOTA comparison: start with the ``Cracks in shields'' survey for the CFI tech they survey. They might also link to other surveys that focused on performance. If that's too old then you'll need to find more recent CFI work in top venues (CCS, NDSS, USENIX Security, IEEE S\&P) and maybe high-tier venues (ESORICS, AsiaCCS, RAID, ACSAC, EuroS\&P). I think we'd prefer to compare to other solutions supporting ARMv7, so take note of which ISAs each support just in case.}
+\cav{Isn't it true that performance overhead is simply a function of abstraction density in the given project? If the architecture of perlbench consists of a denser tree of function calls, there will be more overhead than if you have a very shallow call hierarchy.}
 
 We evaluate the efficiency of \pname by running rewritten SPEC CPU 2017 benchmarks with the results shown in Table \ref{tab:spec2017}.
 The benchmarks were performed on a Raspberry Pi 5 with 16GB of memory.

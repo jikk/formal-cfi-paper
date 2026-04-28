@@ -35,10 +35,11 @@ Although this is an ubiquitous risk, we believe that stronger defenses favor the
 \section{ARMv7 Instruction Categories}
 
 Here we categorize all ARMv7 user-mode instructions based on their control-flow effects as described in \S~\autoref{sec:cfi_design}.
+\ixb{The story here can be ``look at all these instructions whose \emph{operands} change how they need to be treated. Imagine how complex the implementation is. Imagine \emph{not} having a proof for its soundness!}
 
 \begin{figure}[b]
     \centering
-    \begin{tabular}{cc}
+    \begin{tabular}{ll}
         Category & Instructions\\
         Unchanged block & \\
         Non-control-flow change & \\
