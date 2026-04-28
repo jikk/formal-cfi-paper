@@ -3,6 +3,31 @@
 \section{Formal Verification of CFI Binary Rewriter}
 \label{sec:back}
 
+\comment{
+  In formally verifying a binary CFI rewriter, at a high level, we consider the following subcomponents:
+
+- **Front-end processing (ARMv7 decoder and lifter).**
+  The rewriter operates on byte sequences extracted from the `.text` section of well-formed ELF binaries. It decodes these bytes into machine instructions, which serve as the targets for CFI instrumentation. The lifter bridges the binary CFI rewriter and the Picinae framework by translating instructions into a form amenable to symbolic reasoning over arbitrary binary inputs.
+
+  - We select the ARMv7 ISA because it provides a formal specification, making it suitable for rigorous reasoning. This choice enables more tractable formal analysis than ISAs such as Intel x86, whose complexity and irregular semantics make full formalization significantly more challenging. However, we do not verify the decoder and lifter in this work and leave their formal verification as future work.
+
+  - We acknowledge that the correctness and safety of these front-end components, namely the machine code decoder and instruction lifter, are critical. This work does not attempt to verify them, as prior research has studied this problem extensively (section XX).
+
+
+- **Core rewriter (ArmCFI).**
+  ArmCFI takes as input (1) a decoded and lifted instruction stream and (2) a policy specification (e.g., allowed control-flow transfers) derived from static analysis or dynamic profiling. It analyzes the input and instruments CFI enforcement logic, producing security-hardened `.text` segments along with a corresponding policy table.
+
+  - This component forms the core contribution of our work.
+  - Our verification focuses on two aspects:
+    - **CFI compliance:** ensuring the rewritten program satisfies the specified control-flow integrity properties.
+    - **ISA compliance:** ensuring the rewritten binary preserves well-defined ISA semantics and does not introduce invalid or undefined behaviors.
+  - We formally define the safety and security specifications for the binary CFI rewriter in Section XX.
+  - To reason about ISA compliance (ARMv7), we leverage the ISA abstraction provided by the Picinae framework.
+
+- **ELF packaging.**
+  The final stage packages the rewritten code into an executable. We implement this step as a separate script using the LIEF Python library and treat it as outside the scope of this work.
+}
+
 \pname formally verifies a program transformation: a static binary rewriter that takes arbitrary binaries as input and produces security-hardened outputs guaranteed to satisfy a precise safety specification.
 \kjee{Specifically, CFI specification and ISA specification.}
 The precise specification is universal to all binary code for the ISA; once written, it never needs to be specialized to a new rewriter.
