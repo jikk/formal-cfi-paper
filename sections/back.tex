@@ -28,8 +28,10 @@ A CFI binary rewriter performs inherently complex transformations on executable 
 \comment{%
 In formally verifying a binary CFI rewriter, at a high level, we consider the following subcomponents:
 
-  The rewriter operates on well-formed ELF. For a given ELF binary, it extracts the `.text` section, decodes the byte sequence into machine instructions to be provided to the rewriter program.
-    - the rewriter program originally implemented in Gallina, the specification language of Rocq to be (1) formally verified, (2) once verification succeeds, then extract to the Ocaml sources (.ML) to be compiled into the writer program.
+- The rewriter operates on well-formed ELF. For a given ELF binary, it extracts the `.text` section, decodes the byte sequence into machine instructions to be provided to the rewriter program.
+    - the rewriter program originally implemented (firstly written) in Gallina, the specification language of Rocq to be (1) formally verified, (2) once verification succeeds, then extract to the Ocaml sources (.ML) to be compiled and linked into the writer program (say \texttt{rw}).
+
+- The writer binary takes two inputs (1) machine instruction stream extracted and decoded from the input ELF binary and (2) policy defined by allowed source and destination address pairs, which can be obtained either by (1) static control flow analysis or (2) dynamic profiling.
 
 - **Front-end processing (decoding and lifting).**
 
