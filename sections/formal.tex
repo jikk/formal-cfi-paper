@@ -104,7 +104,7 @@ For example, the behavior of most instructions is undefined when they have \text
 unaligned \texttt{pc} instruct-fetch is undefined,
 and we only support ARM mode.
 The lifter models unsupported and undefined instructions as \unpredictable{}, assigning unknown values to all registers, including \texttt{pc}.
-While the lifter does not support these instructions and modes, the rewriter does, and the proof guarantees soundness even in their presence.
+% While the lifter does not support these instructions and modes, the rewriter does, and the proof guarantees soundness even in their presence.
 
 \comment{
 For \unpredictable{} instructions, the corresponding IL sets all registers to an unknown value and
@@ -113,13 +113,6 @@ When the given store is not in ARM mode or the given address is not aligned,
 we treat the instruction as \unpredictable{}.
 The decoder and lifter are specific to the User processor mode for ARM, so we do not consider
 instructions that require a higher privilege level.
-}
-
-\comment{
-While \Picinae{} and our decoder solve the issue of proving properties about unknown binary code,
-we still have to prove the safety of every possible trace of every possible output binary.
-\mxz{some text explaining how our design minimizes state explosion through table lookup/block structure}
-\ixb{I think this point can be shifted into the \heading{Indirect control flow} section where it is more relevant.}
 }
 
 \ixb{Wordy, maybe still useful.}
@@ -149,8 +142,7 @@ and all steps of the trace to be permitted, and by setting all addresses outside
 text segment as exit points that must also satisfy the same invariant.
 \ixb{I think this paragraph should be rewritten without satisfies\_all. And it should be a multi-sentence paragraph. I'm having trouble interpreting this one long sentence.}
 
-We can show that the invariants about memory will hold regardless of what happens in the rewritten code,
-so we do so now.
+First, we can show that the invariants about memory will hold regardless of what happens in the rewritten code.
 For the nonwritable memory requirements, we show that the lifter never produces IL that modifies
 memory permission bits (we are only concerned with User mode),
 and therefore remain correct for all traces that start with the correct permissions.
@@ -160,8 +152,8 @@ For the invariants about the new text and table segments being located in the co
 it is obvious that if we assume that the segments were in the correct location at the start of the trace,
 and the segments are nonwritable, that they will continue to be in the correct location.
 Thus, upon reaching an invariant point, we just need to prove that the trace only took permitted steps,
-is still in ARM mode, and did not change the endianness flag
-(since we only assume the table segment is in the same endianness as the CPU at the start of the trace).
+is still in ARM mode, and did not change the endianness flag,
+since we only assume the table segment is in the same endianness as the CPU at the start of the trace.
 
 Now that the problem has been reduced to only considering a single \Block, we just need to
 consider the following cases:
@@ -178,13 +170,12 @@ the original instruction was a safe instruction where fallthrough is permitted.
 \heading{Non-control-flow change.}
 For instructions that are changed for non-control-flow reasons,
 such as instructions that just reference the PC register without modifying it, we prove a
-lemma similar to the previous case about \Blocks consisting entirely of safe instructions,
-with one caveat that we must deal with.
-Conditional instructions become \Blocks with a conditional branch at the start,
+lemma similar to the previous case about \Blocks consisting entirely of safe instructions.
+However, conditional instructions become \Blocks with a conditional branch at the start,
 which is not a safe instruction, as it does not always fallthrough or raise an exception.
 To handle this, we prove another lemma that if a \Block is safe, it is still safe after inserting a branch to the next
 \Block at the beginning, which requires us to prove that the rewriter correctly computes an encoding that decodes to a
-branch with the proper offset. With this lemma, we can prove the safety of all \Blocks changed for non-control-flow reasons.
+branch with the proper offset. With these lemmas, we can prove the safety of all \Blocks changed for non-control-flow reasons.
 
 \heading{Direct control flow.}
 Instructions that perform direct control flow must be modified to account for
@@ -197,11 +188,11 @@ such as those that always change the instruction mode or \unpredictable{} instru
 are replaced with a branch to the abort handler, which we prove safe similarly to the previous case.
 
 \heading{Indirect control flow.}
-The code to lookup a destination from an instruction's hash table is the same for all indirect control flow instructions,
+The code to lookup a destination from an instruction's policy table is the same for all indirect control flow instructions,
 parameterized by the register containing the destination, the bits extracted by the hash function, and the address of the table.
 We prove a lemma about this code that after executing this portion of the \Block,
 the register contains some value from the table,
-and a separate lemma that the table provided consists entirely of permitted destination addresses for the instruction in question.
+and a separate lemma that the relevant table consists entirely of permitted destination addresses for the instruction in question.
 Proving the safety of indirect control flow \Blocks simply involves
 (1) skipping over all of the instructions up to the table lookup,
 since they are all either safe or a conditional branch to the next \Block

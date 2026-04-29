@@ -298,37 +298,27 @@ Our design uses the same sequence of instructions to guard every form of indirec
 reducing most of our verification task to establishing security and safety of that one shared instruction sequence.
 
 \heading{Global state independence.}
-Some policy enforcement strategies require a property of the entire code space to be true.
-For example, the soundness of label-based approaches relies on the labels chosen not appearing anywhere
-in executable memory other than valid destinations.
-On the other hand, our table-based approach only requires us to consider the current \Block being executed and its corresponding policy table.
-It is a lot easier to reason about a single \Block at a time rather than the entire program.
-Additionally, in some cases we do not even know all of the executable code in memory
-(such as the kernel-provided code mentioned above).
+Rewriters whose soundness depends on global code properties, such as uniqueness of security-relevant values across all executions, raise significant challenges for formal verification.
+For example, the soundness of label-based approaches (cf., \cite{abadi_cfi}) relies on label uniqueness properties that span the rewritten binary code.
+In contrast, safety of our table-based approach is a \Block-local, table-local property independent of any other \Block's code or data.
+This improves proof modularity and scalability during formal verification.
 
-\heading{Minimize preconditions.}
-For every precondition needed for correctness, we must prove that it always holds when necessary.
-We can counter this by designing our code in a way that minimizes the necessary preconditions or makes proving them easy.
-As an example, before using a hash to perform a table lookup, it is necessary that the hash is less than the length of the table
-or else the value loaded will not be from the table.
-However, this is the only precondition we depend on;
-we do not need to prove any other property of our hash function
-such as uniformity or collision resilience.
-
-We need the stack pointer to be word-aligned in some cases
-(we explain later in \autoref{sec:case_studies} why this is necessary).
-One way to enforce this would be to detect all instructions that could cause
-\texttt{SP} to become unaligned and realign it afterwards,
-while ignoring changes to \texttt{SP} that leave alignment intact.
-Instead, we choose to just always realign \texttt{SP} right before it is needed,
-making the proof significantly easier.
+\heading{Safety redundancy.}
+Binaries that implement safety double-checks or extra sanitization with negligible overhead can be much easier to formally verify, because they reduce the need for proofs to maintain (and prove) complex preconditions for safety.
+For example, our rewriter chooses a hash function $h$ whose image is constrained by definition to the bounds of the table it indexes.
+This trivializes a proof of boundedness that would otherwise entail tracking and maintaining numerical invariants that imply boundedness whenever hash values flow to table indexing operations.
+Similarly, to ensure stack pointer alignment (\autoref{sec:case_studies}) our rewriter force-aligns the stack pointer whenever alignment is critical for safety, without checking whether it is already aligned or attempting to prevent it from becoming unaligned.
+This relieves the proof from the obligation of verifying that the pointer remains aligned.
 
 \heading{Immutable security state.}
-Allowing security relevant state to change makes the proof much more difficult,
-as it both increases the number of possible states and requires us to prove that the state never becomes invalid.
-In our design, the rewritten code and policy tables are both non-writable, so we do not have to deal with this.
+Each dynamically mutable element of security-critical data requires a proof of data integrity during formal verification.
+Such proofs can entail verifying every memory-write operation in the rewritten code, raising significant scalability obstacles.
+Our design places all policy data in non-writable sections, allowing proofs to infer policy data integrity from static memory access permissions.
 
 \heading{Nondeterminism independence.}
+Real-world ISAs include many \unpredictable{} operations, some of which seem predictable in practice because they behave consistently across most hardware.
+Rewriters must nevertheless carefully avoid generating code whose safety relies on seemingly consistent yet ISA-unspecified behaviors.
+The choice of verification framework must likewise include foundational support for nondeterministic ISA operational semantics, since this is critical for accurately modeling how real ISA
 Relying on the results of non-deterministic cpu operations, \eg XOR setting ZF to a random bit in x86, runs the risk of requiring the proof to reason about the execution of symbolic instructions at a granularity that is not readily supported.
 While feasible, this requires a careful sequence of destructs and inversion rules.
 For example, to prove semantic transparency one must show that a cpu state in a transformed program is reachable by the original program.

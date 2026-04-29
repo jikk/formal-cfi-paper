@@ -91,7 +91,7 @@ In contrast, formal verification enables reasoning over all possible executions,
 
 \autoref{fig:cfi_verif} illustrates the high-level workflow of \pname. To verify, we decompose the system into three components.
 
-\heading{ARMv7 decoder and lifter.} The frontend components of rewriter operates on byte sequences extracted from the \texttt{.text} section of well-formed ELF binaries. They decode byte sequences into machine instructions and lift them into the \Picinae{} \ir, enabling symbolic reasoning over arbitrary binary inputs.
+\heading{ARMv7 decoder and lifter.} The frontend components of rewriter operates on byte sequences extracted from the \texttt{.text} section of well-formed ELF binaries. They decode byte sequences into machine instructions and lift them into the \Picinae{} \il\ixb{I think we should stick to Intermediate Language (PIL) here}, enabling symbolic reasoning over arbitrary binary inputs.
 
 We target the ARMv7 ISA because it admits a formal specification~\cite{arm_decoder_spec}, making it amenable to rigorous reasoning.
 {% NOTE (@kjee) maybe redundant.
@@ -99,7 +99,7 @@ We target the ARMv7 ISA because it admits a formal specification~\cite{arm_decod
 }
 ARMv7 therefore provides a practical foundation for machine-checked reasoning at the binary level.
 %
-While their correctness remains critical to end-to-end soundness, We do not verify the decoder or lifter in this work. Instead, we treat them as trusted components, as they have been extensively studied in prior work~\cite{fm_decoder0, fm_decoder1, fm_decoder2, fm_decoder3} (\autoref{sec:fm_related}).\kjee{citations needed.}
+While their correctness remains critical to end-to-end soundness, we do not verify the decoder or lifter in this work. Instead, we treat them as trusted components, as they have been extensively studied in prior work~\cite{fm_decoder0, fm_decoder1, fm_decoder2, fm_decoder3} (\autoref{sec:fm_related}).\kjee{citations needed.}
 
 
 \heading{Binary CFI Rewriter.} \pname{} takes as input (1) a decoded and lifted ARMv7 instruction stream and (2) a policy specification (\eg{} permitted control-flow transfers) derived from static analysis or profiling. It instruments the program with CFI enforcement logic and produces a rewritten \texttt{.text} segment together with a policy table.
