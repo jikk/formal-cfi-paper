@@ -81,6 +81,7 @@ Figures need another revision cycle.
         - relation to fig2 and fig3.
         - ELF editor -> ELF packager
 2. Regarding Fig2, can we add some arrows/edges associating the first and second tables?
+3. I wish fig 4 can be more specific to CFI binary rewriter.
 
 ### Appendix
 * [ ] Open science
