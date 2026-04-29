@@ -3,7 +3,6 @@
 \section{Formal Verification of CFI Binary Rewriter}
 \label{sec:back}
 
-
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.9\linewidth]{verification.pdf}
@@ -12,21 +11,22 @@
 
 \autoref{fig:cfi_verif} illustrates the high-level workflow of \pname. To verify a binary CFI rewriter, we decompose the system into three components.
 
-\heading{Front-end processing (ARMv7 decoder and lifter).} The rewriter operates on byte sequences extracted from the \texttt{.text} section of well-formed ELF binaries. It decodes these bytes into machine instructions and lifts them into an intermediate representation compatible with the \Picinae{} framework, enabling symbolic reasoning over arbitrary binary inputs.
+% \heading{Front-end processing for ARMv7 decoder and \Piciname IR lifter.}
+The rewriter operates on byte sequences extracted from the \texttt{.text} section of well-formed ELF binaries. It decodes these bytes into machine instructions and lifts them into an intermediate representation compatible with the \Picinae{} framework, enabling symbolic reasoning over arbitrary binary inputs.
 %
 We target the ARMv7 ISA because it admits a formal specification, making it amenable to rigorous reasoning. In contrast, ISAs such as Intel x86 exhibit substantial semantic complexity and irregularity, which complicate full formalization. ARMv7 therefore provides a practical foundation for machine-checked reasoning at the binary level.
 %
 We do not verify the decoder or lifter in this work. Instead, we treat them as trusted components, as their correctness has been extensively studied in prior work (\autoref{sec:fm_related}). Their correctness nevertheless remains critical to end-to-end soundness.
 
-\heading{ELF packager.} The final stage packages the rewritten code into an executable. We implement this step as a separate script using the LIEF Python library and treat it as out of scope. We discuss its limitations and potential hardening strategies in \autoref{sec:elf_packager_fm}.
+\heading{ELF packager.} The final stage packages the rewritten code into an executable. We implement this step as a separate script using the LIEF Python library~\cite{lief} and treat it as out of scope. We discuss its limitations and potential hardening strategies in \autoref{sec:elf_packager_fm}.
 
-\heading{Binary CFI Rewriter.} \pname{} takes as input (1) a decoded and lifted instruction stream and (2) a policy specification (\eg{} permitted control-flow transfers) derived from static analysis or profiling. It instruments the program with CFI enforcement logic and produces a rewritten \texttt{.text} segment together with a policy table.
+\heading{Binary CFI Rewriter.} \pname{} takes inputs of (1) a decoded and lifted instruction stream and (2) a policy specification (\eg{} permitted control-flow transfers) derived from static analysis or profiling. It instruments the program with CFI enforcement logic and produces a rewritten \texttt{.text} segment together with a policy table.
 %
-This component is the focus of our work. We formally verify two properties.\emph{CFI compliance:} the rewritten program enforces the specified control-flow integrity policy, and \emph{ISA compliance:} the rewritten binary preserves well-defined ARMv7 semantics and introduces no invalid or undefined behaviors.
+This component is the focus of our work. We formally verify two properties.\emph{CFI compliance:} the rewritten program enforces the specified control-flow integrity policy, and \emph{ISA compliance:} the rewritten binary preserves well-defined ARMv7 semantics compliant to ISA specification.
 %
 We formalize these safety and security properties as ISA-level specifications that apply uniformly to all binaries. Once defined, they do not depend on a particular input program or rewriter instance.
 
-In the following, we motivate the problem with a class of bugs that elude even experienced developers and resist exhaustive dynamic testing, then discuss our research scope and threat model.
+In the following, we motivate the problem with a class of bugs that elude even experienced developers and resist exhaustive dynamic testing.
 
 \comment{% old story
   \pname formally verifies a program transformation: a static binary rewriter that takes arbitrary binaries as input and produces security-hardened outputs guaranteed to satisfy a precise safety specification.
