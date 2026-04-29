@@ -1,36 +1,10 @@
 %! root=../main.tex
 \appendix %% CCS: DO NOT REMOVE
 
-\section{Open Science} %% CCS: DO NOT REMOVE
+\section{Open Science}
+We release our artifacts at \url{https://anonymous.4open.science/r/armcfi2026ccs}, including the full source code needed to understand, reproduce, and evaluate our system. The repository provides detailed documentation for rebuilding the formal proofs of compliance with both the CFI specification and the ARMv7 architecture, as well as instructions for building and compiling the \pname rewriter to generate CFI-instrumented binaries.
 
-\kjee{CCS: REMOVE the content below and replace it with appropriate content.}
-\subsection{Artifacts}
-\begin{itemize}
-    \item Git repository including external submodule, source, build instructions, and binary hardening examples.\\
-            Access: anonymized GitHub repository: \url{http://www.github.com/blablablabla}
-\end{itemize}
-Each submitted paper must include an Open Science appendix that:
-\begin{itemize}
-\item Enumerates all artifacts needed to evaluate the paper's core contributions (e.g., code, datasets, models, configuration files, scripts, documentation, benchmarks).
-\item Clearly describes how the program committee can access each artifact during double-blind review (including anonymous URLs or credentials, where applicable).
-% \item Explicitly justifies any artifact that cannot be shared (e.g., due to licensing restrictions, responsible disclosure concerns, safety or privacy of study subjects, or deployment risks if adversarial methods are released prematurely). When full sharing is not possible, authors are encouraged to provide partial, synthetic, or redacted artifacts that still allow reviewers to assess the methodology.
-% \item In case no artifact is needed to evaluate the paperâ€™s core contributions, the authors should state it explicitly.
-\end{itemize}
-
-\section{Ethical Considerations} %% CCS: the entire sectin MAY BE REMOVED only if it is
-                                %% clear that your
-                       %% paper does not raise any ethical
-                       %% concerns. In case of doubts, keep the
-                       %% section and explains why your paper  does
-                       %% not raise any ethical concerns.
-
-% \kjee{CCS: REMOVE the content below and replace it with appropriate content.}
-
-The ethical ramifications of our work in binary defense is the same as for any work in binary defense.
-Powerful malicious actors may use it to further their own interests, safeguarding themselves against retaliation or usurpation.
-Although this is an ubiquitous risk, we believe that stronger defenses favor the forces of good more than the forces of evil.
-
-% Authors are expected to consider the ethical implications and potential societal impact of their work. Papers that raise ethical concerns, such as those involving human subjects, user data, or real-world vulnerability analysis, must include a dedicated "Ethical Considerations" section. This section should discuss the balance of risks vs. benefits and the steps taken to minimize potential harm (e.g., responsible disclosure, data anonymization). Note that institutional (IRB/ERB) approval is neither strictly necessary nor always sufficient to demonstrate ethical conduct; we expect authors to reason about the ethics of their work beyond ensuring institutional compliance. For detailed guidance on community standards, we follow the USENIX Security'26 Ethics Policy\footnote{\url{https://www.usenix.org/conference/usenixsecurity26/call-for-papers\#ethics}}. This section does not count toward the page limit and must be placed after the 12-page main content.
+We also include PoC attack cases (\autoref{tab:poc-attacks}) together with automatically profiled control-flow policies. To facilitate deployment and experimentation, we provide a containerized environment (\eg Docker) that enables users to run \pname on compatible ARMv7 platforms and evaluate it on custom binaries.
 
 \section{ARMv7 Instruction Categories}
 
