@@ -69,6 +69,18 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 * [ ] Advanced examples?
     1. We could use RecIPE, an "extensible and comprehensive benchmark for evaluating memory error defenses" (https://dl.acm.org/doi/pdf/10.1145/3488932.3524127)
 
+### figs
+
+Figures need another revision cycle.
+1. Fig1 needs to be re-drawn to serve dual purposes.
+    - give a high-level workflow and system overview.
+    - detailed description for CFI writer build and formal proof processes.
+    - Detail we want to have:
+        - Edge level with temporal/logical ordering (1), (2) ...
+        - distinction between verified/unverified component
+        - relation to fig2 and fig3.
+        - ELF editor -> ELF packager
+
 ### Appendix
 * [ ] Open science
 * [ ] Ethical considerations
@@ -82,5 +94,10 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 * [ ] ELF editor -> ELF packager
 * [ ] machine check, formal verification, formal method --> three are too many; can we converge to one or two?
 * [ ] a safe abort, \texttt{abort()} ...
+
+### Minor edits
+- [ ]  19% --> 19.xx %
+- [ ] captions for tabs, figs, and listings.
+
 
 ##### tag: `pdli`,`max`, `cfi`, `formal verification`, `arm`
