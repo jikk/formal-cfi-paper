@@ -21,9 +21,9 @@ A trace $\tau$ is safe if all its computational steps are confined to edges in $
 \begin{align*}
 \mathit{steps}(\langle a,\sigma\rangle) &= [\,] \\
 \mathit{steps}\big(\langle a_1,\sigma_1\rangle :: \langle a_2,\sigma_2\rangle :: \tau\big) &= (a_1,a_2)::\mathit{steps}\big(\langle a_2,\sigma_2\rangle :: \tau\big) \\
-\safe{trace}(\tau) &\equiv (\mathit{steps}(\tau)\subseteq\Pol)
+\safe{trace}(\Pol,\tau) &\equiv (\mathit{steps}(\tau)\subseteq\Pol)
 \end{align*}
-\optional{We do not care if the trace ends by throwing a hardware exception, so this definition only considers steps between two addresses.}
+%\optional{We do not care if the trace ends by throwing a hardware exception, so this definition only considers steps between two addresses.}
 
 \heading{Safety of a rewritten trace.}
 % \ixb{@MAX: in equations, you need to wrap multi-letter variable and function names in mathit, mathtt, mathrm. If you do not they will be set as a product of the individual letters.
@@ -91,23 +91,23 @@ whose verification is out-of-scope.
 \heading{Soundness of a CFI implementation.}
 For a CFI rewriter implementation $r$ to be sound, all executions of all rewritten programs it produces must be safe.
 \begin{equation}
-  \safe{CFI}(r) \equiv \forall \txt, \Pol, \langle r(\txt,\Pol),\sigma_0\rangle\leadsto\tau \implies \safe{trace}(\tau)
+  \safe{CFI}(r) \equiv \forall \txt, \Pol, \langle r(\txt,\Pol),\sigma_0\rangle\leadsto\tau \Rightarrow \safe{trace}(\Pol\kern1pt',\tau)
 \end{equation}
 
 \subsection{Safety Proof}
-We prove that our CFI rewriter is sound in Rocq using \Picinae.
-Because we reason about the safety of unspecified\wc{symbolic, undetermined, quantified} programs we need an internal lifter to translate the program bytes to symbolically executable PIL statements.
-To this end, we created the internal ARMv7 lifter, encoding the fetch-decode logic in the official documentation~\cite{ARMv7manual} as a Gallina function.
+%We prove that our CFI rewriter is sound in Rocq using \Picinae.
+%Because we reason about the safety of unspecified\wc{symbolic, undetermined, quantified} programs we need an internal lifter to translate the program bytes to symbolically executable PIL statements.
+%To this end, we created the internal ARMv7 lifter, encoding the fetch-decode logic in the official documentation~\cite{ARMv7manual} as a Gallina function.
 %For this, we create an ARMv7 decoder and lifter in Rocq that translates ARM instruction encodings
 %into \Picinae{} IL, based on the specification in the official documentation\ixb{add citation},
 %and define a \Picinae{} program, \texttt{arm\_prog}, that reads memory of the
 %given store at the given address and returns the IL produced by the decoder and lifter.
 
-Some instructions and cpu modes result in undefined or unsupported behavior.
-For example, the behavior of most instructions is undefined when they have \texttt{pc} as a register operand,
-unaligned \texttt{pc} instruct-fetch is undefined,
-and we only support ARM mode.
-The lifter models unsupported and undefined instructions as \unpredictable{}, assigning unknown values to all registers, including \texttt{pc}.
+%Some instructions and cpu modes result in undefined or unsupported behavior.
+%For example, the behavior of most instructions is undefined when they have \texttt{pc} as a register operand,
+%unaligned \texttt{pc} instruct-fetch is undefined,
+%and we only support ARM mode.
+%The lifter models unsupported and undefined instructions as \unpredictable{}, assigning unknown values to all registers, including \texttt{pc}.
 % While the lifter does not support these instructions and modes, the rewriter does, and the proof guarantees soundness even in their presence.
 
 \comment{
@@ -119,48 +119,24 @@ The decoder and lifter are specific to the User processor mode for ARM, so we do
 instructions that require a higher privilege level.
 }
 
-\ixb{Wordy, maybe still useful.}
-The soundness proof follows a co-inductive structure that boils down to proving each rewritten \Block is safe.
-The new text segment is sliced up by defining an invariant point at every rewritten \Block entrance, hardware interrupt, and instruction outside of the rewritten \Block, that requires the trace to be safe.
-Picin\ae{} slices the proof into two cases: the base case which requires us to reach and satisfy an invariant, and the inductive case which requires us to show that all internal invariants, execution reaches and satisfies a next invariant.
-For our purposes, only the invariants at the start of \Blocks are internal invariants, as we provide no guarantees after a program makes a permitted jump out of the instrumented code section.
-The inductive case gives us the invariant of the trace as a precondition, which means all steps in it are permitted.
-A helper lemma proves that the tail of a safe trace does not influence whether it reaches and satisfies an invariant;
-forgetting the tail we are left with a proof that starting at the beginning of a \Block we safely reach a next invariant.
+The soundness proof follows a coinductive structure that proves that any execution trace of any binary produced by the rewriter can be partitioned into \emph{trace slices}, each confined to a single \Block of the rewritten code.
+The proof is coinductive because the trace and/or each slice within it could be infinitely long.
+This proves that non-terminating programs continue to obey the policy, including those that loop infinitely within a \Block.
 
-% \ixb{@Max: please look this over. I'm trying to polish the proof explanation but I am not certain this is correct.}
-We induct over the structure of the trace, which starts at the beginning of a \Block, and prove that it reaches an invariant point
-We can inductively prove that a trace is safe by proving that if
-the trace starts at the beginning of a \Block in a state that satisfies our preconditions,
-it will eventually
-(1) reach the start of another \Block in a state that also satisfies our preconditions
-(2) exit the new text segment
-or (3) raise a hardware exception, all while only taking permitted steps.
-We define a \Block to be safe if all such traces have this property.
-\ixb{last sentence is confusing: I thought we were discussing the safety of traces, but then it switches to blocks.}
+To perform the coinduction, the proof asserts an invariant at every \Block entry point, and proves that any trace slice that starts in an invariant-satisfying machine state either eventually reaches another invariant-satisfying state or never leaves the \Block.
+The invariant consists of the five assumptions listed in \autoref{sec:verification}.
+In particular, it posits that the instruction mode, code and policy data, endianness mode, and access permissions of security-critical sections have not been corrupted, and that the \PC is at a \Block boundary.
 
-% In \Picinae{}, we prove this using \texttt{satisfies\_all} by placing an invariant point
-\Picinae{}'s co-inductive proof handles this by placing an invariant point
-at the start of each \Block requiring the head of the trace to satisfy our preconditions
-and all steps of the trace to be permitted, and by setting all addresses outside the new
-text segment as exit points that must also satisfy the same invariant.
-\ixb{I think this paragraph should be rewritten without satisfies\_all. And it should be a multi-sentence paragraph. I'm having trouble interpreting this one long sentence.}
+\Picinae transforms this invariant set into a case distinction that asks for a proof of invariant-preservation for every \Block that Rocq infers that the rewriter implementation could generate.
+Each of these cases therefore proves that if the trace begins at the start of a \Block in a state that satisfies the assumptions, then execution eventually
+(a) reaches the start of another \Block in a state that also satisfies the assumptions,
+(b) exits to a policy-permitted, non-block location (\eg, the abort handler),
+(c) raises a hardware exception, or
+(d) never exits the \Block.
+Moreover, the trace slice exhibited during this process is policy-satisfying.
 
-First, we can show that the invariants about memory will hold regardless of what happens in the rewritten code.
-For the nonwritable memory requirements, we show that the lifter never produces IL that modifies
-memory permission bits (we are only concerned with User mode),
-and therefore remain correct for all traces that start with the correct permissions.
-Note that this implicitly assumes that the program does not ask the kernel to modify memory permissions,
-so we cannot guarantee the safety of any rewritten program with this functionality.
-For the invariants about the new text and table segments being located in the correct location in memory,
-it is obvious that if we assume that the segments were in the correct location at the start of the trace,
-and the segments are nonwritable, that they will continue to be in the correct location.
-Thus, upon reaching an invariant point, we just need to prove that the trace only took permitted steps,
-is still in ARM mode, and did not change the endianness flag,
-since we only assume the table segment is in the same endianness as the CPU at the start of the trace.
-
-Now that the problem has been reduced to only considering a single \Block, we just need to
-consider the following cases:
+Each of these cases entails proving properties of abstract code, since most generated \Blocks are functions of the input instruction that they replace, not a fixed, concrete list of instructions.
+For example, \Block code may copy operands from an original instruction into encodings of new instructions that it generates.
 
 \heading{Unchanged \Block.}
 The corresponding \Block for most instructions just contains

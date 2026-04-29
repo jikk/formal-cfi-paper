@@ -1,6 +1,6 @@
 %! root=../main.tex
 \subsection{Case studies}\label{sec:case_studies}
-We present three case studies in which formal verification exposed subtle correctness bugs in the CFI binary rewriter. Each bug arises from a corner case that is easy to overlook in implementation, difficult to trigger through dynamic testing, yet systematically revealed during the proof process. The first case stems from the inherent complexity of binary rewriting, while the latter two arise from \unpredictable{} behaviors in the ARMv7 ISA.
+We present three case studies in which formal verification exposed subtle correctness bugs in the CFI binary rewriter. Each bug arises from a corner case that is easy to overlook in implementation, difficult to trigger through dynamic testing, yet systematically revealed during the proof process. The first case stems from the inherent complexity of binary rewriting, while the latter two arise from obscure instructions and \unpredictable{} behaviors in the ARMv7 ISA.
 
 \optional{% NOTE (@kjee): the following text can be moved to section 2.2
     These case studies illustrate a common theme: assumptions that hold for compiler-generated code or benign execution environments do not hold for arbitrary binaries. Dynamic testing rarely exercises these edge cases, particularly when they depend on rare ISA behaviors or adversarial inputs. In contrast, formal verification exposes such issues by requiring correctness over all executions permitted by the ISA specification, and it guides systematic fixes that eliminate entire classes of errors.
@@ -23,9 +23,9 @@ However, to ensure policy enforcement $\itoip$ also needs to modify indices from
 The issue emerges when proving that all policy table entries are invariant point addresses.
 % The proof fails because $\itoip$ may map a policy entry to an index within the rewritten text segment that is not the start of a valid control-flow \Block.
 The proof fails because if an original policy permitted a jump to an external address that becomes part of the new text segment after rewriting,
-then the policy table can contain an arbitrary new text segment address that does not start a \Block.
+then the policy table can contain an arbitrary new text segment address that does not start a \Block, which is not an invariant point.
 % This allows a jump to bypass the guard code that enforces the policy. 
-This allows a guarded indirect branch to directly step to another indirect branch while bypassing the guard code that enforces the policy.
+This allows a guarded indirect branch to directly step to another indirect branch while bypassing the guard code that enforces the policy, violating rewriter soundness.
 % While individual steps remain locally safe, the global invariant, which all reachable targets are instrumented, does not hold.
 
 % How we fixed?
