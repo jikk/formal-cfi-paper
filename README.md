@@ -80,5 +80,7 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 
 * [ ] ISA or microarchitecture?
 * [ ] ELF editor -> ELF packager
+* [ ] machine check, formal verification, formal method --> three are too many; can we converge to one or two?
+* [ ] a safe abort, \texttt{abort()} ...
 
 ##### tag: `pdli`,`max`, `cfi`, `formal verification`, `arm`
