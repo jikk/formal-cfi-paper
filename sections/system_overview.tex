@@ -58,7 +58,7 @@ We preserve the old text segment as a non-executable data section at its origina
 All executable code is therefore relocated during rewriting.
 The rewriter implements a function \itoip that maps each original instruction location to its rewritten \Block location, defined by
 \begin{equation}
-\itoip(\bi+j) = \begin{cases} \bip+\sum_{k=1}^{j-1} \ell'[k] & \text{if $j\in[0,|\ell|)$} \\
+\itoip(\bi+j) = \begin{cases} \bip+\sum_{k=1}^{j-1} \left|\ell'[k]\right| & \text{if $j\in[0,|\ell|)$} \\
                               \bi+j & \text{otherwise} \end{cases}
 \end{equation}
 where $\ell'[k]$ is the $k$th \Block in output list $\ell'$
@@ -316,11 +316,9 @@ Such proofs can entail verifying every memory-write operation in the rewritten c
 Our design places all policy data in non-writable sections, allowing proofs to infer policy data integrity from static memory access permissions.
 
 \heading{Stack independence.}
-Security state that flows to the stack is a particularly common case of mutable security state.
-Integrity of such data depends on stack integrity, 
-Using the stack introduces the obligation of proving the rewriter is correct despite changes to memory.
-We use the stack anyways, because our immutable security state makes safety-violating memory changes trivially unreachable.
-Any rewriter whose correctness relies on a predictable \emph{mutable} memory region should minimize spurious memory modifications.
+Security state that flows to the stack is a particularly common case of the mutable security state challenge.
+Integrity of such data depends on proving stack integrity, which is a complex data structure on most ISAs\@.
+Rewriters that distrust all stack data, such as by revalidating it or sanitizing it once popped into registers, are therefore easier to formally verify.
 
 \heading{Nondeterminism independence.}
 Real-world ISAs include many \unpredictable{} operations, some of which seem predictable in practice because they behave consistently across most hardware instantiations.
@@ -328,38 +326,35 @@ Rewriters must nevertheless carefully avoid generating code whose safety relies 
 The choice of verification framework must likewise include foundational support for nondeterministic ISA operational semantics, which is critical for modeling how real ISAs behave across arbitrary ISA implementations.
 \Picinae supports this through a nondeterministic expression language that faithfully models \unpredictable{} operations, forcing proofs to cover all possible effects.
 
-\heading{Inductive proof structure.}
-Breaking the proof into invariant points and applying inductive reasoning is a well known way of simplifying program verification to its necessary subcomponents.
-\Picinae{} offers facilities for doing this that work just as well on symbolic code as they do on concrete.
+\heading{Evidence generation.}
+Code generators often internally synthesize evidence of security and safety in the form of data structures that are later discarded.
+Exposing this evidence as output provides powerful assistance to formal verification.
+For example, our rewriter outputs a list $\ell'$ of \Blocks without flattening it into the rewritten code section.
+This strategic choice of output format allows formal verification to construct a proof whose structure matches that of~$\ell'$.
+The proof positions coinductive invariants at \Block boundaries.
+This eliminates the considerable challenge of discovering invariant locations sufficient for proving safety of the abstract binary.
 
 
 \subsection{Rewriter Soundness Proof Setup}
-As we would like to formally verify the soundness of our CFI implementation,
-we implement the CFI rewriter as a function in Gallina,
-Rocq's programming language, to allow us to write machine-checked proofs about its behavior.
-The rewriter function is extracted into OCaml and compiled into an executable
-with some additional driver code for reading/writing files and argument parsing.
-The ELF editor is implemented as a Python script using the LIEF library.
-The extraction to OCaml is formally guaranteed to preserve the rewriter's semantics~\cite{fv_ocaml_extraction}.
-%
-\mxz{i dont think so? e.g. we extract coq Z into ocaml int, which has a limited size and we dont prove that we never use a value that doesn't fit}
-\cav{The extract inlined constants that we include in our setup are trusted, the actual piece of code that does extraction from Rocq to OCaml is formally verified. I think we should lean on this and maybe just include that there are trusted components to the pipeline. Also, we could just extract to a BigInt representation and then it's even more trustworthy}
-We do not formally verify the correctness of the the ELF editor,
-instead only focusing on the core rewriting logic that transforms the instruction bytes.
+%As we would like to formally verify the soundness of our CFI implementation,
+%we implement the CFI rewriter as a function in Gallina,
+%Rocq's programming language, to allow us to write machine-checked proofs about its behavior.
+%The rewriter function is extracted into OCaml and compiled into an executable
+%with some additional driver code for reading/writing files and argument parsing.
+%The ELF editor is implemented as a Python script using the LIEF library.
+%The extraction to OCaml is formally guaranteed to preserve the rewriter's semantics~\cite{fv_ocaml_extraction}.
+%%
+%\mxz{i dont think so? e.g. we extract coq Z into ocaml int, which has a limited size and we dont prove that we never use a value that doesn't fit}
+%\cav{The extract inlined constants that we include in our setup are trusted, the actual piece of code that does extraction from Rocq to OCaml is formally verified. I think we should lean on this and maybe just include that there are trusted components to the pipeline. Also, we could just extract to a BigInt representation and then it's even more trustworthy}
+%We do not formally verify the correctness of the the ELF editor,
+%instead only focusing on the core rewriting logic that transforms the instruction bytes.
 
-However, we are still left with a difficult problem.
-To prove the soundness of the rewriter,
-we must prove that every execution through every binary that the rewriter outputs
-complies with the provided policy.
-Even ignoring the difficulty of reasoning about the vast number of traces this includes,
-existing frameworks for bottom-up verification are incapable of proving properties
-of binary code that is not completely concrete,
-preventing us from proving anything about code where the only known information is that
-it was produced by some input to the rewriter.
-\mxz{add some sentences describing how existing cfi verification skirts around this
-by not proving an implementation}
+Although mainstream \FM frameworks such as Rocq and Isabelle/\penalty0 HOL have built-in support for machine-proving properties of concrete codes implemented in their respective specification languages, they do not natively support verifying properties of codes expressed in other languages or produced by other tools.
+Therefore, although implementing our rewriter as a Gallina function affords Rocq the capacity to directly reason about its implementation, it does not afford it the capability of proving properties of the machine code that our rewriter outputs.
 
-To solve this issue, we turn to the \Picinae{} framework, which we describe in the next section.
+This presents a difficult \FM challenge:
+The rewriter soundness property we must verify is a universally quantified property of all possible executions on all possible ISA-compliant computational environments of all possible machine code programs that the rewriter might generate.
+To address this challenge, we turn to the \Picinae{} framework, described in the next section.
 
 \comment{%
     \begin{itemize}
