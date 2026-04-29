@@ -10,13 +10,15 @@
     \includegraphics[width=0.9\linewidth]{figs/implementation_ixb_proposal.pdf}
     % maybe a bit too long
     \caption{\pname architecture and dataflow showing instrumented instructions (highlighted red and green) and policy table construction (labels colored red and green).\kjee{In overall, edges tell the story. Think more about out ``edges`` can be presented.}
-    % Highlighted instructions are potentially dangerous (red) or their instrumented output (green).
-    % The original text segment contains potentially dangerous instructions, in red.
-    % The rewriter converts each instruction into a block of one or more instructions in the new text segment.
-    % The policy maps source indices to a set of allowed destinations
-    % (that is not required to be disjoint with other sets, e.g. $i_1$ and $i_n$).
-    % Indirect jump instructions become blocks that perform a lookup into a table that constrains the target to permitted destinations and converts between old and new addresses.
-    % Instructions with identical destination sets can share a policy table (e.g.\ tbl2 for $i_1, i_4$).\kjee{caption is too lengthy.}
+    \comment{%
+        Highlighted instructions are potentially dangerous (red) or their instrumented output (green).
+        The original text segment contains potentially dangerous instructions, in red.
+        The rewriter converts each instruction into a block of one or more instructions in the new text segment.
+        The policy maps source indices to a set of allowed destinations
+        (that is not required to be disjoint with other sets, e.g. $i_1$ and $i_n$).
+        Indirect jump instructions become blocks that perform a lookup into a table that constrains the target to permitted destinations and converts between old and new addresses.
+        Instructions with identical destination sets can share a policy table (e.g.\ tbl2 for $i_1, i_4$).\kjee{caption is too lengthy.}
+    }
     }~\label{fig:cfi_arch}
 \end{figure}
 
