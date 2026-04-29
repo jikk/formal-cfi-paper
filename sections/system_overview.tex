@@ -332,7 +332,7 @@ Exposing this evidence as output provides powerful assistance to formal verifica
 For example, our rewriter outputs a list $\ell'$ of \Blocks without flattening it into the rewritten code section.
 This strategic choice of output format allows formal verification to construct a proof whose structure matches that of~$\ell'$.
 The proof positions coinductive invariants at \Block boundaries.
-This eliminates the considerable challenge of discovering invariant locations sufficient for proving safety of the abstract binary.
+This eliminates the considerable challenge of discovering invariant locations sufficient to prove safety of the abstract binary during verification, allowing the rewriter to divulge the code's underlying structure as an untrusted, verifiable hint.
 
 
 \subsection{Rewriter Soundness Proof Setup}
