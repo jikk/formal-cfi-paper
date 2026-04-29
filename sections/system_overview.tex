@@ -57,7 +57,7 @@ Flattening list $\ell'$ yields the rewritten text segment of the output binary.
 We preserve the old text segment as a non-executable data section at its original location in the new binary to preserve static data.
 All executable code is therefore relocated during rewriting.
 The rewriter implements a function \itoip that maps each original instruction location to its rewritten \Block location, defined by
-\begin{equation}
+\begin{equation}\label{eq:itoip}
 \itoip(\bi+j) = \begin{cases} \bip+\sum_{k=1}^{j-1} \left|\ell'[k]\right| & \text{if $j\in[0,|\ell|)$} \\
                               \bi+j & \text{otherwise} \end{cases}
 \end{equation}

@@ -28,69 +28,70 @@ A trace $\tau$ is safe if all its computational steps are confined to edges in $
 \heading{Safety of a rewritten trace.}
 % \ixb{@MAX: in equations, you need to wrap multi-letter variable and function names in mathit, mathtt, mathrm. If you do not they will be set as a product of the individual letters.
 % Note the difference between $txt'$ and $\mathit{txt'}$.}
-Since rewriters move instructions, the policy $\Pol\kern1pt'$ for the rewritten code must remap the addresses in $\Pol$ to their rewritten locations.
-This is remapping is defined by the \itoip in \autoref{sec:cfi_design}.
-Moreover, rewriters introduce new permissible edges when they insert security checks into rewritten code.
-The new edges permit the new checks to execute.
-Finally, the inserted checks may signal an alarm by jumping to a safe abort address $\mai$.
-
-The previous definition does not account for the address translation done by the rewriting process.
-Similar to \itoip (\autoref{sec:cfi_design}), we define a function \iptoi used to determine if steps in the rewritten program correspond to policy permitted steps in the original:
-\[
-  \iptoi(i') = \begin{cases}
-    \mathit{\bi} + n & \text{if } i' \in [\bip, \bip + |\texttt{flatten}(\txtp)|-1] \\
-    i'     & \text{otherwise.}
-  \end{cases}
-\]
-where $n$ is the unique index such that $i'$ is in the $n$th \Block.
-All indices contained in the new text segment are mapped to the corresponding index of the old text segment,
-while other indices are left unchanged.
-We must also account for the abort index and steps between instructions within the same \Block.
-Thus, we can define a permitted step for a rewritten binary as:
-\begin{align*}
-  \Polp(i', j')     \equiv~ & j' = \mai & & \textit{step to the abort handler}\\
-                     \lor~ & \iptoi(i') = \iptoi(j') & & \textit{step within a \Block}\\
-                     \lor~ & \Pol(\iptoi(i'), \iptoi(j')) & & \textit{policy permitted step}
-\end{align*}
-and update our definition of a safe trace to use $\Polp$ instead of $\Pol$.
+Since rewriters relocate and add instructions, the policy $\Pol\kern1pt'$ for the rewritten code must reinterpret policy $\Pol$ in three ways:
+(1) Addresses in $\Pol$ must be mapped to their rewritten locations.
+This remapping is defined by function \itoip (\autoref{eq:itoip}).
+(2) New permissible edges must be added for inserted security checks, to allow the new checks to execute.
+(3) The inserted checks may signal an alarm by jumping to a safe abort address $\mai$.
+These three reinterpretations are formalized as
+\begin{equation}
+\begin{aligned}
+  \Pol\kern1pt' =\:& \{(4\itoip(a_1/4),4\itoip(a_2/4))\:|\:(a_1,a_2)\in\Pol\}\:\cup \\
+                  &\{(a_1',a_2')\:|\:a_1',a_2'\in[\itoip(i),\itoip(i+1)), i\in[0,|\ell|)\}\:\cup \\
+                  &(\mathbb{N}\times\{\mai\})
+%  \iptoi(i') = \begin{cases}
+%    \mathit{\bi} + n & \text{if } i' \in [\bip, \bip + |\texttt{flatten}(\txtp)|-1] \\
+%    i'     & \text{otherwise.}
+%  \end{cases}
+\end{aligned}
+\end{equation}
+where $|\ell|$ is the size of the original code segment.
 
 % Note that this permitted step definition allows a block to step to the corresponding index in the old text segment,
-Note, \Polp{} permits a rewritten \Block to step to its corresponding instruction in the old text segment
-as \iptoi will return the same value for the old index, making the ``step within a \Block'' case true.
-While mechanizing a proof that this does not happen is possible, we instead set the old text segment as nonexecutable.
+%Note, \Polp{} permits a rewritten \Block to step to its corresponding instruction in the old text segment
+%as \iptoi will return the same value for the old index, making the ``step within a \Block'' case true.
+%While mechanizing a proof that this does not happen is possible, we instead set the old text segment as nonexecutable.
 % However, this will never happen in the rewritten code (we just do not explicitly prove this), % probably?
 % and even if this did happen, we mark the old text segment as nonexecutable.
 
-\heading{Safety of a rewritten program.}
+\heading{Assumptions.}
 \ixb{@Max, what do you mean by ``the addresses provided as input by the user'' here? Policy? \bi, \bip, \tbi, \mai?}
-A rewritten program can be described by the new text and table segments returned by the rewriter and the addresses provided as input by the user.
-\[
-   p' = (\txtp, \mathit{tbls}, \mathit{addrs})
-\]
-We can define a rewritten program to be safe if all traces that meet the following preconditions are safe:
-(1) the trace starts in the ARM instruction mode
-(2) the new text segment is placed in memory at the correct location \bip
-(3) the table segment is placed in memory at the correct location \tbi in the correct endianness
-(4) the new text and table segments are nonwritable
-and
-(5) the starting address of the trace is the start of a \Block.
+%A rewritten program can be described by the new text and table segments returned by the rewriter and the addresses provided as input by the user.
+%\[
+%   p' = (\txtp, \mathit{tbls}, \mathit{addrs})
+%\]
+Programs $p$ started in machine states $\sigma_0$ exhibit a trace $\tau$ when executed, denoted $\langle p,\sigma_0\rangle\leadsto\tau$.
+Relation $\leadsto$ is defined by the ISA semantic specification, and is nondeterministic;
+\unpredictable{} operations in $p$ can cause $\langle p,\sigma_0\rangle\leadsto\tau_1$ and $\langle p,\sigma_0\rangle\leadsto\tau_2$ for multiple different traces $\tau_1\ne\tau_2$.
 
-The rewriter only gets to determine the instructions placed in the new text segment;
-we make no assumptions on what other executable code is placed in memory
-(such as code provided by the kernel).
-Therefore, we can no longer guarantee anything if the trace leaves the new text segment.
-However, this can only happen if it was permitted by the original policy,
-or if the destination is the abort handler.
-Thus, we only consider the longest prefix of a trace that contains at most one address
-outside of the new text segment (at the head of the trace).
-\[
-  \safe{prog}(p') \equiv \forall t, \mathit{Precond}_{p'}(t) \implies \safe{trace}(\mathit{prefix}(t))
-\]
+We prove safety of rewritten code in program $p$ under the following assumptions:
+(1) initial state $\sigma_0$ starts in the ARM instruction mode,
+(2) the new text segment in $p$ is located at \bip,
+(3) the policy table data segment is located at \tbi and has endianness matching $\sigma_0$,
+(4) the text and table segments have non-writable permissions,
+and
+(5) the starting \PC in $\sigma_0$ is the start of a \Block.
+These starting assumptions are properties of the ELF editor and OS process loader,
+whose verification is out-of-scope.
+
+%% KWH: I understand what you're saying below, but it's a complex corner case and sounds very alarming to a casual reader ("safe" traces can leave the code segment?!), so I'm omitting it for now.
+
+%The rewriter only gets to determine the instructions placed in the new text segment;
+%we make no assumptions on what other executable code is placed in memory
+%(such as code provided by the kernel).
+%Therefore, we can no longer guarantee anything if the trace leaves the new text segment.
+%However, this can only happen if it was permitted by the original policy,
+%or if the destination is the abort handler.
+%Thus, we only consider the longest prefix of a trace that contains at most one address
+%outside of the new text segment (at the head of the trace).
+%\[
+%  \safe{prog}(p') \equiv \forall t, \mathit{Precond}_{p'}(t) \implies \safe{trace}(\mathit{prefix}(t))
+%\]
 
 \heading{Soundness of a CFI implementation.}
-For a CFI implementation to be sound, all rewritten programs produced by the rewriter must be safe.
+For a CFI rewriter implementation $r$ to be sound, all executions of all rewritten programs it produces must be safe.
 \begin{align*}
-  Sound(CFI) \equiv \forall \txt, \pol, \addrs, \txtp, \tbls, \\
+  \mathit{Sound}(r) \equiv \forall \txt, \pol, \addrs, \txtp, \tbls, \\
     CFI(\txt, \pol, \addrs) = (\txtp, \tbls) \implies \safe{prog}(\txtp, \tbls, \addrs)
 \end{align*}
 

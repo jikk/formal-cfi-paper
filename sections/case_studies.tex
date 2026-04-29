@@ -11,17 +11,28 @@ Across all cases, the proof obligations force reasoning over all possible inputs
 \kjee{We may consider to have a figure for the case study 1.}
 \heading{Address translation.}
 % Why overlooked.
-The rewriter maintains both the original and rewritten text segments, making address translation between them subtle.
-A natural implementation of the translation function $\itoip$ leaves indices outside the original text segment unchanged, mirroring the inverse mapping $\iptoi$.
+% The rewriter maintains both the original and rewritten text segments, making address translation between them subtle.
+% A natural implementation of the translation function $\itoip$ leaves indices outside the original text segment unchanged, mirroring the inverse mapping $\iptoi$.
 %This behavior appears reasonable and aligns with common co-allocation designs used in static binary rewriting. 
 %However, it implicitly assumes that such indices are benign, overlooking the possibility that they may refer to attacker-controlled locations in the rewritten code.
-However, 
+The rewriter maintains both the original and rewritten text segments, making address translation between them subtle.
+A natural implementation of the translation function $\itoip$ only modifies
+o ensure policy enforcement $\itoip$ needs to modify indices from both the original and new text segment.
 
 % How FM detected during proof?
-The issue emerges when proving that all indirect control-flow transfers land on \emph{invariant points} (\eg properly instrumented entry points). The proof fails because $\mathit{rel}$ may map a policy entry to an index within the rewritten text segment that is not the start of a valid control-flow chunk. This allows a jump to bypass the guard code that enforces the policy. While individual steps remain locally safe, the global invariant, which all reachable targets are instrumented, does not hold.
+% The issue emerges when proving that all indirect control-flow transfers land on \emph{invariant points} (\eg properly instrumented entry points).
+The issue emerges when proving that all policy table entries are invariant point addresses.
+% The proof fails because $\itoip$ may map a policy entry to an index within the rewritten text segment that is not the start of a valid control-flow \Block.
+The proof fails because if an original policy permitted a jump to an external address that becomes part of the new text segment after rewriting,
+then the policy table can contain an arbitrary new text segment address that does not start a \Block.
+% This allows a jump to bypass the guard code that enforces the policy. 
+This allows a guarded indirect branch to directly step to another indirect branch while bypassing the guard code that enforces the policy.
+% While individual steps remain locally safe, the global invariant, which all reachable targets are instrumented, does not hold.
 
 % How we fixed?
-To fix the bug, we refine $\mathit{rel}$ to eliminate this ambiguity. Any index that does not correspond to a valid location in the original text segment is conservatively mapped to a safe abort location (\ie $\ensuremath{i_\mathit{abort}}$ or \texttt{abort()}). This ensures that all policy table entries correspond either to valid, instrumented targets or to a safe termination point. The revised definition restores the invariant and discharges the proof obligation.
+% To fix the bug, we refine $\mathit{rel}$ to eliminate this ambiguity. Any index that does not correspond to a valid location in the original text segment is conservatively mapped to a safe abort location (\ie $\ensuremath{i_\mathit{abort}}$ or \texttt{abort()}). This ensures that all policy table entries correspond either to valid, instrumented targets or to a safe termination point. The revised definition restores the invariant and discharges the proof obligation.
+To fix the bug, we refine $\itoip$ to translate any index in the new text segment to $\mai$, preventing non-\Block-starting addresses from appearing in a policy table.
+
 
 \comment{% Old/original
     Recall the \emph{unintuitive} behavior of $\mathit{\iptoi}$~(\autoref{sec:formalization}): unchanged indices permit jumping to the old text segment.

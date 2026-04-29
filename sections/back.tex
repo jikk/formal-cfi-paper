@@ -20,16 +20,16 @@ Finally, we describe our threat model and clarify the scope of the system, inclu
 
 A CFI binary rewriter performs complex transformations on executable code. It rewrites control-flow instructions, relocates and reassembles both original and generated code, and embeds auxiliary structures such as policy tables. Producing a rewritten binary that remains compliant with the target ISA while preserving CFI safety guarantees is therefore nontrivial.
 %
-%Dynamic testing alone cannot establish this level of correctness. \ixb
+%Dynamic testing alone cannot establish this level of correctness. \ixb{I don't like introducing dynamic testing so deep into the paragraph with one sentence to go. I like it this way where testing is mentioned at the end, right where it fits, and then ``Dynamic'' testing is defined 3 paragraphs below.}
 A CFI-enforcing rewriter must ensure that all generated instruction sequences comply with the ISA, not just those exercised during testing.
 
 A key challenge arises from \unpredictable behaviors in the ARM architecture~\cite{unpredictable_behaviors}. The ISA deliberately leaves certain execution outcomes unspecified to preserve implementation flexibility, avoid over-specifying ill-formed programs, and maintain backward compatibility. These behaviors introduce semantic nondeterminism, force conservative reasoning, and frustrate implementation independent correctness guarantees.
 
 In practice, many CPU implementations handle such cases by trapping or terminating execution, although the specification does not mandate a single outcome. As a result, compilers and toolchains avoid emitting instruction sequences that may trigger unpredictable behavior. \pname adopts the same discipline: it rejects any rewritten binary that could enter architecturally \unpredictable regions.
 
-The requirement motivates formal verification. Dynamic testing explores only observed execution paths and cannot rule out latent violations. For a binary CFI rewriter, testing is further hindered by a combinatorial \wc{compounding} input space spanning (1) the input binary, (2) the CFI policy defining valid control transfers, and (3) runtime inputs to the program. Exercising corner cases that trigger unpredictable behavior across these dimensions is therefore unlikely.
+The requirement motivates formal verification. Dynamic testing explores only observed execution paths and cannot rule out latent violations. For a binary CFI rewriter, testing is further hindered by a combinatorial\wc{compounding} input space spanning (1) the input binary, (2) the CFI policy defining valid control transfers, (3) runtime inputs to the program, and (4) the ISA implementation. Exercising corner cases that trigger unpredictable behavior across these dimensions through testing is therefore unlikely.
 
-In contrast, formal verification enables reasoning over all possible executions, ensuring that rewriting never introduces paths that trigger unpredictable behavior. More broadly, although CFI is widely deployed with low overhead, prior work has focused on design guarantees, performance, and policy generation, largely overlooking implementation correctness. Formal verification of CFI implementations against precise safety and security specifications remains underexplored. In \autoref{sec:case_studies}, we present two concrete error cases, branching to the PC register and unaligned PC loads, that surfaced during verification and would be difficult to detect through testing alone.
+In contrast, formal verification reasons over all possible executions, ensuring that rewriting never introduces paths that trigger unpredictable behavior. More broadly, although CFI is widely deployed with low overhead, prior work has focused on design guarantees, performance, and policy generation, largely overlooking implementation correctness. Formal verification of CFI implementations against precise safety and security specifications remains underexplored. In \autoref{sec:case_studies}, we present two concrete error cases, branching to the PC register and unaligned PC loads, that surfaced during verification and would be difficult to detect through testing alone.
 
 \comment{%
   \subsection{Motivation: ISA Compliant Sound CFI}\label{sec:cfi_motivation}
@@ -93,7 +93,7 @@ In contrast, formal verification enables reasoning over all possible executions,
 
 \autoref{fig:cfi_verif} illustrates the high-level workflow of \pname. To build a verified rewriter, we decompose the system into three components.
 
-\heading{ARMv7 decoder and lifter.} The frontend components of rewriter operates on byte sequences extracted from the \texttt{.text} section of well-formed ELF binaries. They decode byte sequences into machine instructions and lift them into the \pil, enabling symbolic reasoning over arbitrary binary inputs.
+\heading{ARMv7 decoder and lifter.} The rewriter's frontend component decodes byte sequences extracted from the \texttt{.text} section of well-formed ELF binaries. Within the soundness proof, the lifter \emph{lifts} the rewritten code into the \pil, enabling symbolic reasoning over arbitrary binary inputs.
 
 We target the ARMv7 ISA because it admits a formal specification~\cite{arm_decoder_spec}, making it amenable to rigorous reasoning.
 {% NOTE (@kjee) maybe redundant.
@@ -104,7 +104,7 @@ ARMv7 therefore provides a practical foundation for machine-checked reasoning at
 While their correctness remains critical to end-to-end soundness, we do not verify the decoder or lifter in this work. Instead, we treat them as trusted components, as they have been extensively studied in prior work~\cite{fm_decoder0, fm_decoder1, fm_decoder2, fm_decoder3} (\autoref{sec:fm_related}).\kjee{citations needed.}
 
 
-\heading{Binary CFI Rewriter.} \pname{} takes as input (1) a decoded and lifted ARMv7 instruction stream and (2) a policy specification (\eg{} permitted control-flow transfers) derived from static analysis or profiling. It instruments the program with CFI enforcement logic and produces a rewritten \texttt{.text} segment together with a policy table.
+\heading{Binary CFI Rewriter.} \pname{} takes as input (1) a decoded ARMv7 instruction stream and (2) a user-provided policy specification (\eg{} permitted control-flow transfers) derived from static analysis or profiling. It instruments the program with CFI enforcement logic and produces a rewritten \texttt{.text} segment together with a policy table.
 %
 This component is the primary focus. We formally verify two properties for rewritten binaries:
 %
@@ -115,7 +115,7 @@ This component is the primary focus. We formally verify two properties for rewri
 
 We formalize these safety and security properties as ISA-level specifications that apply uniformly to all binaries. Once defined, they do not depend on a particular input program or rewriter instance.
 
-\heading{ELF Packager.} The final stage packages the rewritten code into an executable integrating\wc{combining} rewitten and original \texttt{.text} sections, policy tables and remaining metadata entries pertained from the original binary.  We implement this step as a separate script using the LIEF Python library~\cite{lief} and treat it as out of scope. We discuss its limitations and potential hardening strategies in \autoref{sec:elf_packager_fm}.
+\heading{ELF Packager.} The final stage packages the rewritten code into an executable integrating\wc{combining} rewitten and original \texttt{.text} sections, policy tables and sundry metadata from the original binary.  We implement this step as a Python script using the LIEF library~\cite{lief} and treat it as out of scope. We discuss its limitations and potential hardening strategies in \autoref{sec:elf_packager_fm}.
 
 % In the following, we motivate the problem with a class of bugs that elude even experienced developers and resist exhaustive dynamic testing.
 
@@ -142,7 +142,7 @@ For example, constraint $P(c)\equiv(\exists c_0,\ r(c_0)\,{=}\,c)$ specifies tha
 \heading{Threat model.}
 Unlike prior work that verifies either compilers~\cite{compcert} (\ie source-to-binary transformations) or validators~\cite{rocksalt} (\ie binary-to-accept/reject decisions), \pname{} verifies a \emph{binary-to-binary transformation} that enforces security properties directly on arbitrary inputs.
 %
-\pname targets adversaries who exploit memory corruption vulnerabilities to hijack program control flow, a threat model consistent with prior work on code-reuse attacks. We assume the attacker can corrupt code pointers (return addresses, function pointers, or vtable entries) and possesses a writable memory region under their control (\eg a heap object or auxiliary buffer). We further assume the attacker can perform limited memory disclosure sufficient to infer code and data addresses in the presence of ASLR\@.
+\pname targets adversaries who exploit memory corruption vulnerabilities to hijack program control flow, a threat model consistent with prior work on code-reuse attacks. We assume the attacker can corrupt code pointers (return addresses, function pointers, or vtable entries) and possesses a writable memory region under their control (\eg a heap object or auxiliary buffer). We further assume the attacker can perform limited memory disclosure sufficient to infer code and data addresses in the presence of ASLR and supply maliciously crafted binaries.
 Under \pname's CFI enforcement, any control-flow transfer that violates the policy is redirected to the safe abort (\ie \texttt{abort()}), preventing attacker-controlled diversion of execution.
 
 \heading{Research scope.}
