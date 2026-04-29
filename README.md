@@ -50,10 +50,12 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 - Python script is out of scope because there is no formal specification of an OS loader. At the very least, this would be needed to specify the correctness of the ELF editor, if not a formally verified process loader. Paper docs do not count as formal specs. (27:10)
 
 ## TODOs
+* [ ] we need to mention `near-arbitrary` argument somewhere from sec 1 or 2.
 
-* [ ] set up anonymous github repo for paper code
+* [x] set up anonymous github repo for paper code
     - https://anonymous.4open.science/
-* [X] Ilan, Shreya, Charles brainstorm
+
+* [x] Ilan, Shreya, Charles brainstorm
     1. Formal verification friendly design decisions
     2. Bugs caught only because of the proof obligations
     3. What are the design principles for making the next binary rewriter
