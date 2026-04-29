@@ -184,7 +184,7 @@ BX r0                    // branch to table[h(dest)]
 so there are actually 4 add instructions in this \Block to add each byte separately, but idk if it's necessary to say that here}
 \ixb{I bet it's not necessary.}
 
-\caption{Rewriting \texttt{BX r0}. The tables show the hash values and address translation for the permitted destinations. The listing shows the rewritten \Block.
+\caption{Rewriting instruction \texttt{BX r0}. The tables map old addresses to new, and the listing shows the rewritten \Block code.
 \ixb{The table diagram still is not beautiful, but I think it serves us well to combine the tables and listing in the same figure.
 It makes referring to it in a leading paragraph sentence easier.}\kjee{How can we/readers associate tables and listing?}}
 \label{fig:block_rewriter_demo}
@@ -255,19 +255,19 @@ It also reduces the number of conditional instructions added to rewritten code, 
     For this work we focus exclusively on ARM mode.
     Jazelle and ThumbEE are rare in practice, and Thumb support is reserved as a future extension that can be accommodated with more instruction encodings.
     To disallow the other modes, \pname detects and removes mode-changing instructions, and disallows indirect control-flow transfers to odd-valued destination addresses, since such jumps change the instruction state to Thumb mode.
-    The latter is achieved by populating tables $T_D$ exclusively with word-aligned addresses.
+    The latter is achieved by storing only even-valued addresses in tables~$T_D$.
 
     \heading{\unpredictable{} instructions.}
-    Certain instructions are defined to be \unpredictable{}. The manual describes this term as:
-    \begin{displayquote}
-        Means the behavior cannot be relied upon. \unpredictable{} behavior must not perform any function that cannot be performed at the current or a lower level of privilege using instructions that are not \unpredictable{}.
-    \end{displayquote}
-    \comment{Although in practice, these instructions usually just cause a hardware exception \mxz{maybe?},} This definition includes the possibility of performing unpermitted control flow.
-    Thus, the rewriter must detect and remove all such instructions to guarantee safety for arbitrary ISA-conformant cpus. Most instruction types include at least a few \unpredictable{} variants, either from use of the PC register for instructions that do not support it or from the instruction encoding requiring certain bits to be 0 or 1. A couple of instructions are only \unpredictable{} at runtime, including indirect control flow instructions when the destination address ends with the bits `10'. This issue is avoided the same way we prevent switching to Thumb mode, by enforcing that all policy table entries are divisible by four.
+%    Certain instructions are defined to be \unpredictable{}. The manual describes this term as:
+%    \begin{displayquote}
+%        Means the behavior cannot be relied upon. \unpredictable{} behavior must not perform any function that cannot be performed at the current or a lower level of privilege using instructions that are not \unpredictable{}.
+%    \end{displayquote}
+%    \comment{Although in practice, these instructions usually just cause a hardware exception \mxz{maybe?},} This definition includes the possibility of performing unpermitted control flow.
+    The rewriter must detect and remove all \unpredictable{} instructions to guarantee safety for arbitrary ISA-conformant cpus (see \S\ref{sec:cfi_motivation}). Most instruction types include at least a few \unpredictable{} variants, such as from unsafe uses of \PC register operands or invalid instruction encodings. The rewriter statically replaces these with safe aborts. Unpredictability of some instructions depends on dynamic argument values, including indirect control-flows to destinations with low-order bits $10$. This is enforced by storing only word-aligned addresses in tables~$T_D$.
 }
 
 % python/ocaml extractor
-The ELF editor is given the output of the CFI rewriter and adds new segments to the original ELF for the rewritten instructions, the policy tables, and the abort handler that are loaded at the correct addresses and permissions. The original text segment is changed to be nonexecutable. Finally, the ELF editor uses the rewriter's \itoip function to update the entrypoint and symbol values.
+Once the CFI rewriter has generated a new code section, the ELF editor adds new segments to the original ELF for the rewritten instructions, the policy tables, and the abort handler with correct base addresses and permissions. The original text segment is changed to be non-executable. Finally, the entry point and symbol values are updated using the rewriter's \itoip function.
 
 
 \subsection{FM-friendly Rewriter Design Principles}\label{sec:fm_friendly}
@@ -275,18 +275,26 @@ The ELF editor is given the output of the CFI rewriter and adds new segments to 
 \ixb{@KJEE, if not for leading into \S~4 I would think this subsection should go before the Design, making the order "Design Principles -> Design -> Proof Setup". I understand that it's a good lead into Picin\ae{}, but going before design means (1) maybe we can reduce the size of the Design section, which is almost 2 whole pages, and (2) in the design section we can say "this is how we implemented design principle X, see?" Thoughts on reordering?}
 \todo{}
 
-With formal verification, the price of high assurance is the labor of proving.
-Can cut some of the costs by using FM-friendly design principles
+Strategic design and implementation choices can significantly ease the burden of formal verification.
+Our experience designing, implementing, and verifying \pname{} led us to general binary rewriter development principles that proved important for keeping the verification task tractable.
+This section presents these principles with explanations of how and why they impact \FM verification.
 
 \heading{Minimize conditionals.}
-Each conditional doubles the number of traces we must consider; we must reason about the case when the condition is true and false.
-In our design, we enforce the policy without using conditionals, as each indirect jump becomes a conditionless policy table lookup.
-We do not need to separately prove correct policy enforcement when the destination is permitted or prohibited,
-since in both cases the destination becomes a value from the table, which only contains permitted destinations.
+Each security-relevant conditional instruction that a rewriter adds increases the state space of control-flow paths that a proof must consider when verifying the implementation's safety.
+Minimizing conditional introduction therefore significantly affects verification feasibility.
+
+Each tested condition's complexity likewise impacts proof complexity.
+For example, the \texttt{EQ} conditional on ARM is a symbolic expression of the form $e=0$ during formal verification,
+but the \texttt{LE} conditional is a symbolic expression of the form $\mathrm{toZ}_{32}(e_1)\leq\mathrm{toZ}_{32}(e_2)$, where $\mathrm{toZ}_{32}$ is a symbolic expression that performs two's complement conversion from Rocq unsigned binary numbers $\mathsf{N}$ to Rocq signed binary numbers $\mathsf{Z}$.
+Rewriters that introduce many complex conditional guards are therefore significantly more difficult to verify than rewriters that use fewer, simpler conditional tests.
+
+Our design enforces the policy without conditionals by implementing each indirect jump as an unconditional policy table lookup.
+This greatly eases verification, since table integrity provably implies control-flow integrity without increasing the rewritten CFG\@.
 
 \heading{Code reuse.}
-Reusing code means we can reuse proofs about the code.
-We use the same sequence of instructions to load from a policy table in every indirect branch \Block,
+Code-reuse in rewritten binaries leads to proof-reuse during verification.
+In particular, a rewriter that generates nearly identical \Blocks for many different instructions can be verified with fewer lemmas, each of which prove the soundness of a unique rewriter-generated \Block type.
+Our design uses the same sequence of instructions to guard every form of indirect branch in the ARM ISA,
 allowing us to only have to prove the code always results in a state with a permitted destination once.
 
 \heading{Global state independence.}
