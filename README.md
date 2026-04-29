@@ -81,12 +81,11 @@ Figures need another revision cycle.
         - relation to fig2 and fig3.
         - ELF editor -> ELF packager
 2. Regarding Fig2, can we add some arrows/edges associating the first and second tables?
-    ixb: I tried to make the dataflow clearer. 
+    ixb: I tried to make the dataflow clearer.
 4. I wish fig 4 can be more specific to CFI binary rewriter.
 
 ### Appendix
-* [ ] Open science
-* [ ] Ethical considerations
+* [x] Open science
 * [ ] what do we want to have on appendix?
   - Example proofs
   - Counter example cases? (indirectly stating what theorems and lemmas want to prevent from happening)
@@ -102,5 +101,7 @@ Figures need another revision cycle.
 - [ ]  19% --> 19.xx %
 - [ ] captions for tabs, figs, and listings.
 
+## References (@shrya)
+- [ ] check out whether  `et. al.` is okay in citations/reference.
 
 ##### tag: `pdli`,`max`, `cfi`, `formal verification`, `arm`
