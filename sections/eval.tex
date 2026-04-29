@@ -3,13 +3,42 @@
 
 \kjee{@Max please have a look this section as a whole.}
 
-\subsection{Efficiency}
+\subsection{Performance Overhead}
 \kjee{@Max: We need more text here. (1) could \pname cover all benchmark items?; (2) what are fast? why? (3) what are slow? why?}
 \kjee{@Shreya: we may want to have a SOTA comparsion for the CFI efficiency}
 \ixb{@Shreya: my suggestions for the SOTA comparison: start with the ``Cracks in shields'' survey for the CFI tech they survey. They might also link to other surveys that focused on performance. If that's too old then you'll need to find more recent CFI work in top venues (CCS, NDSS, USENIX Security, IEEE S\&P) and maybe high-tier venues (ESORICS, AsiaCCS, RAID, ACSAC, EuroS\&P). I think we'd prefer to compare to other solutions supporting ARMv7, so take note of which ISAs each support just in case.}
-Here we present the efficiency evaluation result.
+\cav{Isn't it true that performance overhead is simply a function of abstraction density in the given project? If the architecture of perlbench consists of a denser tree of function calls, there will be more overhead than if you have a very shallow call hierarchy.}
+
+We evaluate the efficiency of \pname by running rewritten SPEC CPU 2017 benchmarks with the results shown in Table \ref{tab:spec2017}.
+The benchmarks were performed on a Raspberry Pi 5 with 16GB of memory.
+The policy chosen to be enforced was the most permissive one, allowing any instruction to
+step to any other instruction in the program.
+The average overhead was 19\%, showing that our rewriter does not result in unreasonable performance penalties.
 
 \input{tables/spec2017_tab2}
+
+\subsection{Space Overhead}
+Rewritten binaries take up more space than the original ones from the addition of the new text and policy table segments.
+We measure the relative size of each for the rewritten SPEC binaries, shown in Figure \ref{fig:spec2017_size}.
+
+On average, the new text segment is 1.36 times larger than the original text segment.
+For the table segment, we also measure how many entries are filled with an actual program address compared to the abort handler.
+Some benchmarks have very high space overhead mainly due to unfilled entries
+when the table is forced to be unnecessarily large to differentiate between distinct addresses.
+In these cases, using a better hash function can reduce the number of unfilled entries and the overall size of the table segment.
+The table segment on average contributed 73.5\% of the added size.
+
+\input{tables/spec2017_size}
+
+\subsection{Functionality}
+The SPEC CPU test suite includes checks if the benchmarks produce the correct output,
+and all of the rewritten programs succeeded.
+In addition, we tested the rewriter for functionality on other programs,
+including coreutils, Lua, CPython, Vim, Git, \mxz{list a few more programs}.
+\pname does not require input binaries to be from a specific compiler.
+We tested C and C++ binaries produced from GCC and Clang,
+as well as other binaries from languages like Zig, \mxz{todo test rust, go, ocaml, ...},
+and found the rewritten programs to still function correctly.
 
 \subsection{Security Evaluation}
 To evaluate the effectiveness of \pname against representative control-flow hijacking attacks,
@@ -19,27 +48,11 @@ we developed the following proof-of-concept (PoC) programs and their exploit scr
 
 \pname successfully instrumented control-flow monitoring for all binaries above and blocked
 the corresponding attacks at runtime.
-\mxz{there is no jop/srop eval. also we cannot block srop, since we dont instrument syscalls, and the proof cant catch this either since we lift svc as an inst that raises an exception (the kernel is not modeled)}
-Beyond enforcement correctness, \pname supports flexible policy specification.
-For these experiments, we applied a partial blacklisting policy that designates a function by
-name (\eg \texttt{bad\_func()}) as an invalid control-flow destination.
-\pname is designed to accommodate more comprehensive and realistic policies, such as
-whole-program call-graph enforcement or fine-grained per-callsite constraints.
-\ixb{Reading this I realize I'm scared the function that turns the cli-provided blacklist into a whitelist for the rewriter has a bug in it.}
+We also instrument the programs to enforce a permissive policy that still contains the necessary
+edges in the CFG and were able to exploit those programs.
+As long as the provided policy is specific enough to prevent control-flow hijacks,
+our formal proof guarantees that such exploits will be prevented through correct policy enforcement.
 
-The following shows an example policy used for the basic security evaluation.
-
-\begin{lstlisting}[language=c, linewidth=0.9\linewidth,caption={CFI policy example.\kjee{a dummy, placeholder}},label={lst:cfi_policy},captionpos=b,xleftmargin=.3cm]
-/* Blacklist policy: deny control-flow transfers to bad_func() */
-BLACKLIST {
-    bad_func
-}
-
-/* All other control-flow transfers follow the default policy */
-DEFAULT ALLOW;
-\end{lstlisting}
-
-Detailed documentation of the policy specification language is available in \texttt{POLICY.md} in the \pname repository\footnoteref{note0}.
 
 %%%%%%%%%%%%%%%%%% case_studies %%%%%%%%%%%%%%%%%%%%%
 \input{sections/case_studies}

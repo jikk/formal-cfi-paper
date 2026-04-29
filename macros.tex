@@ -39,6 +39,7 @@
 \usepackage{mdsymbol}
 \usepackage{multirow}
 \usepackage{pifont}
+\usepackage{pgfplots}
 \usepackage{tabularx}
 \usepackage{threeparttable}
 \usepackage{tikz}
@@ -115,6 +116,14 @@ urlcolor={winered},
 filecolor={winered},
 citecolor={winered},
 allcolors={winered}
+}
+
+\newcommand{\Autoref}[1]{%
+  \begingroup
+  \def\sectionautorefname{Section}%
+  \def\figureautorefname{Figure}%
+  \autoref{#1}%
+  \endgroup
 }
 
 %%%

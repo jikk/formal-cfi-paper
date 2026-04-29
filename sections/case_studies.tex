@@ -17,22 +17,22 @@ While this --- co-allocation of old and new text segments --- is necessary (or p
 \kjee{Why this invalidates the proof? Is it flagged during proof process? not clear what is an issue here.}
 \mxz{the following text explains why the proof would fail}
 %
-Instead, when any index $i'$ in the new text segment is provided as input to \itoip, we must translate it to $ai$.
+Instead, when any index $i'$ in the new text segment is provided as input to \itoip, we must translate it to $\mai$.
 To show why this is necessary, consider a policy that permits an instruction to jump to an index $i$ \kjee{address?}\ixb{Index is technically correct, but I agree if you're saying this is hard for a skimmer to follow. Throughout the development and paper ``index'' by default refers to the word-aligned offset into memory. The address of index $i'$ is $4i'$.} outside the old text segment that happens to be part of the new text segment after rewriting.
 A policy table for this instruction would contain $\itoip(i)$ as one of its entries, which equals $i$ under the \naive{} definition, as $i$ is not in the old text segment.
 %
-Since $i$ could be any index of the new text segment, the destination does not have to be the start of another block.
-If the end of a dynamic control flow block was at $i$, a trace could execute a dynamic branch without executing the guard code
+Since $i$ could be any index of the new text segment, the destination does not have to be the start of another \Block.
+If the end of a indirect control flow \Block was at $i$, a trace could execute an indirect branch without executing the guard code
 that constrains the instruction to permitted destinations. Thus, \itoip cannot leave new text segment indices alone
-and instead must choose a different policy permitted destination to place in the table, such as $ai$.
+and instead must choose a different policy permitted destination to place in the table, such as $\mai$.
 %
 In the proof, this problem is detected when we try to prove that we reach an invariant point after jumping to a table entry.
-While we can prove that this step is always safe, it is not true that the destination is an invariant point unless we modify $i2i'$.
+While we can prove that this step is always safe, it is not true that the destination is an invariant point unless we modify $\itoip$.
 
 \heading{Branching to PC.}
 Most instructions other than those in the data processing or load/store categories are defined to be \unpredictable{}
-when using PC (\ie r15) as a register operand, as there is no practical reason to use PC in these instructions~\cite{unpredictable_bx_pc}.
-It is reasonable to assume that \texttt{BX pc} \mxz{arm assembly does not use \$ for registers} (branch to the program counter) would be included, but it is actually
+when using PC (\ie r15) as a register operand, as there is no practical reason to use PC in these instructions~\cite{unpredictable_pc}.
+It is reasonable to assume that \texttt{BX pc} (branch to the program counter) would be included, but it is actually
 a valid instruction used in Thumb mode.
 %
 In ARM mode, this instruction behaves exactly the same as a static branch with an offset of 8, so there is no reason to use it
@@ -43,6 +43,7 @@ If the rewriter mistakenly handles this instruction like other \texttt{BX} instr
 
 
 \heading{Unaligned (Misaligned) PC Load.}
+\ixb{Do we really mean loading an address from an address? As in, an indirect jump by reading from VMEM?}
 When loading an address into the program counter, the behavior is \unpredictable{} if the address being loaded from is
 not word-aligned~\cite{unpredictable_misaligned_pc}. Some blocks produced by our rewriter use the stack to store the destination and end by loading this address. However, if the stack pointer was unaligned before the block began execution, this load would be \unpredictable{}.
 Even though the ARM calling convention mandates that the stack pointer is always aligned\kjee{4 bytes?}, it is still possible to set its value to an unaligned value~\kjee{address}. To ensure that this does not~\wc{prevent from} happen at runtime, a block must realign the stack pointer before loading from it.

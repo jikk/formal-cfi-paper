@@ -51,11 +51,9 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 
 ## TODOs
 
-* [ ] better name for `ELF Editor`
-    - @kjee: `ELF Packager` is my current favorite
-    - `ELF Repackager`, `ELF Composer`, `ELF Reconstructor`, `ELF Rebuilder`
-
-* [ ] Ilan, Shreya, Charles brainstorm
+* [ ] set up anonymous github repo for paper code
+    - https://anonymous.4open.science/
+* [X] Ilan, Shreya, Charles brainstorm
     1. Formal verification friendly design decisions
     2. Bugs caught only because of the proof obligations
     3. What are the design principles for making the next binary rewriter
@@ -75,5 +73,10 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 * [ ] what do we want to have on appendix?
   - Example proofs
   - Counter example cases? (indirectly stating what theorems and lemmas want to prevent from happening)
+
+### Terms/keywords
+
+* [ ] ISA or microarchitecture?
+* [ ] ELF editor -> ELF packager
 
 ##### tag: `pdli`,`max`, `cfi`, `formal verification`, `arm`

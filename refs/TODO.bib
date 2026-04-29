@@ -21,33 +21,121 @@
     note   = {[Online; accessed 2026-04-17]}
 }
 
-@misc{unpredictable_behaviors,
-    ids    = {unpredictable_bx_pc, unpredictable_misaligned_pc},
-    author = {},
-    title  = {Kangkook Jee Research},
-    url    = {https://kangkookjee.io/},
-    month  = {},
-    year   = {},
-    note   = {[Online; accessed 2026-04-17]}
+
+@inproceedings{ptcfi,
+address = {New York, NY, USA},
+author = {Gu, Yufei and Zhao, Qingchuan and Zhang, Yinqian and Lin, Zhiqiang},
+title = {PT-CFI: Transparent Backward-Edge Control Flow Violation Detection Using Intel Processor Trace},
+year = {2017},
+isbn = {9781450345231},
+publisher = {Association for Computing Machinery},
+url = {https://doi.org/10.1145/3029806.3029830},
+doi = {10.1145/3029806.3029830},
+booktitle = {Proceedings of the Seventh ACM on Conference on Data and Application Security and Privacy},
+pages = {173–184},
+keywords = {Intel PT, control flow integrity, return oriented programming, shadow stack},
 }
 
-@misc{cfi_papers,
-    ids    = {cfi0, cfi1, cfi2, cfi3},
-    author = {},
-    title  = {Kangkook Jee Research},
-    url    = {https://kangkookjee.io/},
-    month  = {},
-    year   = {},
-    note   = {[Online; accessed 2026-04-17]}
+@INPROCEEDINGS{ptcfi2,
+  author={Liu, Yutao and Shi, Peitao and Wang, Xinran and Chen, Haibo and Zang, Binyu and Guan, Haibing},
+  booktitle={2017 IEEE International Symposium on High Performance Computer Architecture (HPCA)}, 
+  title={Transparent and Efficient CFI Enforcement with Intel Processor Trace}, 
+  year={2017}, pages={529-540},keywords={Decoding;Runtime;Hardware;Security;Libraries;Instruments;Registers;Control-flow integrity;Intel processor trace},
+  doi={10.1109/HPCA.2017.18}}
+
+@inproceedings{llvm_cfi,
+address = {New York, NY, USA},
+author = {Muntean, Paul and Neumayer, Matthias and Lin, Zhiqiang and Tan, Gang and Grossklags, Jens and Eckert, Claudia},
+title = {Analyzing control flow integrity with LLVM-CFI},
+year = {2019},
+isbn = {9781450376280},
+publisher = {Association for Computing Machinery},
+url = {https://doi.org/10.1145/3359789.3359806},
+doi = {10.1145/3359789.3359806},
+booktitle = {Proceedings of the 35th Annual Computer Security Applications Conference},
+keywords = {Clang, LLVM, computer systems, control flow integrity, defense},
+series = {ACSAC '19}
 }
 
-
-@misc{todo,
-    ids    = {todo0, todo1, todo2, todo3},
-    author = {},
-    title  = {Kangkook Jee Research},
-    url    = {https://kangkookjee.io/},
-    month  = {},
-    year   = {},
-    note   = {[Online; accessed 2026-04-17]}
+@inproceedings {kbouncer,
+address = {Washington, D.C.},
+author = {Vasilis Pappas and Michalis Polychronakis and Angelos D. Keromytis},
+title = {Transparent {ROP} Exploit Mitigation Using Indirect Branch Tracing},
+booktitle = {22nd USENIX Security Symposium (USENIX Security 13)},
+year = {2013},
+isbn = {978-1-931971-03-4},
+pages = {447--462},
+url = {https://www.usenix.org/conference/usenixsecurity13/technical-sessions/paper/pappas},
+publisher = {USENIX Association},
 }
+
+@inproceedings {ropecker,
+author = {Cheng Yueqiang; Zhou Zongwei; Miao Yu; Ding Xuhua; and Robert Deng},
+title = {ROPecker: A Generic and Practical Approach For Defending Against ROP Attack},
+booktitle = {NDSS Symposium 2014: Proceedings of the 21st Network and Distributed System Security Symposium, San Diego, February 23-2},
+year = {2014},
+url = {https://ink.library.smu.edu.sg/sis_research/1973/},
+publisher = {Internet Society},
+}
+
+@misc {ropguard,
+author={Ivan Fratri\'{c}},
+title={ROPGuard: Runtime Prevention of Return-Oriented Programming Attacks},
+url={http://www.ieee.hr/_download/repository/Ivan_Fratric.pdf},
+year = {2012},
+institution = {University of Zagreb}
+}
+
+@inproceedings {coarse_cfi,
+address = {San Diego, CA},
+author = {Lucas Davi and Ahmad-Reza Sadeghi and Daniel Lehmann and Fabian Monrose},
+title = {Stitching the Gadgets: On the Ineffectiveness of {Coarse-Grained} {Control-Flow} Integrity Protection},
+booktitle = {23rd USENIX Security Symposium (USENIX Security 14)},
+year = {2014},
+isbn = {978-1-931971-15-7},
+url = {https://www.usenix.org/conference/usenixsecurity14/technical-sessions/presentation/davi},
+publisher = {USENIX Association},
+}
+
+@INPROCEEDINGS{ccfir,
+  author={Zhang, Chao and Wei, Tao and Chen, Zhaofeng and Duan, Lei and Szekeres, László and McCamant, Stephen and Song, Dawn and Zou, Wei},
+  booktitle={2013 IEEE Symposium on Security and Privacy}, 
+  title={Practical Control Flow Integrity and Randomization for Binary Executables}, 
+  year={2013}, url= {https://ieeexplore.ieee.org/abstract/document/6547133}, isbn = {978-1-4673-6166-8}, keywords={Security;Layout;Libraries;Runtime;Law;Control systems},
+  doi={10.1109/SP.2013.44},
+  publisher = {IEEE}
+}
+
+@inproceedings{bincfi,
+author = {Zhang, Mingwei and Sekar, R.},
+title = {Control Flow and Code Integrity for COTS binaries: An Effective Defense Against Real-World ROP Attacks},
+year = {2015},
+isbn = {9781450336826},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2818000.2818016},
+doi = {10.1145/2818000.2818016},
+booktitle = {Proceedings of the 31st Annual Computer Security Applications Conference},
+series = {ACSAC '15}
+}
+
+@article{bbb_cfi,
+address = {New York, NY, USA},
+author = {He, Wenjian and Das, Sanjeev and Zhang, Wei and Liu, Yang},
+title = {BBB-CFI: Lightweight CFI Approach Against Code-Reuse Attacks Using Basic Block Information},
+year = {2020},
+publisher = {Association for Computing Machinery},
+issn = {1539-9087},
+url = {https://doi.org/10.1145/3371151},
+doi = {10.1145/3371151},
+journal = {ACM Trans. Embed. Comput. Syst.},
+keywords = {runtime security, basic block, Control flow integrity}
+}
+
+@INPROCEEDINGS{outofcontrol,
+  author={Göktas, Enes and Athanasopoulos, Elias and Bos, Herbert and Portokalidis, Georgios},
+  booktitle={2014 IEEE Symposium on Security and Privacy}, 
+  title={Out of Control: Overcoming Control-Flow Integrity}, 
+  year={2014},
+keywords={Software;Security;Internet;Programming;Electronic mail;Payloads;Integrated circuits;Control-flow integrity evaluation;code-reuse attack},
+  doi={10.1109/SP.2014.43}}

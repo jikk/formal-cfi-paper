@@ -3,66 +3,73 @@
 \section{Verification of Implementation Soundness}\label{sec:verification}
 
 \ixb{I wondered whether how the \itoip, i'2i and policy definitions interact to allow program intended jumps out of the code region (e.g., to OS code). I know it's somewhere here, having trouble finding it by skimming.}
-\subsection{Formalization}\label{sec:formalization}
+\subsection{Soundness Formalization}\label{sec:formalization}
 % Compact list spacing for this section
 \setlist[itemize]{topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex,leftmargin=*}
 \setlist[enumerate]{label=(\arabic*),topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex,leftmargin=*}
 
-We begin by formalizing what it means for a binary CFI rewriter \emph{implementation} to be sound.
+A CFI rewriter \emph{implementation} is sound if all execution traces of all programs it outputs respect the input control flow policy.
+We formalize this notion below.
+% We begin by formalizing what it means for a binary CFI rewriter \emph{implementation} to be sound.
+
+\ixb{Did we ever discuss the validity of this approach w.r.t. the enforced policy is actually a trusted mapping of the original?}
 % To prove that our CFI implementation is sound, we must formalize what it means to be sound.
 
 \heading{Safety of a single trace.}
-We define a proposition $Pol(i, j)$, which is true if stepping from index $i$
+We define a proposition $\Pol(i, j)$, which is true if stepping from index $i$
 to $j$ is permitted by the policy.
 In our case, since the policy is specified as a function from source indices to lists of valid destination indices,
-$Pol(i, j) \equiv j \in pol(i)$.
-For an execution trace to be safe, all steps must satisfy $Pol$:
+$\Pol(i, j) \equiv j \in \pol(i)$.
+For an execution trace to be safe, all steps must satisfy $\Pol$:
 \[
-\safe{trace}(t) \equiv \forall (\langle a_1,\sigma_1\rangle, \langle a_2,\sigma_2\rangle) \in steps(t),
+\safe{trace}(t) \equiv \forall (\langle a_1,\sigma_1\rangle, \langle a_2,\sigma_2\rangle) \in \mathit{steps}(t),
    \Pol(a_1/4, a_2/4)
 \]
-We do not care if the trace ends by throwing a hardware exception,
-so this definition only considers steps between two addresses.
+\optional{We do not care if the trace ends by throwing a hardware exception, so this definition only considers steps between two addresses.}
 
 \heading{Safety of a trace in a rewritten program.}
-\ixb{@MAX: in equations, you need to wrap multi-letter variable and function names in mathit, mathtt, mathrm. If you do not they will be set as a product of the individual letters.
-Note the difference between $txt'$ and $\mathit{txt'}$.}
+% \ixb{@MAX: in equations, you need to wrap multi-letter variable and function names in mathit, mathtt, mathrm. If you do not they will be set as a product of the individual letters.
+% Note the difference between $txt'$ and $\mathit{txt'}$.}
 The previous definition does not account for the address translation done by the rewriting process.
-Similar to the \itoip function described earlier, we define an index translation function \iptoi as follows:
+Similar to \itoip (\autoref{sec:cfi_design}), we define a function \iptoi used to determine if steps in the rewritten program correspond to policy permitted steps in the original:
 \[
   \iptoi(i') = \begin{cases}
-    \mathit{bi} + n & \text{if } i' \in [\mathit{bi'}, \mathit{bi'} + |\text{flatten}(\mathit{txt'})|), \\
+    \mathit{\bi} + n & \text{if } i' \in [\bip, \bip + |\texttt{flatten}(\txtp)|-1] \\
     i'     & \text{otherwise.}
   \end{cases}
 \]
-where $n$ is the unique index such that $i'$ is in the $n$th block.
+where $n$ is the unique index such that $i'$ is in the $n$th \Block.
 All indices contained in the new text segment are mapped to the corresponding index of the old text segment,
 while other indices are left unchanged.
-We must also account for the abort index and steps between instructions within the same block.
+We must also account for the abort index and steps between instructions within the same \Block.
 Thus, we can define a permitted step for a rewritten binary as:
 \begin{align*}
-  \mathit{Pol'}(i', j')     \equiv~ & j' = ai & \textit{step to the abort handler}\\
-                     \lor~ & \iptoi(i') = \iptoi(j') & \textit{step within a block}\\
-                     \lor~ & Pol(\iptoi(i'), \iptoi(j')) & \textit{policy permitted step}
+  \Polp(i', j')     \equiv~ & j' = \mai & & \textit{step to the abort handler}\\
+                     \lor~ & \iptoi(i') = \iptoi(j') & & \textit{step within a \Block}\\
+                     \lor~ & \Pol(\iptoi(i'), \iptoi(j')) & & \textit{policy permitted step}
 \end{align*}
-and update our definition of a safe trace to use $Pol'$ instead of $Pol$.
+and update our definition of a safe trace to use $\Polp$ instead of $\Pol$.
 
-Note that this permitted step definition allows a block to step to the corresponding index in the old text segment,
-as \iptoi will return the same value for the old index, making the "step within a block" case true.
-However, this will never happen in the rewritten code (we just do not explicitly prove this), % probably?
-and even if this did happen, we mark the old text segment as nonexecutable.
+% Note that this permitted step definition allows a block to step to the corresponding index in the old text segment,
+Note, \Polp{} permits a rewritten \Block to step to its corresponding instruction in the old text segment
+as \iptoi will return the same value for the old index, making the ``step within a \Block'' case true.
+While mechanizing a proof that this does not happen is possible, we instead set the old text segment as nonexecutable.
+% However, this will never happen in the rewritten code (we just do not explicitly prove this), % probably?
+% and even if this did happen, we mark the old text segment as nonexecutable.
 
 \heading{Safety of a rewritten program.}
+\ixb{@Max, what do you mean by ``the addresses provided as input by the user'' here? Policy? \bi, \bip, \tbi, \mai?}
 A rewritten program can be described by the new text and table segments returned by the rewriter and the addresses provided as input by the user.
 \[
-   p' = (txt', tbls, addrs)
+   p' = (\txtp, \mathit{tbls}, \mathit{addrs})
 \]
 We can define a rewritten program to be safe if all traces that meet the following preconditions are safe:
 (1) the trace starts in the ARM instruction mode
-(2) the new text segment is placed in memory at the correct location $bi'$
-(3) the table segment is placed in memory at the correct location $tbi$ in the correct endianness
+(2) the new text segment is placed in memory at the correct location \bip
+(3) the table segment is placed in memory at the correct location \tbi in the correct endianness
 (4) the new text and table segments are nonwritable
-and (5) the starting address of the trace is the start of a block.
+and
+(5) the starting address of the trace is the start of a \Block.
 
 The rewriter only gets to determine the instructions placed in the new text segment;
 we make no assumptions on what other executable code is placed in memory
@@ -73,50 +80,71 @@ or if the destination is the abort handler.
 Thus, we only consider the longest prefix of a trace that contains at most one address
 outside of the new text segment (at the head of the trace).
 \[
-  \safe{prog}(p') \equiv \forall t, \mathit{Precond}_{p'}(t) \implies \safe{trace}(prefix(t))
+  \safe{prog}(p') \equiv \forall t, \mathit{Precond}_{p'}(t) \implies \safe{trace}(\mathit{prefix}(t))
 \]
 
 \heading{Soundness of a CFI implementation.}
 For a CFI implementation to be sound, all rewritten programs produced by the rewriter must be safe.
 \begin{align*}
-  Sound(CFI) \equiv \forall txt, pol, addrs, txt', tbls, \\
-    CFI(txt, pol, addrs) = (txt', tbls) \implies \safe{prog}(txt', tbls, addrs)
+  Sound(CFI) \equiv \forall \txt, \pol, \addrs, \txtp, \tbls, \\
+    CFI(\txt, \pol, \addrs) = (\txtp, \tbls) \implies \safe{prog}(\txtp, \tbls, \addrs)
 \end{align*}
 
-\subsection{Rocq Proof}
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.9\linewidth]{verification.pdf}
-    \caption{Verification and extraction of the core rewriting logic.}~\label{fig:cfi_verif}
-\end{figure}
+\subsection{Safety Proof}
 We prove that our CFI rewriter is sound in Rocq using \Picinae.
-For this, we create an ARMv7 decoder and lifter in Rocq that translates ARM instruction encodings
-into \Picinae{} IL, based on the specification in the official documentation\ixb{add citation},
-and define a \Picinae{} program, \texttt{arm\_prog}, that reads memory of the
-given store at the given address and returns the IL produced by the decoder and lifter.
+Because we reason about the safety of unspecified\wc{symbolic, undetermined, quantified} programs we need an internal lifter to translate the program bytes to symbolically executable PIL statements.
+To this end, we created the internal ARMv7 lifter, encoding the fetch-decode logic in the official documentation~\cite{ARMv7manual} as a Gallina function.
+%For this, we create an ARMv7 decoder and lifter in Rocq that translates ARM instruction encodings
+%into \Picinae{} IL, based on the specification in the official documentation\ixb{add citation},
+%and define a \Picinae{} program, \texttt{arm\_prog}, that reads memory of the
+%given store at the given address and returns the IL produced by the decoder and lifter.
+
+Some instructions and cpu modes result in undefined or unsupported behavior.
+For example, the behavior of most instructions is undefined when they have \texttt{pc} as a register operand,
+unaligned \texttt{pc} instruct-fetch is undefined,
+and we only support ARM mode.
+The lifter models unsupported and undefined instructions as \unpredictable{}, assigning unknown values to all registers, including \texttt{pc}.
+While the lifter does not support these instructions and modes, the rewriter does, and the proof guarantees soundness even in their presence.
+
+\comment{
 For \unpredictable{} instructions, the corresponding IL sets all registers to an unknown value and
 jumps to an unknown address.
 When the given store is not in ARM mode or the given address is not aligned,
 we treat the instruction as \unpredictable{}.
 The decoder and lifter are specific to the User processor mode for ARM, so we do not consider
 instructions that require a higher privilege level.
+}
 
-While \Picinae{} solves our issue of proving properties about binary code that is not fully known,
+\comment{
+While \Picinae{} and our decoder solve the issue of proving properties about unknown binary code,
 we still have to prove the safety of every possible trace of every possible output binary.
 \mxz{some text explaining how our design minimizes state explosion through table lookup/block structure}
+\ixb{I think this point can be shifted into the \heading{Indirect control flow} section where it is more relevant.}
+}
 
+\ixb{Wordy, maybe still useful.}
+The soundness proof follows a co-inductive structure that boils down to proving each rewritten \Block is safe.
+The new text segment is sliced up by defining an invariant point at every rewritten \Block entrance, hardware interrupt, and instruction outside of the rewritten \Block, that requires the trace to be safe.
+Picin\ae{} slices the proof into two cases: the base case which requires us to reach and satisfy an invariant, and the inductive case which requires us to show that all internal invariants, execution reaches and satisfies a next invariant.
+For our purposes, only the invariants at the start of \Blocks are internal invariants, as we provide no guarantees after a program makes a permitted jump out of the instrumented code section.
+The inductive case gives us the invariant of the trace as a precondition, which means all steps in it are permitted.
+A helper lemma proves that the tail of a safe trace does not influence whether it reaches and satisfies an invariant;
+forgetting the tail we are left with a proof that starting at the beginning of a \Block we safely reach a next invariant.
+
+% \ixb{@Max: please look this over. I'm trying to polish the proof explanation but I am not certain this is correct.}
+We induct over the structure of the trace, which starts at the beginning of a \Block, and prove that it reaches an invariant point
 We can inductively prove that a trace is safe by proving that if
-the trace starts at the beginning of a block in a state that satisfies our preconditions,
+the trace starts at the beginning of a \Block in a state that satisfies our preconditions,
 it will eventually
-(1) reach the start of another block in a state that also satifies our preconditions
+(1) reach the start of another \Block in a state that also satisfies our preconditions
 (2) exit the new text segment
 or (3) raise a hardware exception, all while only taking permitted steps.
-We define a block to be safe if all such traces have this property.
+We define a \Block to be safe if all such traces have this property.
 \ixb{last sentence is confusing: I thought we were discussing the safety of traces, but then it switches to blocks.}
 
 % In \Picinae{}, we prove this using \texttt{satisfies\_all} by placing an invariant point
 \Picinae{}'s co-inductive proof handles this by placing an invariant point
-at the start of each block requiring the head of the trace to satisfy our preconditions
+at the start of each \Block requiring the head of the trace to satisfy our preconditions
 and all steps of the trace to be permitted, and by setting all addresses outside the new
 text segment as exit points that must also satisfy the same invariant.
 \ixb{I think this paragraph should be rewritten without satisfies\_all. And it should be a multi-sentence paragraph. I'm having trouble interpreting this one long sentence.}
@@ -135,28 +163,28 @@ Thus, upon reaching an invariant point, we just need to prove that the trace onl
 is still in ARM mode, and did not change the endianness flag
 (since we only assume the table segment is in the same endianness as the CPU at the start of the trace).
 
-Now that the problem has been reduced to only considering a single block, we just need to
+Now that the problem has been reduced to only considering a single \Block, we just need to
 consider the following cases:
 
-\heading{Unchanged block.}
-The corresponding block for most instructions just contains
+\heading{Unchanged \Block.}
+The corresponding \Block for most instructions just contains
 the original instruction. We define an instruction to be safe if it can only
 ever fall through to the next instruction or raise a hardware exception and can never change the
-CPU's instruction mode or endianness. For these cases, we prove as a lemma that a block containing
+CPU's instruction mode or endianness. For these cases, we prove as a lemma that a \Block containing
 a single safe instruction is safe as long as fallthrough is policy-permitted,
-and that whenever the block remains unchanged,
+and that whenever the \Block remains unchanged,
 the original instruction was a safe instruction where fallthrough is permitted.
 
 \heading{Non-control-flow change.}
 For instructions that are changed for non-control-flow reasons,
 such as instructions that just reference the PC register without modifying it, we prove a
-lemma similar to the previous case about blocks consisting entirely of safe instructions,
+lemma similar to the previous case about \Blocks consisting entirely of safe instructions,
 with one caveat that we must deal with.
-Conditional instructions become blocks with a conditional branch at the start,
+Conditional instructions become \Blocks with a conditional branch at the start,
 which is not a safe instruction, as it does not always fallthrough or raise an exception.
-To handle this, we prove another lemma that if a block is safe, it is still safe after inserting a branch to the next
-block at the beginning, which requires us to prove that the rewriter correctly computes an encoding that decodes to a
-branch with the proper offset. With this lemma, we can prove the safety of all blocks changed for non-control-flow reasons.
+To handle this, we prove another lemma that if a \Block is safe, it is still safe after inserting a branch to the next
+\Block at the beginning, which requires us to prove that the rewriter correctly computes an encoding that decodes to a
+branch with the proper offset. With this lemma, we can prove the safety of all \Blocks changed for non-control-flow reasons.
 
 \heading{Direct control flow.}
 Instructions that perform direct control flow must be modified to account for
@@ -171,22 +199,22 @@ are replaced with a branch to the abort handler, which we prove safe similarly t
 \heading{Indirect control flow.}
 The code to lookup a destination from an instruction's hash table is the same for all indirect control flow instructions,
 parameterized by the register containing the destination, the bits extracted by the hash function, and the address of the table.
-We prove a lemma about this code that after executing this portion of the block,
+We prove a lemma about this code that after executing this portion of the \Block,
 the register contains some value from the table,
 and a separate lemma that the table provided consists entirely of permitted destination addresses for the instruction in question.
-Proving the safety of indirect control flow blocks simply involves
+Proving the safety of indirect control flow \Blocks simply involves
 (1) skipping over all of the instructions up to the table lookup,
-since they are all either safe or a conditional branch to the next block
+since they are all either safe or a conditional branch to the next \Block
 (2) applying the lemma about the table lookup code to skip to a state afterwards where we have
 loaded from the table
-(3) executing the rest of the block and reaching a state where we have transfered control
+(3) executing the rest of the \Block and reaching a state where we have transferred control
 to the address from the table
 (4) applying the lemma about the addresses in the table and concluding that we have
 successfully reached another invariant point, since we are in a state in the same instruction mode and endianness
-either at the start of a block for a permitted destination or the abort handler.
+either at the start of a \Block for a permitted destination or the abort handler.
 
-These cases cover every possible block generated by our CFI implementation, so a block is always safe.
+These cases cover every possible \Block generated by our CFI implementation, so a \Block is always safe.
 Thus, we conclude that for all programs produced by the rewriter,
-any trace beginning at the start of a block will only take steps permitted by the policy as long as it remains in the new text segment,
+any trace beginning at the start of a \Block will only take steps permitted by the policy as long as it remains in the new text segment,
 meaning our implementation is sound.
 \qed
