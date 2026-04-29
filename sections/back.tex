@@ -89,9 +89,9 @@ In contrast, formal verification enables reasoning over all possible executions,
 
 \subsection{\pname Overview}
 
-\autoref{fig:cfi_verif} illustrates the high-level workflow of \pname. To verify, we decompose the system into three components.
+\autoref{fig:cfi_verif} illustrates the high-level workflow of \pname. To build a verified rewriter, we decompose the system into three components.
 
-\heading{ARMv7 decoder and lifter.} The frontend components of rewriter operates on byte sequences extracted from the \texttt{.text} section of well-formed ELF binaries. They decode byte sequences into machine instructions and lift them into the \Picinae{} \il\ixb{I think we should stick to Intermediate Language (PIL) here}, enabling symbolic reasoning over arbitrary binary inputs.
+\heading{ARMv7 decoder and lifter.} The frontend components of rewriter operates on byte sequences extracted from the \texttt{.text} section of well-formed ELF binaries. They decode byte sequences into machine instructions and lift them into the \pil, enabling symbolic reasoning over arbitrary binary inputs.
 
 We target the ARMv7 ISA because it admits a formal specification~\cite{arm_decoder_spec}, making it amenable to rigorous reasoning.
 {% NOTE (@kjee) maybe redundant.

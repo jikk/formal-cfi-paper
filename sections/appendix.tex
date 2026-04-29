@@ -11,21 +11,21 @@ We also include PoC attack cases (\autoref{tab:poc-attacks}) together with autom
 
 \section{ARMv7 Instruction Categories}
 
-Here we categorize all ARMv7 user-mode instructions based on their control-flow effects as described in \S~\autoref{sec:cfi_design}.
+Here we categorize all \mxz{we cant do all, the manual has over 400 separate instructions (though some are variants of the same inst)} ARMv7 user-mode instructions based on their control-flow effects as described in \S~\autoref{sec:cfi_design}.
 \ixb{The story here can be ``look at all these instructions whose \emph{operands} change how they need to be treated. Imagine how complex the implementation is. Imagine \emph{not} having a proof for its soundness!}
+
 
 \begin{figure}[b]
     \centering
-    \begin{tabular}{ll}
-        Category & Instructions\\
-        Unchanged block & \\
-        Non-control-flow change & \\
-        Direct control flow & \\
-        Indirect control flow & \\
-        Unsupported & \\
-        \unpredictable{} & \\
-        Operand specific & \\
-    \end{tabular}
+    \begin{tabularx}{\linewidth}{|X|X|}
+       \hline Category & Instructions \\
+       \hline Direct control flow & B, BL, BX with Rm=15 \\ 
+       \hline Indirect control flow & Data processing instructions (AND, EOR, SUB, RSB, ADD, ADC, SBC, RSC, ORR, MOV, LSL, LSR, ASR, RRX, ROR, BIC, MVN) with Rd=15, BX with Rm<>15, BLX (register), LDR with Rt=15, Block data transfer (Load) instructions (LDMDA, LDM/POP, LDMDB, LDMIB) with bit15=1 \\
+       \hline Non-control-flow change & Data processing instructions with Rd<>15 and Rm=
+       \hline Unsupported & BXJ, BLX (immediate), instructions from non-ARM modes, other instructions not supported by decoder/lifter (\eg SIMD) \\
+       \hline \unpredictable{} & Some variants of almost all instructions \\
+       \hline
+    \end{tabularx}
     \caption{Caption}
     \label{tab:placeholder}
 \end{figure}
