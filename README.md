@@ -50,10 +50,12 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 - Python script is out of scope because there is no formal specification of an OS loader. At the very least, this would be needed to specify the correctness of the ELF editor, if not a formally verified process loader. Paper docs do not count as formal specs. (27:10)
 
 ## TODOs
+* [ ] we need to mention `near-arbitrary` argument somewhere from sec 1 or 2.
 
-* [ ] set up anonymous github repo for paper code
+* [x] set up anonymous github repo for paper code
     - https://anonymous.4open.science/
-* [X] Ilan, Shreya, Charles brainstorm
+
+* [x] Ilan, Shreya, Charles brainstorm
     1. Formal verification friendly design decisions
     2. Bugs caught only because of the proof obligations
     3. What are the design principles for making the next binary rewriter
@@ -67,6 +69,20 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 * [ ] Advanced examples?
     1. We could use RecIPE, an "extensible and comprehensive benchmark for evaluating memory error defenses" (https://dl.acm.org/doi/pdf/10.1145/3488932.3524127)
 
+### figs
+
+Figures need another revision cycle.
+1. Fig1 needs to be re-drawn to serve dual purposes.
+    - give a high-level workflow and system overview.
+    - detailed description for CFI writer build and formal proof processes.
+    - Detail we want to have:
+        - Edge level with temporal/logical ordering (1), (2) ...
+        - distinction between verified/unverified component
+        - relation to fig2 and fig3.
+        - ELF editor -> ELF packager
+2. Regarding Fig2, can we add some arrows/edges associating the first and second tables?
+3. I wish fig 4 can be more specific to CFI binary rewriter.
+
 ### Appendix
 * [ ] Open science
 * [ ] Ethical considerations
@@ -78,5 +94,12 @@ Given page budget (20 + 5), the following outlines overall/rough page budget dis
 
 * [ ] ISA or microarchitecture?
 * [ ] ELF editor -> ELF packager
+* [ ] machine check, formal verification, formal method --> three are too many; can we converge to one or two?
+* [ ] a safe abort, \texttt{abort()} ...
+
+### Minor edits
+- [ ]  19% --> 19.xx %
+- [ ] captions for tabs, figs, and listings.
+
 
 ##### tag: `pdli`,`max`, `cfi`, `formal verification`, `arm`

@@ -27,7 +27,7 @@ For every indirect jump, it checks whether target addresses are call-preceded of
 CCFIR works with relocation data, rerouting indirect jumps to a separate Springboard section.
 While that offers an additional layer of protection from ROP attacks, in 2014, both CCFIR and binCFI were proven vulnerable to advanced ROP attacks due to the "looser" nature of their policies~\cite{outofcontrol}.
 
-CFIs using basic blocks are a low-overhead option as well~\cite{bbb_cfi}. We utilize basic blocks in our enforcement
+CFIs using basic blocks are a low overhead option as well~\cite{bbb_cfi}. Jumps are only legal if the destination address is an entry point of a basic block. This policy is enforced with a monitor using Intel PT to gather control-flow data in real time, while ours is enforced via a verified rewriter. 
 
 A more recent CFI project most similar to ours, muCFI, uses formal verification, proving an absence of hardware-based control flow attacks for a given CPU architecture~\cite{ceesay2024mucfi}. For a given CPU, all indirect jumps reach a valid destination defined by the CFG by keeping track of the PC value. However, while excellent at protecting against constant-time attacks and hardware-level control flow hijackings, software-related vulnerabilities, such as buffer overflows, are out of scope for muCFI.
 

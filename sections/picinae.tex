@@ -38,8 +38,8 @@ Internal lifters implement this process within Rocq rather than using an externa
 To realize \pname, we implement an internal lifter for ARMv7\@.
 Internal lifting has the advantage that it need not be applied to concrete machine code.
 % caverill: Is this notation explained anywhere, or worth the space?
-Each internal lifter is a Gallina function $\lceil\cdot\rceil:\mathbb{N}^*\rightharpoonup s$ that specifies the general process of translating bytes $\vec{b}\in\mathbb{N}^*$ to IL statements $s$ for a particular ISA\@.
-Rocq theorems and proofs can thereby abstractly refer to the IL representation $\lceil\vec{b}\rceil$ of arbitrary (unknown) byte sequences $\vec{b}$.
+Each internal lifter is a Gallina function $\lceil\cdot\rceil:\mathbb{N}^*\rightharpoonup s$ that specifies the general process of translating byte lists $\ell\in\mathbb{N}^*$ to IL statements $s$ for a particular ISA\@.
+Rocq theorems and proofs can thereby abstractly refer to the IL representation $\lceil\ell\rceil$ of arbitrary (unknown) byte list $\ell$.
 The lifter decodes bytes to assembly instructions and translates assembly instructions to IL without performing full disassembly or control-flow recovery (which are Turing-undecidable tasks on many architectures in the general case).
 This keeps the lifter small and amenable to abstract formal reasoning.
 
@@ -52,15 +52,15 @@ This keeps the lifter small and amenable to abstract formal reasoning.
 \begin{figure}[t]
 \footnotesize
 \begin{align*}
-&\text{Expressions} & e &\Coloneqq v~|~n\ofwidth{w}~|~e_1[e_2]\ofwidth{w}~|~e_1[e_2\coloneqq e_3]\ofwidth{w}~|~e_1\circledcirc e_2 \\
-& & & \hphantom{\Coloneqq}|~(e:w)~|~\mathsf{let}~v\coloneqq e_1~\mathsf{in}~e_2~|~{*}\ofwidth{w} \\
-&\text{Statements} & s &\Coloneqq \cdot~|~v\coloneqq e~|~\mathtt{jmp}~e~|~\mathtt{exn}~n~|~s_1;s_2~|~e~?~s_1:s_2~|~s^e \\
-&\text{Stores} & \sigma &: \Sigma\coloneqq v\rightharpoonup\mathbb{N} \\
-&\text{Exits} & \chi &\Coloneqq~{\fallthru}~\text{(fallthru)}~|~a~\text{(destination address)} \\
-& & & \hphantom{\Coloneqq}|~{\uparrow}i~\text{(hardware exception)} \\
-&\text{Programs} & p &: \Sigma\rightarrow\mathbb{N}\rightharpoonup s \\
-&\text{Traces} & \tau &\Coloneqq \langle\chi,\sigma\rangle~|~\langle\chi,\sigma\rangle::\tau
-\end{align*}
+  &\text{Expressions} & e &\Coloneqq v~|~n\ofwidth{w}~|~e_1[e_2]\ofwidth{w}~|~e_1[e_2\coloneqq e_3]\ofwidth{w}~|~e_1\circledcirc e_2 \\
+  & & & \hphantom{\Coloneqq}|~(e:w)~|~\mathsf{let}~v\coloneqq e_1~\mathsf{in}~e_2~|~{*}\ofwidth{w} \\
+  &\text{Statements} & s &\Coloneqq \cdot~|~v\coloneqq e~|~\mathtt{jmp}~e~|~\mathtt{exn}~n~|~s_1;s_2~|~e~?~s_1:s_2~|~s^e \\
+  &\text{Stores} & \sigma &: \Sigma\coloneqq v\rightharpoonup\mathbb{N} \\
+  &\text{Exits} & \chi &\Coloneqq~{\fallthru}~\text{(fallthru)}~|~a~\text{(destination address)} \\
+  & & & \hphantom{\Coloneqq}|~{\uparrow}i~\text{(hardware exception)} \\
+  &\text{Programs} & p &: \Sigma\rightarrow\mathbb{N}\rightharpoonup s \\
+  &\text{Traces} & \tau &\Coloneqq \langle\chi,\sigma\rangle~|~\langle\chi,\sigma\rangle::\tau
+  \end{align*}
 \vspace{-10pt}
 % \caption{An IL for expressing individual machine instruction operational semantics}
 \caption{\Picinae{} IR Specification.\kjee{@ixb please confirm it.}\ixb{Spec. looks complete; added typecast entry in the explanatory paragraph. Any specific question you had about it?}}\label{fig:picinae_il}

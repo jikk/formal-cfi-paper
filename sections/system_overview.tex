@@ -10,13 +10,15 @@
     \includegraphics[width=0.9\linewidth]{figs/implementation_ixb_proposal.pdf}
     % maybe a bit too long
     \caption{\pname architecture and dataflow showing instrumented instructions (highlighted red and green) and policy table construction (labels colored red and green).\kjee{In overall, edges tell the story. Think more about out ``edges`` can be presented.}
-    % Highlighted instructions are potentially dangerous (red) or their instrumented output (green).
-    % The original text segment contains potentially dangerous instructions, in red.
-    % The rewriter converts each instruction into a block of one or more instructions in the new text segment.
-    % The policy maps source indices to a set of allowed destinations
-    % (that is not required to be disjoint with other sets, e.g. $i_1$ and $i_n$).
-    % Indirect jump instructions become blocks that perform a lookup into a table that constrains the target to permitted destinations and converts between old and new addresses.
-    % Instructions with identical destination sets can share a policy table (e.g.\ tbl2 for $i_1, i_4$).\kjee{caption is too lengthy.}
+    \comment{%
+        Highlighted instructions are potentially dangerous (red) or their instrumented output (green).
+        The original text segment contains potentially dangerous instructions, in red.
+        The rewriter converts each instruction into a block of one or more instructions in the new text segment.
+        The policy maps source indices to a set of allowed destinations
+        (that is not required to be disjoint with other sets, e.g. $i_1$ and $i_n$).
+        Indirect jump instructions become blocks that perform a lookup into a table that constrains the target to permitted destinations and converts between old and new addresses.
+        Instructions with identical destination sets can share a policy table (e.g.\ tbl2 for $i_1, i_4$).\kjee{caption is too lengthy.}
+    }
     }~\label{fig:cfi_arch}
 \end{figure}
 
@@ -29,41 +31,45 @@ The former is implemented in Rocq and its soundness is verified in \S\ref{sec:ve
 The verified Rocq code is extracted to OCaml, linked with minimal wrapper code for file IO, and compiled into the executable that performs the binary rewriting.
 The ELF editor is a python script that packages the rewritten code into an ELF file.
 
-The rest of this section details the design of the CFI rewriter, which is expressed in Rocq as a function from the following inputs:
+The CFI rewriter is a Rocq function with the following inputs:
 \begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
 \item \heading{Text Segment ($\ell$):}
 The rewriter receives the contents of the text segment of the original program as a list $\ell$ of 4-byte integers.
 \item \heading{Addresses ($\bi, \bip, \tbi, \mai$):}
 The rewriter also receives the locations of the original and new code sections (\bi{} and \bip, resp.), the address-translation table (\tbi), and the safe abort code (\mai).
-Locations (\bi, \bip, etc.) are indexes of each 4-byte address in virtual memory, which equals its virtual address divided by 4.
+Each location is the index $i$ of a 4-byte virtual memory address~$4i$.
 % \kjee{@Max what are various things here?} that we describe in more detail as they become relevant.
 % These addresses are passed to the rewriter as their value divided by four, for reasons also explained later.
 % \mxz{I',m not sure if I like deferring the explanation of these, but i don't know how else to structure this section}
 % When referring to values that represent addresses divided by four, we will use the term "index", as if memory was an array of four-byte values.
 \item \heading{Policy (\pol):}
 The CFI policy specifies the set of permitted destinations of each instruction in the text segment.
-Our rewriter accepts policies as a function from source indices to lists of permitted destination indices.
-Policies may specifiy arbitrary destination sets; non-disjoint sets are supported.
+It is expressed as a function from source indices to lists of permitted destination indices.
+Policies may specify arbitrary destination sets; the rewriter supports non-disjoint, non-identical destination sets.
 \end{itemize}
 
 % block structure
 The rewriter translates each instruction of the original text segment into a \emph{\Block} of one or more new instructions.
-Thus, a \Block is a list of instruction encodings (list of ints) and the rewriter returns a list of \Blocks (\ie a list of lists).
-The flattened list is the rewritten text segment of the output binary.
+Thus, a \Block is a list of instruction encodings (list of ints) and the rewriter returns a list $\ell'$ of \Blocks (\ie a list of lists).
+Flattening list $\ell'$ yields the rewritten text segment of the output binary.
 
 % index translation
 We preserve the old text segment as a non-executable data section at its original location in the new binary to preserve static data.
 All executable code is therefore relocated during rewriting.
-The rewriter implements a function \itoip that maps each original instruction address to its rewritten \Block address using their respective base addresses ($\bi$ and $\bip$).
+The rewriter implements a function \itoip that maps each original instruction location to its rewritten \Block location, defined by
+\begin{equation}
+\itoip(\bi+j) = \begin{cases} \bip+\sum_{k=1}^{j-1} \ell'[k] & \text{if $j\in[0,|\ell|)$} \\
+                              \bi+j & \text{otherwise} \end{cases}
+\end{equation}
+where $\ell'[k]$ is the $k$th \Block in output list $\ell'$
 
 Rewritten code must sometimes jump to regions outside its new text segment.
 For example, the ARM Linux kernel provides helper functions that cannot be relocated to fixed addresses.
 Therefore, \itoip returns the input index when it does not fall within the original text segment range.
-Otherwise, $\itoip(4n)$ is the address of the first instruction of the $n$th rewritten \Block.
+Otherwise, $4\itoip(\bi+j)$ is the address of the first instruction of the $j$th rewritten \Block.
 
 % abort handler
-When a rewritten program detects an impending invalid control-flow transfer,
-it redirects control to the safe abort handler located at index $\mai$.
+%When a rewritten program detects an impending invalid control-flow transfer, it redirects control to the safe abort handler located at index $\mai$.
 
 % rewriting
 The rewriter sequentially examines each original instruction and determines whether it must be changed
@@ -73,17 +79,17 @@ to comply with the policy or to preserve functionality:
 Most instructions are irrelevant to enforcing the policy, and are therefore rewritten to single-instruction \Blocks that preserve the original instruction.
 
 \heading{Non-control-flow change.}
-Some ARM instructions accept the program counter as a register operand, causing their behavior to change when the instruction is relocated.
-If the original instruction references the program counter without transferring control,
+Some ARM instructions accept the \PC as a register operand, causing their behavior to change when relocated.
+If the original instruction references the \PC without transferring control,
 the rewritten \Block code first loads the original address of the instruction into a scratch register,
 runs the original instruction with PC replaced with the scratch register,
 and finally restores the scratch register to its original value.
 
-Most ARM instructions use the first four bits of the encoding for conditional execution.
-A conditional instruction should be rewritten into a conditional \Block.
+Most ARM instruction encodings use the first four bits as a conditional execution prefix.
+A conditional instruction must be rewritten to a conditional \Block.
 Rather than propagating the condition field to each instruction of the \Block,
-we insert a branch with opposite condition at the start of the \Block, which skips to the \Block's immediate successor.
-This avoids difficulties where the flag bits change within the \Block.
+we start the \Block with an opposite-condition branch to the succeeding \Block.
+This avoids difficulties where the flag bits can change within the \Block.
 \mxz{
 i imagine it's faster too,
 since the cpu doesn't need to process all of the instructions of the block when none of them would run anyways,
@@ -169,11 +175,11 @@ This is because it shares the same hash as its original destination, which is sa
     \end{tabular}
     \vspace{8pt}
 \begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,label={lst:armv7},xleftmargin=.3cm]
-UBFX r0, r0, #6, #3      // r0 = H(dest) (r0 is an address, so we add 2 to lsb)
-LSL r0, r0, #2           // r0 = H(dest) * 4
-ADD r0, r0, #a           // r0 = &table[H(dest)]
-LDR r0, [r0]             // r0 = table[H(dest)]
-BX r0                    // branch to table[H(dest)]
+UBFX r0, r0, #6, #3      // r0 = h(dest) (r0 is an address, so we add 2 to lsb)
+LSL r0, r0, #2           // r0 = h(dest) * 4
+ADD r0, r0, #table_addr  // r0 = &table[h(dest)]
+LDR r0, [r0]             // r0 = table[h(dest)]
+BX r0                    // branch to table[h(dest)]
 \end{lstlisting}
 \mxz{there isn't an instruction to add an arbitrary constant to a register, only certain constants are possible
 so there are actually 4 add instructions in this \Block to add each byte separately, but idk if it's necessary to say that here}
@@ -229,14 +235,14 @@ It makes referring to it in a leading paragraph sentence easier.}\kjee{How can w
 {% NOTE (@jee): somewhat length, feel redudant.
     \heading{Unsupported instructions.}
     % There are some ARM instructions that we do not support.
-    Some ARM instructions are predictable but out of scope (\eg floating point).
+    Some ARM instructions are predictable but out of scope (\eg Advanced SIMD).
     In these cases, we replace them with a branch to $\mai$.
     \ixb{todo---fact check with Max.}
     \mxz{floating point is not out of scope, this part was just a transition to talking about endianness/instruction mode/unpredictable}
 
     \heading{Endianness.}
     ARM supports both little and big endian memory operations, determined by the value of the E bit of the Current Program Status Register.
-    Changing the E bit at runtime could risk policy violations by loading destination addresses from hash tables in a different byte order than they were stored.
+    Changing the E bit at runtime could risk policy violations by loading destination addresses from policy tables in a different byte order than they were stored.
     \pname therefore replaces endianness mode-switching instructions with safe aborts.
     Support for mixed endianness could be added by setting the E bit in each dynamic control flow block and restoring its previous value after table-read is complete.
 
@@ -245,15 +251,15 @@ It makes referring to it in a leading paragraph sentence easier.}\kjee{How can w
     For this work we focus exclusively on ARM mode.
     Jazelle and ThumbEE are rare in practice, and Thumb support is reserved as a future extension that can be accommodated with more instruction encodings.
     To disallow the other modes, \pname detects and removes mode-changing instructions, and disallows dynamic control-flow transfers to odd-valued destination addresses, since they change the instruction state to Thumb mode.
-    The latter is achieved by implementing all destination addresses as indices, so no hash table entries are odd.
+    The latter is achieved by implementing all destination addresses as indices, so no policy table entries are odd.
 
     \heading{\unpredictable{} instructions.}
     Certain instructions are defined to be \unpredictable{}. The manual describes this term as:
     \begin{displayquote}
         Means the behavior cannot be relied upon. \unpredictable{} behavior must not perform any function that cannot be performed at the current or a lower level of privilege using instructions that are not \unpredictable{}.
     \end{displayquote}
-    Although in practice, these instructions usually just cause a hardware exception \mxz{maybe?}, this definition includes the possibility of performing unpermitted control flow.
-    Thus, the rewriter must detect and remove all such instructions to guarantee safety for arbitrary ISA-conformant cpus. Most instruction types include at least a few \unpredictable{} variants, either from use of the PC register for instructions that do not support it or from the instruction encoding requiring certain bits to be 0 or 1. A couple of instructions are only \unpredictable{} at runtime, including dynamic control flow instructions when the destination address ends with the bits '10'. This issue is avoided the same way we prevent switching to Thumb mode, by enforcing that all hash table entries are divisible by four.
+    \comment{Although in practice, these instructions usually just cause a hardware exception \mxz{maybe?},} This definition includes the possibility of performing unpermitted control flow.
+    Thus, the rewriter must detect and remove all such instructions to guarantee safety for arbitrary ISA-conformant cpus. Most instruction types include at least a few \unpredictable{} variants, either from use of the PC register for instructions that do not support it or from the instruction encoding requiring certain bits to be 0 or 1. A couple of instructions are only \unpredictable{} at runtime, including indirect control flow instructions when the destination address ends with the bits `10'. This issue is avoided the same way we prevent switching to Thumb mode, by enforcing that all policy table entries are divisible by four.
 }
 
 % python/ocaml extractor
