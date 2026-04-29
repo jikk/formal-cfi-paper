@@ -24,7 +24,7 @@
 \submitreadytrue{}
 
 \newif\ifcomments{}
-\commentstrue{}
+\commentsfalse{}
 
 \ifcomments{}
 	\newcommand{\kjee}[1]{\noindent\textcolor{red}{[KJEE: #1]}}
@@ -81,4 +81,7 @@
 
 \newcommand{\safe}[1]{\mathit{Safe_{#1}}}
 \newcommand{\unpredictable}{{\footnotesize UNPREDICTABLE}}
+
+% average overhead.
+\def\avgoh{19}
 

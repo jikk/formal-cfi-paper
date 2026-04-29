@@ -104,4 +104,5 @@ acmart.toc
 tmp.tex
 main.snippets
 main.bbl-SAVE-ERROR
+venv/
 CLAUDE.md

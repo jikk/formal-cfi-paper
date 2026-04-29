@@ -10,20 +10,29 @@
     \caption{Verification and extraction of the core rewriting logic.\kjee{this figure can be extended to provide high-level overview/workflow.}\kjee{ELF editor -> ELF packager}}~\label{fig:cfi_verif}
 \end{figure}
 
-\autoref{fig:cfi_verif} illustrates the high-level workflow of \pname. To verify a binary CFI rewriter, we decompose the system into three components.
+\autoref{fig:cfi_verif} illustrates the high-level workflow of \pname. To verify, we decompose the system into three components.
 
-\heading{Front-end processing (ARMv7 decoder and lifter).} The rewriter operates on byte sequences extracted from the \texttt{.text} section of well-formed ELF binaries. It decodes these bytes into machine instructions and lifts them into an intermediate representation compatible with the \Picinae{} framework, enabling symbolic reasoning over arbitrary binary inputs.
-%
-We target the ARMv7 ISA because it admits a formal specification, making it amenable to rigorous reasoning. In contrast, ISAs such as Intel x86 exhibit substantial semantic complexity and irregularity, which complicate full formalization. ARMv7 therefore provides a practical foundation for machine-checked reasoning at the binary level.
-%
-We do not verify the decoder or lifter in this work. Instead, we treat them as trusted components, as their correctness has been extensively studied in prior work (\autoref{sec:fm_related}). Their correctness nevertheless remains critical to end-to-end soundness.
+\heading{ARMv7 decoder and lifter.} The frontend components of rewriter operates on byte sequences extracted from the \texttt{.text} section of well-formed ELF binaries. They decode byte sequences into machine instructions and lift them into the \Picinae{} \ir, enabling symbolic reasoning over arbitrary binary inputs.
 
-\heading{ELF packager.} The final stage packages the rewritten code into an executable. We implement this step as a separate script using the LIEF Python library and treat it as out of scope. We discuss its limitations and potential hardening strategies in \autoref{sec:elf_packager_fm}.
+We target the ARMv7 ISA because it admits a formal specification~\cite{arm_decoder_spec}, making it amenable to rigorous reasoning.
+{% NOTE (@kjee) maybe redundant.
+    In contrast, ISAs such as Intel x86 exhibit substantial semantic complexity and irregularity, which complicate full formalization.
+}
+ARMv7 therefore provides a practical foundation for machine-checked reasoning at the binary level.
+%
+While their correctness remains critical to end-to-end soundness, We do not verify the decoder or lifter in this work. Instead, we treat them as trusted components, as they have been extensively studied in prior work~\cite{fm_decoder0, fm_decoder1, fm_decoder2, fm_decoder3} (\autoref{sec:fm_related}).\kjee{citations needed.}
 
-\heading{Binary CFI Rewriter.} \pname{} takes as input (1) a decoded and lifted instruction stream and (2) a policy specification (\eg{} permitted control-flow transfers) derived from static analysis or profiling. It instruments the program with CFI enforcement logic and produces a rewritten \texttt{.text} segment together with a policy table.
+\heading{ELF Packager.} The final stage packages the rewritten code into an executable integrating\wc{combining} rewitten and original \texttt{.text} sections, policy tables and remaining metadata entries pertained from the original binary.  We implement this step as a separate script using the LIEF Python library~\cite{lief} and treat it as out of scope. We discuss its limitations and potential hardening strategies in \autoref{sec:elf_packager_fm}.
+
+\heading{Binary CFI Rewriter.} \pname{} takes as input (1) a decoded and lifted ARMv7 instruction stream and (2) a policy specification (\eg{} permitted control-flow transfers) derived from static analysis or profiling. It instruments the program with CFI enforcement logic and produces a rewritten \texttt{.text} segment together with a policy table.
 %
-This component is the focus of our work. We formally verify two properties.\emph{CFI compliance:} the rewritten program enforces the specified control-flow integrity policy, and \emph{ISA compliance:} the rewritten binary preserves well-defined ARMv7 semantics and introduces no invalid or undefined behaviors.
+This component is the primary focus. We formally verify two properties for rewritten binaries:
 %
+\begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
+  \item \emph{CFI compliance} enforces the \wc{specified} control-flow integrity policy, and
+  \item \emph{ISA compliance} preserves well-defined ARMv7 semantics and introduces no invalid or undefined behaviors.
+\end{itemize}
+
 We formalize these safety and security properties as ISA-level specifications that apply uniformly to all binaries. Once defined, they do not depend on a particular input program or rewriter instance.
 
 In the following, we motivate the problem with a class of bugs that elude even experienced developers and resist exhaustive dynamic testing, then discuss our research scope and threat model.
@@ -64,7 +73,7 @@ safety requirements is nontrivial.
 %In particular, establishing an assurance CFI-enforcing binary rewriter must guarantee that every generated instruction sequence remains fully compliant with the target ISA through dynamic testing alone is fundamentally limited.
 %\kwh{The above sentence is not grammatical; I'm unable to parse it.}
 
-\ixb{train wreck attempt to address @KWH's comment.}
+\ixb{trainwreck attempt to address @KWH's comment.}\kjee{it isn't that bad.}
 For instance, some instructions rarely produced by compilers, and other instructions in rare contexts, may exhibit \unpredictable{} behavior~\cite{unpredictable_behaviors,examiner2024asplos}: their execution outcome is deliberately unspecified and may differ between implementations.
 Two examples for this are the BX PC instruction and unaligned PC loads, both of which were encountered and corrected through the verification process (see~\autoref{sec:case_studies}).
 BX PC is an instruction that is only meaningful in ThumbEE mode, which we do not cover, but is still valid in ARM.
@@ -125,17 +134,14 @@ For example, constraint $P(c)\equiv(\exists c_0,\ r(c_0)\,{=}\,c)$ specifies tha
 \ixb{Tricky things to include ($\sim$21:30): basically attackers get to send inputs to victim programs and send malware to the CFI rewriter, out of scope is messing with the hardware, ELF metadata, and manipulating the policy input.}
 
 \heading{Threat model.}
-Unlike prior work that verifies either compilers (\ie source-to-binary transformations) or validators (\ie binary-to-accept/reject decisions), \pname{} verifies a \emph{binary-to-binary transformation} that enforces security properties directly on arbitrary inputs.
+Unlike prior work that verifies either compilers~\cite{compcert} (\ie source-to-binary transformations) or validators~\cite{rocksalt} (\ie binary-to-accept/reject decisions), \pname{} verifies a \emph{binary-to-binary transformation} that enforces security properties directly on arbitrary inputs.
 %
 \pname targets adversaries who exploit memory corruption vulnerabilities to hijack program control flow, a threat model consistent with prior work on code-reuse attacks. We assume the attacker can corrupt code pointers (return addresses, function pointers, or vtable entries) and possesses a writable memory region under their control (\eg a heap object or auxiliary buffer). We further assume the attacker can perform limited memory disclosure sufficient to infer code and data addresses in the presence of ASLR\@.
-Under \pname's CFI enforcement, any control-flow transfer that violates the policy is redirected to \texttt{abort()}, preventing attacker-controlled diversion of execution.
-\ixb{Do we need to mention we do not support multithreading/concurrency?}
-\ixb{@Max, for my curiosity, are there CF transfer violations that get redirected to valid targets rather than \texttt{abort}?}
-\mxz{yes, an invalid control flow transfer that hashes to the same value as a valid one gets redirected there}
+Under \pname's CFI enforcement, any control-flow transfer that violates the policy is redirected to the safe abort (\ie \texttt{abort()}), preventing attacker-controlled diversion of execution.
 
 \heading{Research scope.}
 We target the ARMv7 ISA for three reasons. First, ARMv7 represents one of the most
-widely deployed architectures by installed base~\cite{arm_field_growth}, particularly in low-powered embedded
+widely deployed architectures by installed base~\cite{arm_field_growth,patterson2016computer}, particularly in low-powered embedded
 and IoT devices that are commonly deployed without modern security defenses, making
 binary hardening for this platform practically important. Second, a formal
 specification for the ARMv7 instruction decoder has been the subject of
@@ -150,7 +156,6 @@ For example, we disallow runtime changes to the CPSR E bit to enforce fixed endi
 We also restrict execution to the ARM instruction set and exclude Thumb, Jazelle, and ThumbEE modes to avoid unintended state transitions and additional encoding complexity; all control-flow targets are aligned to prevent implicit mode switching.
 %
 Finally, we detect and replace all \unpredictable{} instructions with safe aborts, since their undefined semantics could introduce unintended or unsafe control flows.
-\Autoref{sec:overview} provides further details on these architectural features and the rationale behind these design choices.
 
 This work explores the formal verification of a rewriter that operates on binary code sections. Specifically, we focus on securing the \texttt{.text} sections of ELF binaries. Securing non-code ELF components, such as metadata, relocation entries, and dynamic linking structures, falls outside our current scope.
 %
