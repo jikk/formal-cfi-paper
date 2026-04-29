@@ -1,54 +1,93 @@
 %! root=../main.tex
 \subsection{Case studies}\label{sec:case_studies}
-In this section, we present three case studies highlighting subtle bugs introduced during the binary CFI rewriter implementation that were subsequently uncovered through the formal proof process. These bugs stem from corner cases that are difficult to reason about in isolation (\eg dynamic testing); arising either from nuanced ISA specification details or from the inherent complexity of implementing binary rewriter where attackers in guest program can attempt to manipulate security logic residing in monitoring context.
+We present three case studies in which formal verification exposed subtle correctness bugs in the CFI binary rewriter. Each bug arises from a corner case that is easy to overlook in implementation, difficult to trigger through dynamic testing, yet systematically revealed during the proof process. The first case stems from the inherent complexity of binary rewriting, while the latter two arise from \unpredictable{} behaviors in the ARMv7 ISA.
 
+\optional{%
+    These case studies illustrate a common theme: assumptions that hold for compiler-generated code or benign execution environments do not hold for arbitrary binaries. Dynamic testing rarely exercises these edge cases, particularly when they depend on rare ISA behaviors or adversarial inputs. In contrast, formal verification exposes such issues by requiring correctness over all executions permitted by the ISA specification, and it guides systematic fixes that eliminate entire classes of errors.
+}
+
+Across all cases, the proof obligations force reasoning over all possible inputs and executions, exposing violations that remain latent under conventional testing.
+
+\kjee{we may consider to have a figure for the case study 1.}
 \heading{Address translation.}
-Recall the \emph{unintuitive} behavior of $\mathit{\iptoi}$~(\autoref{sec:formalization}): unchanged indices permit jumping to the old text segment.
-\ixb{@MAX: proposed rewrite of what you had before, though I'm not sure I captured the behavior correctly. The main point of the rewrite is to make it less wordy and highlight \emph{unintuitive} earlier to fuel reader interest.}
-% As we describe the \iptoi function in \autoref{sec:formalization}, we briefly mentioned an
-% \emph{unintuitive} behavior that permits jumping to the old text segment since some of its indices are left unchanged.
-% but gave an explanation on why this is still fine.
-\kjee{In what case do we still need to preserve the control transfer (or data reference) to *the old text*. We need more detailed explanation/justification; Here or from somewhere in section 3.}
-\ixb{@MAX, perhaps repeat the point "the ARM Linux kernel provides helper functions that we cannot rewrite at fixed addresses" (\autoref{sec:cfi_design}) for the third time? Previously also in \autoref{sec:formalization}}
-%
-While this --- co-allocation of old and new text segments --- is necessary (or prevalent) design practice for sound and efficient implementation of CFI via static binary rewriting \mxz{not sure what this is trying to say. }, leaving the analogous behavior present in the \itoip function used in the rewriter implementation would invalidate the proof.
-\kjee{Why this invalidates the proof? Is it flagged during proof process? not clear what is an issue here.}
-\mxz{the following text explains why the proof would fail}
-%
-Instead, when any index $i'$ in the new text segment is provided as input to \itoip, we must translate it to $\mai$.
-To show why this is necessary, consider a policy that permits an instruction to jump to an index $i$ \kjee{address?}\ixb{Index is technically correct, but I agree if you're saying this is hard for a skimmer to follow. Throughout the development and paper ``index'' by default refers to the word-aligned offset into memory. The address of index $i'$ is $4i'$.} outside the old text segment that happens to be part of the new text segment after rewriting.
-A policy table for this instruction would contain $\itoip(i)$ as one of its entries, which equals $i$ under the \naive{} definition, as $i$ is not in the old text segment.
-%
-Since $i$ could be any index of the new text segment, the destination does not have to be the start of another \Block.
-If the end of a indirect control flow \Block was at $i$, a trace could execute an indirect branch without executing the guard code
-that constrains the instruction to permitted destinations. Thus, \itoip cannot leave new text segment indices alone
-and instead must choose a different policy permitted destination to place in the table, such as $\mai$.
-%
-In the proof, this problem is detected when we try to prove that we reach an invariant point after jumping to a table entry.
+% Why overlooked.
+The rewriter maintains both the original and rewritten text segments, making address translation between them subtle. A natural implementation of the translation function $\mathit{rel}$ leaves indices outside the original text segment unchanged, mirroring the inverse mapping $\mathit{rel}^{-1}$. This behavior appears reasonable and aligns with common co-allocation designs used in static binary rewriting. However, it implicitly assumes that such indices are benign, overlooking the possibility that they may refer to attacker-controlled locations in the rewritten code.
+
+% How FM detected during proof?
+The issue emerges when proving that all indirect control-flow transfers land on \emph{invariant points} (\eg properly instrumented entry points). The proof fails because $\mathit{rel}$ may map a policy entry to an index within the rewritten text segment that is not the start of a valid control-flow chunk. This allows a jump to bypass the guard code that enforces the policy. While individual steps remain locally safe, the global invariant, which all reachable targets are instrumented, does not hold.
+
+% How we fixed?
+To fix the bug, we refine $\mathit{rel}$ to eliminate this ambiguity. Any index that does not correspond to a valid location in the original text segment is conservatively mapped to a safe abort location (\ie $\ensuremath{i_\mathit{abort}}$ or \texttt{abort()}). This ensures that all policy table entries correspond either to valid, instrumented targets or to a safe termination point. The revised definition restores the invariant and discharges the proof obligation.
+
+\comment{% Old/original
+    Recall the \emph{unintuitive} behavior of $\mathit{\iptoi}$~(\autoref{sec:formalization}): unchanged indices permit jumping to the old text segment.
+    \ixb{@MAX: proposed rewrite of what you had before, though I'm not sure I captured the behavior correctly. The main point of the rewrite is to make it less wordy and highlight \emph{unintuitive} earlier to fuel reader interest.}
+    % As we describe the \iptoi function in \autoref{sec:formalization}, we briefly mentioned an
+    % \emph{unintuitive} behavior that permits jumping to the old text segment since some of its indices are left unchanged.
+    % but gave an explanation on why this is still fine.
+    \kjee{In what case do we still need to preserve the control transfer (or data reference) to *the old text*. We need more detailed explanation/justification; Here or from somewhere in section 3.}
+    \ixb{@MAX, perhaps repeat the point "the ARM Linux kernel provides helper functions that we cannot rewrite at fixed addresses" (\autoref{sec:cfi_design}) for the third time? Previously also in \autoref{sec:formalization}}
+    %
+    While this --- co-allocation of old and new text segments --- is necessary (or prevalent) design practice for sound and efficient implementation of CFI via static binary rewriting \mxz{not sure what this is trying to say. }, leaving the analogous behavior present in the \itoip function used in the rewriter implementation would invalidate the proof.
+    \kjee{Why this invalidates the proof? Is it flagged during proof process? not clear what is an issue here.}
+    \mxz{the following text explains why the proof would fail}
+    %
+    Instead, when any index $i'$ in the new text segment is provided as input to \itoip, we must translate it to $\mai$.
+    To show why this is necessary, consider a policy that permits an instruction to jump to an index $i$ \kjee{address?}\ixb{Index is technically correct, but I agree if you're saying this is hard for a skimmer to follow. Throughout the development and paper ``index'' by default refers to the word-aligned offset into memory. The address of index $i'$ is $4i'$.} outside the old text segment that happens to be part of the new text segment after rewriting.
+    A policy table for this instruction would contain $\itoip(i)$ as one of its entries, which equals $i$ under the \naive{} definition, as $i$ is not in the old text segment.
+    %
+    Since $i$ could be any index of the new text segment, the destination does not have to be the start of another \Block.
+    If the end of a indirect control flow \Block was at $i$, a trace could execute an indirect branch without executing the guard code
+    that constrains the instruction to permitted destinations. Thus, \itoip cannot leave new text segment indices alone
+    and instead must choose a different policy permitted destination to place in the table, such as $\mai$.
+    %
+    In the proof, this problem is detected when we try to prove that we reach an invariant point after jumping to a table entry.
 While we can prove that this step is always safe, it is not true that the destination is an invariant point unless we modify $\itoip$.
+}
 
 \heading{Branching to PC.}
-Most instructions other than those in the data processing or load/store categories are defined to be \unpredictable{}
-when using PC (\ie r15) as a register operand, as there is no practical reason to use PC in these instructions~\cite{unpredictable_pc}.
-It is reasonable to assume that \texttt{BX pc} (branch to the program counter) would be included, but it is actually
-a valid instruction used in Thumb mode.
-%
-In ARM mode, this instruction behaves exactly the same as a static branch with an offset of 8, so there is no reason to use it
-(the GNU assembler will explicitly warn that ``use of r15 in bx in ARM mode is not really useful''
-if you try~\cite{gas_manual}).
-%
-If the rewriter mistakenly handles this instruction like other \texttt{BX} instructions, under the assumption that this case would be detected as \unpredictable{} earlier in the rewriting process, then the corresponding block will start with a \texttt{UBFX} that writes to PC, which is \unpredictable{}, and could therefore perform policy-violating control flow.
+Most ARMv7 instructions treat the program counter \cd{(PC, r15)} as an invalid operand, resulting in \unpredictable{} behavior. Consequently, implementations often assume that such cases can be ignored or filtered out early. However, \cd{BX pc} is a subtle exception: while largely meaningless in ARM mode, it is still a valid instruction with defined semantics; the instruction behaves exactly the same as a static branch with an offset of 8, so there is no reason to use it  (the GNU assembler will explicitly warn that ``use of r15 in bx in ARM mode is not really useful if you try''~\cite{gas_manual}).
+This rare corner case is unlikely to be generated by compilers and therefore easily escapes attention during implementation and testing.
+
+% How FM detected during proof?
+The proof requires that all rewritten instruction sequences are well-defined under the ISA semantics. When the rewriter treats \cd{BX pc} like a generic indirect branch, it may generate instrumentation that writes to the PC using instructions (\eg \cd{UBFX}) for which PC operands are \unpredictable. The formal model flags this as a violation, since the resulting execution may exhibit nondeterministic control flow, breaking the CFI guarantee.
+
+% How we fixed?
+To fix, we explicitly recognize and handle \cd{BX pc} as a special case in the rewriter. Instead of applying the generic instrumentation scheme, we rewrite it into a semantically equivalent, well-defined sequence (\eg a direct branch) that avoids any \unpredictable{} use of \cd{PC}\@. This ensures that the rewritten code remains within the defined subset of the ISA and preserves control-flow integrity.
+
+\comment{% old/original text.
+    Most instructions other than those in the data processing or load/store categories are defined to be \unpredictable{}
+    when using PC (\ie r15) as a register operand, as there is no practical reason to use PC in these instructions~\cite{unpredictable_pc}.
+    It is reasonable to assume that \texttt{BX pc} (branch to the program counter) would be included, but it is actually
+    a valid instruction used in Thumb mode.
+    %
+    In ARM mode, this instruction behaves exactly the same as a static branch with an offset of 8, so there is no reason to use it
+    (the GNU assembler will explicitly warn that ``use of r15 in bx in ARM mode is not really useful''
+    if you try~\cite{gas_manual}).
+    %
+    If the rewriter mistakenly handles this instruction like other \texttt{BX} instructions, under the assumption that this case would be detected as \unpredictable{} earlier in the rewriting process, then the corresponding block will start with a \texttt{UBFX} that writes to PC, which is \unpredictable{}, and could therefore perform policy-violating control flow.
+}
 
 
-\heading{Unaligned (Misaligned) PC Load.}
-\ixb{Do we really mean loading an address from an address? As in, an indirect jump by reading from VMEM?}
-When loading an address into the program counter, the behavior is \unpredictable{} if the address being loaded from is
-not word-aligned~\cite{unpredictable_pc}. Some blocks produced by our rewriter use the stack to store the destination and end by loading this address. However, if the stack pointer was unaligned before the block began execution, this load would be \unpredictable{}.
-Even though the ARM calling convention mandates that the stack pointer is always aligned\kjee{4 bytes?}, it is still possible to set its value to an unaligned value~\kjee{address}. To ensure that this does not~\wc{prevent from} happen at runtime, a block must realign the stack pointer before loading from it.
+\heading{Unaligned (Misaligned) \cd{PC} load.}
+ARMv7 requires that loads into the \cd{PC} operate on word-aligned addresses; otherwise, the behavior is \unpredictable{}. In practice, implementations assume that the stack pointer is always aligned, as mandated by the calling convention. However, this invariant is not enforced by hardware and can be violated by adversarial or malformed binaries. As a result, rewriter-generated sequences that load a return address from the stack may inadvertently rely on an unstated alignment assumption.
 
-\kjee{I liked the following.}
-Edge cases like this one are near impossible to find through testing alone. The precondition for this to happen will
-never occur under normal program execution, as ARM's calling convention explicitly prohibits it.
-Even if this case shows up during testing, \unpredictable{} behavior is implementation dependent;
-regardless of however many times you test this case on one machine, you might still never see a policy violating control flow
-depending on your CPU's implementation.
+% How FM detected during proof?
+The proof considers arbitrary initial machine states, including those that violate calling convention assumptions. When reasoning about a block that loads the \cd{PC} from the stack, the proof fails to establish well-defined behavior if the stack pointer is misaligned. Since \unpredictable{} behavior is modeled conservatively, this introduces nondeterminism that invalidates the correctness argument.
+
+% How we fixed?
+To fix, we modify the generated code to enforce alignment explicitly before performing the load. This involves realigning the stack pointer or masking the address to ensure word alignment prior to loading into the \cd{PC}. By eliminating dependence on external invariants, the rewritten code becomes robust to adversarial inputs and satisfies the proof obligations.
+
+\comment{%
+    \ixb{Do we really mean loading an address from an address? As in, an indirect jump by reading from VMEM?}
+    When loading an address into the program counter, the behavior is \unpredictable{} if the address being loaded from is
+    not word-aligned~\cite{unpredictable_pc}. Some blocks produced by our rewriter use the stack to store the destination and end by loading this address. However, if the stack pointer was unaligned before the block began execution, this load would be \unpredictable{}.
+    Even though the ARM calling convention mandates that the stack pointer is always aligned\kjee{4 bytes?}, it is still possible to set its value to an unaligned value~\kjee{address}. To ensure that this does not~\wc{prevent from} happen at runtime, a block must realign the stack pointer before loading from it.
+
+    \kjee{I liked the following.}
+    Edge cases like this one are near impossible to find through testing alone. The precondition for this to happen will
+    never occur under normal program execution, as ARM's calling convention explicitly prohibits it.
+    Even if this case shows up during testing, \unpredictable{} behavior is implementation dependent;
+    regardless of however many times you test this case on one machine, you might still never see a policy violating control flow
+    depending on your CPU's implementation.
+}
