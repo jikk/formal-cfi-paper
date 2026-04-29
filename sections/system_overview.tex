@@ -295,7 +295,7 @@ This greatly eases verification, since table integrity provably implies control-
 Code-reuse in rewritten binaries leads to proof-reuse during verification.
 In particular, a rewriter that generates nearly identical \Blocks for many different instructions can be verified with fewer lemmas, each of which prove the soundness of a unique rewriter-generated \Block type.
 Our design uses the same sequence of instructions to guard every form of indirect branch in the ARM ISA,
-allowing us to only have to prove the code always results in a state with a permitted destination once.
+reducing most of our verification task to establishing security and safety of that one shared instruction sequence.
 
 \heading{Global state independence.}
 Some policy enforcement strategies require a property of the entire code space to be true.
