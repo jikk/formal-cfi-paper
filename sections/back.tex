@@ -76,6 +76,7 @@ safety requirements is nontrivial.
 \ixb{trainwreck attempt to address @KWH's comment.}\kjee{it isn't that bad.}
 For instance, some instructions rarely produced by compilers, and other instructions in rare contexts, may exhibit \unpredictable{} behavior~\cite{unpredictable_behaviors,examiner2024asplos}: their execution outcome is deliberately unspecified and may differ between implementations.
 Two examples for this are the BX PC instruction and unaligned PC loads, both of which were encountered and corrected through the verification process (see~\autoref{sec:case_studies}).
+\ixb{The subtlety with the BX PC example is that it is \emph{not} \unpredictable{}, rather one would think it is unpredictable, and doing so leads to unsoundness.}
 BX PC is an instruction that is only meaningful in ThumbEE mode, which we do not cover, but is still valid in ARM.
 However, dynamic testing is unlikely to catch logic bugs that appear in such rare contexts without.
 

@@ -38,8 +38,8 @@ Internal lifters implement this process within Rocq rather than using an externa
 To realize \pname, we implement an internal lifter for ARMv7\@.
 Internal lifting has the advantage that it need not be applied to concrete machine code.
 % caverill: Is this notation explained anywhere, or worth the space?
-Each internal lifter is a Gallina function $\lceil\cdot\rceil:\mathbb{N}^*\rightharpoonup s$ that specifies the general process of translating bytes $\vec{b}\in\mathbb{N}^*$ to IL statements $s$ for a particular ISA\@.
-Rocq theorems and proofs can thereby abstractly refer to the IL representation $\lceil\vec{b}\rceil$ of arbitrary (unknown) byte sequences $\vec{b}$.
+Each internal lifter is a Gallina function $\lceil\cdot\rceil:\mathbb{N}^*\rightharpoonup s$ that specifies the general process of translating byte lists $\ell\in\mathbb{N}^*$ to IL statements $s$ for a particular ISA\@.
+Rocq theorems and proofs can thereby abstractly refer to the IL representation $\lceil\ell\rceil$ of arbitrary (unknown) byte list $\ell$.
 The lifter decodes bytes to assembly instructions and translates assembly instructions to IL without performing full disassembly or control-flow recovery (which are Turing-undecidable tasks on many architectures in the general case).
 This keeps the lifter small and amenable to abstract formal reasoning.
 
