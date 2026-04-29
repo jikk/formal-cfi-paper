@@ -83,6 +83,7 @@ Figures need another revision cycle.
 2. Regarding Fig2, can we add some arrows/edges associating the first and second tables?
     ixb: I tried to make the dataflow clearer.
 4. I wish fig 4 can be more specific to CFI binary rewriter.
+   agreed it is low priority
 
 ### Appendix
 * [x] Open science
