@@ -8,7 +8,7 @@
 \setlist[itemize]{topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex,leftmargin=*}
 \setlist[enumerate]{label=(\arabic*),topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex,leftmargin=*}
 
-A CFI rewriter \emph{implementation} is sound if all execution traces of all programs it outputs respect the input control flow policy.
+A CFI rewriter \emph{implementation} is sound if all execution traces of all programs it outputs obey the control-flow policy.
 We formalize this notion below.
 % We begin by formalizing what it means for a binary CFI rewriter \emph{implementation} to be sound.
 
@@ -16,14 +16,11 @@ We formalize this notion below.
 % To prove that our CFI implementation is sound, we must formalize what it means to be sound.
 
 \heading{Safety of a single trace.}
-We define a proposition $\Pol(i, j)$, which is true if stepping from index $i$
-to $j$ is permitted by the policy.
-In our case, since the policy is specified as a function from source indices to lists of valid destination indices,
-$\Pol(i, j) \equiv j \in \pol(i)$.
-For an execution trace to be safe, all steps must satisfy $\Pol$:
+Static CFI policies $\Pol$ are sets of virtual address edges $(a,a')\in\mathbb{N}^2$.
+An execution trace $\tau$ is safe if all its computational steps are confined to edges in $\Pol$:
 \[
-\safe{trace}(t) \equiv \forall (\langle a_1,\sigma_1\rangle, \langle a_2,\sigma_2\rangle) \in \mathit{steps}(t),
-   \Pol(a_1/4, a_2/4)
+\safe{trace}(\tau) \equiv \forall (\langle a_1,\sigma_1\rangle, \langle a_2,\sigma_2\rangle) \in \mathit{steps}(t),
+   (a_1, a_2)\in\Pol
 \]
 \optional{We do not care if the trace ends by throwing a hardware exception, so this definition only considers steps between two addresses.}
 
