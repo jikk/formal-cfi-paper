@@ -318,7 +318,8 @@ Our design places all policy data in non-writable sections, allowing proofs to i
 \heading{Nondeterminism independence.}
 Real-world ISAs include many \unpredictable{} operations, some of which seem predictable in practice because they behave consistently across most hardware.
 Rewriters must nevertheless carefully avoid generating code whose safety relies on seemingly consistent yet ISA-unspecified behaviors.
-The choice of verification framework must likewise include foundational support for nondeterministic ISA operational semantics, since this is critical for accurately modeling how real ISA
+The choice of verification framework must likewise include foundational support for nondeterministic ISA operational semantics, since this is critical for accurately modeling how real ISAs behave across arbitrary ISA implementations.
+\Picinae's IL supports this through a nond
 Relying on the results of non-deterministic cpu operations, \eg XOR setting ZF to a random bit in x86, runs the risk of requiring the proof to reason about the execution of symbolic instructions at a granularity that is not readily supported.
 While feasible, this requires a careful sequence of destructs and inversion rules.
 For example, to prove semantic transparency one must show that a cpu state in a transformed program is reachable by the original program.
