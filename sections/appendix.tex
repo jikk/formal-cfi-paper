@@ -2,8 +2,11 @@
 \appendix %% CCS: DO NOT REMOVE
 
 \section{Open Science}
-We release our artifacts at \url{https://anonymous.4open.science/r/armcfi2026ccs}, including the full source code needed to understand, reproduce, and evaluate our system. The repository provides detailed documentation for rebuilding the formal proofs of compliance with both the CFI specification and the ARMv7 architecture, as well as instructions for building and compiling the \pname rewriter to generate CFI-instrumented binaries.
+% We release our artifacts at \url{https://anonymous.4open.science/r/armcfi2026ccs}, including the full source code needed to understand, reproduce, and evaluate our system.
 
+We release our artifacts via anonymous repository~\footnoteref{note0}, including the full source code needed to understand, reproduce, and evaluate our system.
+%
+The repository provides detailed documentation for rebuilding the formal proofs of compliance with both the CFI specification and the ARMv7 architecture, as well as instructions for building and compiling the \pname rewriter to generate CFI-instrumented binaries.
 We also include PoC attack cases (\autoref{tab:poc-attacks}) together with automatically profiled control-flow policies. To facilitate deployment and experimentation, we provide a containerized environment (\eg Docker) that enables users to run \pname on compatible ARMv7 platforms and evaluate it on custom binaries.
 
 \section{ARMv7 Instruction Categories}
