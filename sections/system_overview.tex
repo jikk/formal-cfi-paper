@@ -7,7 +7,7 @@
 \begin{figure}[t]
     \centering
     % \includegraphics[width=0.9\linewidth]{implementation.pdf}
-    \includegraphics[width=0.9\linewidth]{figs/implementation_ixb_proposal.pdf}
+    \includegraphics[width=0.9\linewidth]{figs/ARMCFI Overview ixb_transitions.drawio.pdf}
     % maybe a bit too long
     \caption{\pname architecture and dataflow showing instrumented instructions (highlighted red and green) and policy table construction (labels colored red and green).\kjee{In overall, edges tell the story. Think more about out ``edges`` can be presented.}
     \comment{%
@@ -104,36 +104,35 @@ If the instruction performs an indirect control-flow transfer, it becomes guarde
 To perform this check with minimal branching, we devise a novel method using hash tables
 that translate addresses in the old text segment to corresponding addresses in the rewritten text segment.
 The translation code uses the old destination as a lookup key for a hash table that consists exclusively of permitted destination addresses for that instruction.
-Soundness verification of the guard code therefore reduces to proving soundness of the table contents.
+Soundness verification of the guard code therefore reduces to proving table integrity.
 %Care must be taken during table construction to ensure the original program behavior is preserved.
 
 % hash table structure
-Given a set of permitted destination indices $D = \{i_1, i_2, \dots\}$, a suitable table $T$ and hash function $h$ must have the following properties:
-
-\mxz{this looks ugly}
-\ixb{Gave them keyword descriptions. I think we can drop the numbering, bold the descriptions, and elaborate in a paragraph if need be. @Charles is good at latex, maybe he can format this beautifully.}
-
-(1) \textbf{Completeness:} $\forall i_j \in D, T[h(i_j)] = 4 i_j'$
+Given a set of permitted destination addresses $D = \{a_1, a_2, \dots\}$, a suitable table $T_D$ and hash function $h$ must satisfy the following:
+\begin{enumerate}
+\item \textbf{Completeness:} $\forall a \in D, T_D[h(a)] = 4\itoip(a/4)$
 % (the program can compute the translated address of a valid destination by indexing into the table)
-
-
-(2) \textbf{Idempotency:} $\forall i_j \in D, T[h(i_j')] = 4 i_j'$
+\item \textbf{Idempotency:} $\forall a \in D, T_D[h(4\itoip(a/4))] = 4\itoip(a/4)$
 % (using a valid translated address to index the table gives back the same address)
-
+%
 % the previous two properties imply this one
 % (3) $\forall i_j, i_k \in d, i_j \ne i_k \implies H(i_j) \ne H(i_k) \land H(i_j') \ne H(i_k') \land H(i_j') \ne H(i_k)$
 % (there are no hash collisions, but we allow corresponding old and translated indices to have the same hash)
-
-(3) \textbf{Safety:} $\forall n, \nexists i_j \in D, h(i_j) = n \implies T[n] = 4 \mai$
+\item \textbf{Safety:} $\forall n\not\in h|_D, T_D[n] = 4\mai$
 % (we fill unused slots in the table with the abort address)
+\end{enumerate}
+Completeness ensures that each permitted jump target is redirected to the correct rewritten \Block target.
+Idempotency ensures that permitted, already-redirected targets (\eg addresses drawn from the \PC of the rewritten code at runtime) are preserved.
+Safety ensures that all impermissible jumps are aborted.
 
-For our implementation, we choose $h$ to be a function of the form $h(x) = ({x}\gg\mathit{lsb}) \bmod 2^w$ (bitsubstring),
-which can be performed with a single instruction on ARM (\texttt{UBFX}, unsigned bit field extract),
-and find parameters that minimize table size $|T|$ for any given destination set $D$ while maintaining the above properties.
-Tables can be safely shared by instructions that have the same destination set, further minimizing space overhead.
+To statically generate a minimal-sized table $T_D$ for an instruction with destination set $D$, our implementation iteratively populates candidate tables of increasing size, discarding those that violate completeness, idempotency, or safety, until it finds a table with no property-violating hash collisions.
+If the resulting table equals that of another rewritten instruction, the duplicate table is discarded and both instructions share a table.
+This is a common case since most policies constrain many instructions similarly (\eg by grouping method calls into equivalence classes by type signature~\cite{tau_cfi}).
 
-Unlike prior enforcement strategies that require destination sets to form equivalence classes, such as those that in-line unique labels at destination addresses~\cite{xcfi_paper},
-using instruction-specific policy tables allows us to enforce policies where a destination can belong to any number of distinct sets.
+To implement hash function $h$ efficiently, we choose bit-substring function $h(x) = ({x}\gg\mathit{lsb}) \bmod 2^w$,
+which can be performed with a single instruction on ARM (\texttt{UBFX}, unsigned bit field extract).
+Parameters $\mathit{lsb},w\in[0,32)$ are chosen to minimize table size $|T_D|$.
+\kwh{Can we say anything here about how the optimal parameters are found? Maybe it's by exhaustive search of all $32\times32$ possibilities?}
 
 % As an example, consider the instruction \texttt{BX r0}, which branches to the address in \texttt{r0},
 % with an original destination set with indices \texttt{0x110}, \texttt{0x120}, and \texttt{0x130},
@@ -143,19 +142,19 @@ using instruction-specific policy tables allows us to enforce policies where a d
 % The rewritten block and policy table for this instruction is as follows: \kjee{the following presentation can be improved.}
 
 \autoref{fig:block_rewriter_demo} illustrates rewriting \texttt{BX\:r0} (a branch to \texttt{r0}),
-with a policy-permitted original destination $D = \{0\mathrm{x}110, 0\mathrm{x}120, 0\mathrm{x}130\}$,
-whose corresponding new indices are $\{0\mathrm{x}200, 0\mathrm{x}220, 0\mathrm{x}240\}$, respectively.
-The parameters for $h$ that minimize table size while mapping destinations to unique keys are $\mathit{lsb}=4$ and $w=3$, extracting bits 4--6 from each index.
+with policy-permitted destination set $D = \{0\mathrm{x}110, 0\mathrm{x}120, 0\mathrm{x}130\}$,
+whose corresponding new addresses are $\{0\mathrm{x}200, 0\mathrm{x}220, 0\mathrm{x}240\}$, respectively.
+The parameters for $h$ that minimize table size in this example are $\mathit{lsb}=4$ and $w=3$, which extract bits 4--6 from each index.
 \ixb{I think these two sentences may save readers some confusion; unsure if they're worth the space though:}
 New destination $0\mathrm{x}220$ has only one entry in the table, whereas the others have two.
 This is because it shares the same hash as its original destination, which is safe because jumps to the new and old destinations should both be routed to the new \Block.
 
-\begin{figure}[h]
+\begin{figure}[t]
     \definecolor{green}{rgb}{0.0, 0.6, 0.0}
     \centering
     \begin{tabular}{|c|c|c|c|}
         \hline
-        \textbf{i} & \textbf{i'} & \textbf{H(i)} & \textbf{H(i')} \\ \hline
+        $i$ & $\itoip(i)$ & $h(i)$ & $h(\itoip(i))$ \\ \hline
         0x110 & \textcolor{red}{0x200} & \textcolor{red}{1} & \textcolor{red}{0} \\ \hline
         0x120 & \textcolor{green}{0x220} & \textcolor{green}{2} & \textcolor{green}{2} \\ \hline
         0x130 & \textcolor{blue}{0x240} & \textcolor{blue}{3} & \textcolor{blue}{4} \\ \hline
@@ -190,6 +189,10 @@ so there are actually 4 add instructions in this \Block to add each byte separat
 It makes referring to it in a leading paragraph sentence easier.}\kjee{How can we/readers associate tables and listing?}}
 \label{fig:block_rewriter_demo}
 \end{figure}
+
+Unlike prior enforcement strategies that require destination sets to form equivalence classes, such as those that in-line unique labels at destination addresses~\cite{abadi_cfi},
+using instruction-specific policy tables allows us to enforce policies where a destination can belong to any number of distinct sets.
+It also reduces the number of conditional instructions added to rewritten code, reducing the space of control-flow paths that must be considered during verification.
 
 % \begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,caption={\texttt{BX r0} block where $a$ is the address of the table.},label={lst:armv7},captionpos=b,xleftmargin=.3cm]
 % UBFX r0, r0, #6, #3      // r0 = H(dest) (r0 is an address, so we add 2 to lsb)
@@ -235,23 +238,24 @@ It makes referring to it in a leading paragraph sentence easier.}\kjee{How can w
 {% NOTE (@jee): somewhat length, feel redudant.
     \heading{Unsupported instructions.}
     % There are some ARM instructions that we do not support.
-    Some ARM instructions are predictable but out of scope (\eg Advanced SIMD).
-    In these cases, we replace them with a branch to $\mai$.
+    Some ARM instructions are predictable but not yet supported by our prototype (\eg Advanced SIMD).
+    These are conservatively replaced with branches to $\mai$.
+%    We describe additional instructions that the rewriter removes below.
     \ixb{todo---fact check with Max.}
     \mxz{floating point is not out of scope, this part was just a transition to talking about endianness/instruction mode/unpredictable}
 
     \heading{Endianness.}
-    ARM supports both little and big endian memory operations, determined by the value of the E bit of the Current Program Status Register.
+    ARM supports both little and big endian memory operations, determined by the value of the E bit of the \CPSR.
     Changing the E bit at runtime could risk policy violations by loading destination addresses from policy tables in a different byte order than they were stored.
     \pname therefore replaces endianness mode-switching instructions with safe aborts.
-    Support for mixed endianness could be added by setting the E bit in each dynamic control flow block and restoring its previous value after table-read is complete.
+    Future work could support mixed endianness by setting and restoring the E bit before and after table-reads.
 
     \heading{Instruction mode.}
-    ARMv7 provides four different instruction states determined by the J and T bits of the CPSR: ARM, Thumb, Jazelle, and ThumbEE.
+    ARMv7 provides four different instruction states determined by the J and T bits of the \CPSR: ARM, Thumb, Jazelle, and ThumbEE.
     For this work we focus exclusively on ARM mode.
     Jazelle and ThumbEE are rare in practice, and Thumb support is reserved as a future extension that can be accommodated with more instruction encodings.
-    To disallow the other modes, \pname detects and removes mode-changing instructions, and disallows dynamic control-flow transfers to odd-valued destination addresses, since they change the instruction state to Thumb mode.
-    The latter is achieved by implementing all destination addresses as indices, so no policy table entries are odd.
+    To disallow the other modes, \pname detects and removes mode-changing instructions, and disallows indirect control-flow transfers to odd-valued destination addresses, since such jumps change the instruction state to Thumb mode.
+    The latter is achieved by populating tables $T_D$ exclusively with word-aligned addresses.
 
     \heading{\unpredictable{} instructions.}
     Certain instructions are defined to be \unpredictable{}. The manual describes this term as:
@@ -265,33 +269,6 @@ It makes referring to it in a leading paragraph sentence easier.}\kjee{How can w
 % python/ocaml extractor
 The ELF editor is given the output of the CFI rewriter and adds new segments to the original ELF for the rewritten instructions, the policy tables, and the abort handler that are loaded at the correct addresses and permissions. The original text segment is changed to be nonexecutable. Finally, the ELF editor uses the rewriter's \itoip function to update the entrypoint and symbol values.
 
-\subsection{Rewriter Soundness Proof Setup}
-As we would like to formally verify the soundness of our CFI implementation,
-we implement the CFI rewriter as a function in Gallina,
-Rocq's programming language, to allow us to write machine-checked proofs about its behavior.
-The rewriter function is extracted into OCaml and compiled into an executable
-with some additional driver code for reading/writing files and argument parsing.
-The ELF editor is implemented as a Python script using the LIEF library.
-The extraction to OCaml is formally guaranteed to preserve the rewriter's semantics~\cite{fv_ocaml_extraction}.
-%
-\mxz{i dont think so? e.g. we extract coq Z into ocaml int, which has a limited size and we dont prove that we never use a value that doesn't fit}
-\cav{The extract inlined constants that we include in our setup are trusted, the actual piece of code that does extraction from Rocq to OCaml is formally verified. I think we should lean on this and maybe just include that there are trusted components to the pipeline. Also, we could just extract to a BigInt representation and then it's even more trustworthy}
-We do not formally verify the correctness of the the ELF editor,
-instead only focusing on the core rewriting logic that transforms the instruction bytes.
-
-However, we are still left with a difficult problem.
-To prove the soundness of the rewriter,
-we must prove that every execution through every binary that the rewriter outputs
-complies with the provided policy.
-Even ignoring ... \mxz{something something state explosion for every trace},
-existing frameworks for bottom-up verification are incapable of proving properties
-of binary code that is not completely concrete,
-preventing us from proving anything about code where the only known information is that
-it was produced by some input to the rewriter.
-\mxz{add some sentences describing how existing cfi verification skirts around this
-by not proving an implementation}
-
-To solve this issue, we turn to the \Picinae{} framework, which we describe in the next section.
 
 \subsection{FM-friendly Rewriter Design Principles}\label{sec:fm_friendly}
 \kjee{@Max, @ixb: we need sth here.}
@@ -358,6 +335,35 @@ Any rewriter whose correctness relies on a predictable \emph{mutable} memory reg
 \heading{Inductive proof structure.}
 Breaking the proof into invariant points and applying inductive reasoning is a well known way of simplifying program verification to its necessary subcomponents.
 \Picinae{} offers facilities for doing this that work just as well on symbolic code as they do on concrete.
+
+
+\subsection{Rewriter Soundness Proof Setup}
+As we would like to formally verify the soundness of our CFI implementation,
+we implement the CFI rewriter as a function in Gallina,
+Rocq's programming language, to allow us to write machine-checked proofs about its behavior.
+The rewriter function is extracted into OCaml and compiled into an executable
+with some additional driver code for reading/writing files and argument parsing.
+The ELF editor is implemented as a Python script using the LIEF library.
+The extraction to OCaml is formally guaranteed to preserve the rewriter's semantics~\cite{fv_ocaml_extraction}.
+%
+\mxz{i dont think so? e.g. we extract coq Z into ocaml int, which has a limited size and we dont prove that we never use a value that doesn't fit}
+\cav{The extract inlined constants that we include in our setup are trusted, the actual piece of code that does extraction from Rocq to OCaml is formally verified. I think we should lean on this and maybe just include that there are trusted components to the pipeline. Also, we could just extract to a BigInt representation and then it's even more trustworthy}
+We do not formally verify the correctness of the the ELF editor,
+instead only focusing on the core rewriting logic that transforms the instruction bytes.
+
+However, we are still left with a difficult problem.
+To prove the soundness of the rewriter,
+we must prove that every execution through every binary that the rewriter outputs
+complies with the provided policy.
+Even ignoring the difficulty of reasoning about the vast number of traces this includes,
+existing frameworks for bottom-up verification are incapable of proving properties
+of binary code that is not completely concrete,
+preventing us from proving anything about code where the only known information is that
+it was produced by some input to the rewriter.
+\mxz{add some sentences describing how existing cfi verification skirts around this
+by not proving an implementation}
+
+To solve this issue, we turn to the \Picinae{} framework, which we describe in the next section.
 
 \comment{%
     \begin{itemize}
