@@ -59,3 +59,23 @@ This appendix outlines the work needed to replace the hash function with one tha
 In \autoref{sec:fm_friendly} we list FM friendly design principles.
 Another design principle that helps in this case is making the desired soundness/correctness properties independent of deep properties of the implementation.
 For instance, the soundness of the rewriter does not depend on the cryptographic security or collision avoidance of the hash function.
+
+\section{Key Lemmas}
+
+We showcase here some of our important lemmas.
+\autoref{fig:rewrite_no_table_overflow} addresses the unsound behavior we discussed in \autoref{sec:cfi_motivation} that allows maliciously crafted inputs to overflow the space allowed for the jump table.
+The lemma proves that the table fits in memory without wrapping around the end of it.
+Here \tbi and \tables are section variables corresponding to the base index of the policy table and its contents respectively.
+
+\begin{figure}
+    \centering
+    \begin{minted}[fontsize=\small,escapeinside=@@]{coq}
+Lemma no_table_overflow: @\tbi@ + N_len_cat @\tables@ < @$2^{30}$@.
+Proof.
+  cbv[cfi_rw] in *. destruct_match_in CFI_RW; try easy.
+  eapply rewrite_no_table_overflow. apply CFI_RW.
+Qed.
+    \end{minted}
+    \caption{Proof the policy table does not wrap around memory.}
+    \label{fig:rewrite_no_table_overflow}
+\end{figure}
