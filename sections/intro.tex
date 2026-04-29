@@ -53,7 +53,7 @@ We present \pname, the first binary \cfi rewriter implementation with a complete
 \wc{We say that} A \cfi rewriter is \emph{sound} if all possible execution traces of every rewritten binary obey the policy.
 
 % NOTE (@kjee): FM of binary writer itself is a difficult, unexplored, open challenge.
-Binary-level \cfi, built on static binary rewriting techniques~\cite{rewriter0, rewriter1, rewriter2,reassessor2023sec}, is a well-studied and mature area. Yet formally verifying the correctness of a binary \cfi implementation, let alone the broader class of binary rewriters, remains an open challenge despite the long-standing availability of mature proof assistants such as Coq/\penalty0 Rocq~\cite{rocq} and Isabelle/HOL~\cite{hol}.
+Binary-level \cfi, built on static binary rewriting techniques~\cite{rewriter0, rewriter1, rewriter2,reassessor2023sec}, is a well-studied and mature domain\wc{area}. Yet formally verifying the correctness of a binary \cfi implementation, let alone the broader class of binary rewriters, remains an open challenge despite the long-standing availability of mature proof assistants such as Coq/\penalty0 Rocq~\cite{rocq} and Isabelle/HOL~\cite{hol}.
 
 % NOTE (@kjee): and its core challenges lie in ...
 The core difficulty is \emph{semantic generality}: rewriter soundness must hold for all possible input binaries, \kjee{arbitrary or near-arbitrary} whether compiled, hand-written, or otherwise, not merely those drawn from a particular toolchain or restricted to a compiler-sanctioned subset of the ISA\@.

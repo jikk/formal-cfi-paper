@@ -10,20 +10,25 @@
     \caption{Verification and extraction of the core rewriting logic.\kjee{this figure can be extended to provide high-level overview/workflow.}\kjee{ELF editor -> ELF packager}}~\label{fig:cfi_verif}
 \end{figure}
 
-\autoref{fig:cfi_verif} illustrates the high-level workflow of \pname. To verify a binary CFI rewriter, we decompose the system into three components.
+\autoref{fig:cfi_verif} illustrates the high-level workflow of \pname. To verify, we decompose the system into three components.
 
-\heading{Front-end processing (ARMv7 decoder and lifter).} The rewriter operates on byte sequences extracted from the \texttt{.text} section of well-formed ELF binaries. It decodes these bytes into machine instructions and lifts them into an intermediate representation compatible with the \Picinae{} framework, enabling symbolic reasoning over arbitrary binary inputs.
-%
+\heading{ARMv7 decoder and lifter.} The frontend components of rewriter operates on byte sequences extracted from the \texttt{.text} section of well-formed ELF binaries. It decodes these bytes into machine instructions and lifts them into the \Picinae{} \ir, enabling symbolic reasoning over arbitrary binary inputs.
+
 We target the ARMv7 ISA because it admits a formal specification, making it amenable to rigorous reasoning. In contrast, ISAs such as Intel x86 exhibit substantial semantic complexity and irregularity, which complicate full formalization. ARMv7 therefore provides a practical foundation for machine-checked reasoning at the binary level.
 %
-We do not verify the decoder or lifter in this work. Instead, we treat them as trusted components, as their correctness has been extensively studied in prior work (\autoref{sec:fm_related}). Their correctness nevertheless remains critical to end-to-end soundness.
+While their correctness nevertheless remains critical to end-to-end soundness, We do not verify the decoder or lifter in this work. Instead, we treat them as trusted components, as they have been extensively studied in prior work (\autoref{sec:fm_related}).\kjee{citations needed.}
 
-\heading{ELF packager.} The final stage packages the rewritten code into an executable. We implement this step as a separate script using the LIEF Python library and treat it as out of scope. We discuss its limitations and potential hardening strategies in \autoref{sec:elf_packager_fm}.
+\heading{ELF Packager.} The final stage packages the rewritten code into an executable integrating\wc{combining} rewitten and original \texttt{.text} sections, policy tables and remaining metadata entries pertained from the original binary.  We implement this step as a separate script using the LIEF Python library~\cite{lief} and treat it as out of scope. We discuss its limitations and potential hardening strategies in \autoref{sec:elf_packager_fm}.
 
-\heading{Binary CFI Rewriter.} \pname{} takes as input (1) a decoded and lifted instruction stream and (2) a policy specification (\eg{} permitted control-flow transfers) derived from static analysis or profiling. It instruments the program with CFI enforcement logic and produces a rewritten \texttt{.text} segment together with a policy table.
+\heading{Binary CFI Rewriter.} \pname{} takes as input (1) a decoded and lifted ARMv7 instruction stream and (2) a policy specification (\eg{} permitted control-flow transfers) derived from static analysis or profiling. It instruments the program with CFI enforcement logic and produces a rewritten \texttt{.text} segment together with a policy table.
 %
-This component is the focus of our work. We formally verify two properties.\emph{CFI compliance:} the rewritten program enforces the specified control-flow integrity policy, and \emph{ISA compliance:} the rewritten binary preserves well-defined ARMv7 semantics and introduces no invalid or undefined behaviors.
+This component is the primary focus. We formally verify two properties for rewritten binaries:
 %
+\begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
+  \item \emph{CFI compliance} enforces the \wc{specified} control-flow integrity policy, and
+  \item \emph{ISA compliance} preserves well-defined ARMv7 semantics and introduces no invalid or undefined behaviors.
+\end{itemize}
+
 We formalize these safety and security properties as ISA-level specifications that apply uniformly to all binaries. Once defined, they do not depend on a particular input program or rewriter instance.
 
 In the following, we motivate the problem with a class of bugs that elude even experienced developers and resist exhaustive dynamic testing, then discuss our research scope and threat model.
