@@ -315,21 +315,18 @@ Each dynamically mutable element of security-critical data requires a proof of d
 Such proofs can entail verifying every memory-write operation in the rewritten code, raising significant scalability obstacles.
 Our design places all policy data in non-writable sections, allowing proofs to infer policy data integrity from static memory access permissions.
 
-\heading{Nondeterminism independence.}
-Real-world ISAs include many \unpredictable{} operations, some of which seem predictable in practice because they behave consistently across most hardware.
-Rewriters must nevertheless carefully avoid generating code whose safety relies on seemingly consistent yet ISA-unspecified behaviors.
-The choice of verification framework must likewise include foundational support for nondeterministic ISA operational semantics, since this is critical for accurately modeling how real ISAs behave across arbitrary ISA implementations.
-\Picinae's IL supports this through a nond
-Relying on the results of non-deterministic cpu operations, \eg XOR setting ZF to a random bit in x86, runs the risk of requiring the proof to reason about the execution of symbolic instructions at a granularity that is not readily supported.
-While feasible, this requires a careful sequence of destructs and inversion rules.
-For example, to prove semantic transparency one must show that a cpu state in a transformed program is reachable by the original program.
-For deterministic programs, this is easy.
-With the addition of non-determinism you must prove the non-deterministic operation could take a branch satisfying the state similarity property.
-
 \heading{Stack independence.}
+Security state that flows to the stack is a particularly common case of mutable security state.
+Integrity of such data depends on stack integrity, 
 Using the stack introduces the obligation of proving the rewriter is correct despite changes to memory.
 We use the stack anyways, because our immutable security state makes safety-violating memory changes trivially unreachable.
 Any rewriter whose correctness relies on a predictable \emph{mutable} memory region should minimize spurious memory modifications.
+
+\heading{Nondeterminism independence.}
+Real-world ISAs include many \unpredictable{} operations, some of which seem predictable in practice because they behave consistently across most hardware instantiations.
+Rewriters must nevertheless carefully avoid generating code whose safety relies on seemingly consistent yet ISA-unspecified behaviors.
+The choice of verification framework must likewise include foundational support for nondeterministic ISA operational semantics, which is critical for modeling how real ISAs behave across arbitrary ISA implementations.
+\Picinae supports this through a nondeterministic expression language that faithfully models \unpredictable{} operations, forcing proofs to cover all possible effects.
 
 \heading{Inductive proof structure.}
 Breaking the proof into invariant points and applying inductive reasoning is a well known way of simplifying program verification to its necessary subcomponents.
