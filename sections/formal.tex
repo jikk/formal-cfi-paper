@@ -90,10 +90,9 @@ whose verification is out-of-scope.
 
 \heading{Soundness of a CFI implementation.}
 For a CFI rewriter implementation $r$ to be sound, all executions of all rewritten programs it produces must be safe.
-\begin{align*}
-  \mathit{Sound}(r) \equiv \forall \txt, \pol, \addrs, \txtp, \tbls, \\
-    CFI(\txt, \pol, \addrs) = (\txtp, \tbls) \implies \safe{prog}(\txtp, \tbls, \addrs)
-\end{align*}
+\begin{equation}
+  \safe{CFI}(r) \equiv \forall \txt, \Pol, \langle r(\txt,\Pol),\sigma_0\rangle\leadsto\tau \implies \safe{trace}(\tau)
+\end{equation}
 
 \subsection{Safety Proof}
 We prove that our CFI rewriter is sound in Rocq using \Picinae.

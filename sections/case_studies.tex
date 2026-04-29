@@ -11,13 +11,12 @@ Across all cases, the proof obligations force reasoning over all possible inputs
 \kjee{We may consider to have a figure for the case study 1.}
 \heading{Address translation.}
 % Why overlooked.
-% The rewriter maintains both the original and rewritten text segments, making address translation between them subtle.
+The rewriter maintains both the original and rewritten text segments, making address translation between them subtle.
 % A natural implementation of the translation function $\itoip$ leaves indices outside the original text segment unchanged, mirroring the inverse mapping $\iptoi$.
 %This behavior appears reasonable and aligns with common co-allocation designs used in static binary rewriting. 
 %However, it implicitly assumes that such indices are benign, overlooking the possibility that they may refer to attacker-controlled locations in the rewritten code.
-The rewriter maintains both the original and rewritten text segments, making address translation between them subtle.
-A natural implementation of the translation function $\itoip$ only modifies
-o ensure policy enforcement $\itoip$ needs to modify indices from both the original and new text segment.
+A natural implementation of the translation function $\itoip$ only remaps original text segment addresses to the corresponding new text segment address, leaving all other addresses alone. 
+However, to ensure policy enforcement $\itoip$ also needs to modify indices from new text segment.
 
 % How FM detected during proof?
 % The issue emerges when proving that all indirect control-flow transfers land on \emph{invariant points} (\eg properly instrumented entry points).
