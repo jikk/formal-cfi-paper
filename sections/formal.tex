@@ -8,8 +8,8 @@
 \setlist[itemize]{topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex,leftmargin=*}
 \setlist[enumerate]{label=(\arabic*),topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex,leftmargin=*}
 
-A CFI rewriter \emph{implementation} is sound if all execution traces of all programs it outputs obey the control-flow policy.
-We formalize this notion below.
+A CFI rewriter is sound if all execution traces of all programs it outputs obey the control-flow policy.
+We formalize this below.
 % We begin by formalizing what it means for a binary CFI rewriter \emph{implementation} to be sound.
 
 \ixb{Did we ever discuss the validity of this approach w.r.t. the enforced policy is actually a trusted mapping of the original?}
@@ -17,16 +17,23 @@ We formalize this notion below.
 
 \heading{Safety of a single trace.}
 Static CFI policies $\Pol$ are sets of virtual address edges $(a,a')\in\mathbb{N}^2$.
-An execution trace $\tau$ is safe if all its computational steps are confined to edges in $\Pol$:
-\[
-\safe{trace}(\tau) \equiv \forall (\langle a_1,\sigma_1\rangle, \langle a_2,\sigma_2\rangle) \in \mathit{steps}(t),
-   (a_1, a_2)\in\Pol
-\]
+A trace $\tau$ is safe if all its computational steps are confined to edges in $\Pol$:
+\begin{align*}
+\mathit{steps}(\langle a,\sigma\rangle) &= [\,] \\
+\mathit{steps}\big(\langle a_1,\sigma_1\rangle :: \langle a_2,\sigma_2\rangle :: \tau\big) &= (a_1,a_2)::\mathit{steps}\big(\langle a_2,\sigma_2\rangle :: \tau\big) \\
+\safe{trace}(\tau) &\equiv (\mathit{steps}(\tau)\subseteq\Pol)
+\end{align*}
 \optional{We do not care if the trace ends by throwing a hardware exception, so this definition only considers steps between two addresses.}
 
-\heading{Safety of a trace in a rewritten program.}
+\heading{Safety of a rewritten trace.}
 % \ixb{@MAX: in equations, you need to wrap multi-letter variable and function names in mathit, mathtt, mathrm. If you do not they will be set as a product of the individual letters.
 % Note the difference between $txt'$ and $\mathit{txt'}$.}
+Since rewriters move instructions, the policy $\Pol\kern1pt'$ for the rewritten code must remap the addresses in $\Pol$ to their rewritten locations.
+This is remapping is defined by the \itoip in \autoref{sec:cfi_design}.
+Moreover, rewriters introduce new permissible edges when they insert security checks into rewritten code.
+The new edges permit the new checks to execute.
+Finally, the inserted checks may signal an alarm by jumping to a safe abort address $\mai$.
+
 The previous definition does not account for the address translation done by the rewriting process.
 Similar to \itoip (\autoref{sec:cfi_design}), we define a function \iptoi used to determine if steps in the rewritten program correspond to policy permitted steps in the original:
 \[
