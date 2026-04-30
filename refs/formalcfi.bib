@@ -27,7 +27,7 @@
 
 @INPROCEEDINGS{ccfir,
   AUTHOR = {Zhang, Chao and Wei, Tao and Chen, Zhaofeng and Duan, Lei and Szekeres, László and McCamant, Stephen and Song, Dawn and Zou, Wei},
-  BOOKTITLE = {IEEE}#sym# on #"Security and Privacy \nym{SP}",
+  BOOKTITLE = {IEEE} #sym# on #"Security and Privacy \nym{SP}",
   DATE = {2013},
   TITLE = {Practical Control Flow Integrity and Randomization for Binary Executables},
 }
@@ -49,23 +49,19 @@
 @INPROCEEDINGS{cfi2005ccs,
     ids = {abadi_cfi},
   AUTHOR = {Abadi, Martin and Budiu, Mihai and Erlingsson, U lfar and Ligatti, Jay},
-  BOOKTITLE =  proc # of # the # { \cnum{12th} ACM Conference on Computer and Communications Security},
+  BOOKTITLE =  proc # of # the # { \cnum{12th} ACM Conference} # on # {Computer and Communications Security \nym{CCS}},
   DATE = {2005},
-  DOI = {10.1145/1102120.1102165},
-  ISBN = {1-59593-226-7},
-  KEYWORDS = {CFI},
-  PAGES = {340--353},
-  SERIES = {ACM conference on Computer and Communications Security (CCS)},
+  IGNOREPAGES = {340--353},
+  RMSERIES = {ACM conference on Computer and Communications Security (CCS)},
   TITLE = {{Control-flow integrity}},
 }
 
 @INPROCEEDINGS{li2020ccs,
   AUTHOR = {Li, Yuan and Wang, Mingzhe and Zhang, Chao and Chen, Xingman and Yang, Songtao and Liu, Ying},
-  BOOKTITLE = {ACM conference on Computer and Communications Security (CCS)},
+  BOOKTITLE = {ACM} # conf # on # {Computer and Communications Security \nym{CCS}},
   DATE = {2020},
-  DOI = {10.1145/3372297.3417867},
-  PAGES = {1821--1835},
-  SERIES = {ACM conference on Computer and Communications Security (CCS)},
+  IGNOREPAGES = {1821--1835},
+  RMSERIES = {ACM conference on Computer and Communications Security (CCS)},
   TITLE = {{Finding Cracks in Shields: On the Security of Control Flow Integrity Mechanisms}},
 }
 
@@ -525,6 +521,12 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
   year={2024}
 }
 
+@MISC{verified_pointers,
+  author = "Freek Verbeek and Ali Shokri and Daniel Engel and Binoy Ravindran",
+  title = "Formally Verified Binary-level Pointer Analysis",
+  howpublished = "\url{https://arxiv.org/abs/2501.17766}",
+  year = 2025,
+}
 @inproceedings{russo2010dynamic,
   title={Dynamic vs. static flow-sensitive security analysis},
   author={Russo, Alejandro and Sabelfeld, Andrei},

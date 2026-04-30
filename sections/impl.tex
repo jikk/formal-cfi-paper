@@ -50,7 +50,7 @@ These proofs are discharged entirely within Rocq, providing a machine-verified c
 
 \subsection{Extraction and the Binary Rewriter}
 
-A typical \pname build first checks all proofs in \texttt{armcfi\_proof.v} using the Rocq proof checker, then invokes Rocq's extraction mechanism to translate the verified Gallina functions into executable OCaml code.
+A typical \pname build first checks all proofs in \texttt{cfi\_proof.v} using the Rocq proof checker, then invokes Rocq's extraction mechanism to translate the verified Gallina functions into executable OCaml code.
 The extracted OCaml modules are compiled and linked with a small set of unverified OCaml and Python driver scripts that handle the ELF-specific tasks outside the scope of the formal verification:
 parsing the input ELF binary to locate the \texttt{.text} segment and its load address,
 invoking the extracted \texttt{cfi\_rw} function with the appropriate arguments,

@@ -41,10 +41,10 @@ We present \pname, the first binary \cfi rewriter implementation with a complete
   First, we define a general-purpose CFI soundness specification over abstract execution traces of arbitrary binaries on ISA-compliant environments. These definitions are reusable and extensible across ISAs and binary rewriting tasks.
   % First, our general-purpose CFI soundness specification universally defines CFI safety and security in terms of abstract execution traces of arbitrary binaries on any ISA specification-compliant computing environment. These definitions are reusable: they can be validated, shared across the community, and extended to support other ISAs and security-sensitive binary rewriting tasks.
   %
-  Second, we directly verify the rewriter over all inputs, rather than relying on post hoc\wc{postmortem} validation. A single proof establishes correctness for all rewritten binaries, regardless of source language or toolchain for the ISA\@.
+  Second, we verify the rewriter over all inputs, rather than relying on \textit{post hoc}\wc{postmortem} validation. A single proof establishes correctness for all rewritten binaries, regardless of source language or toolchain for the ISA\@.
   % Second, the proof directly verifies the rewriter over all code inputs, not merely a runtime validator's conservative detection of rewriter failures after deployment. This one proof thereby establishes high assurance for all rewritten binaries derived from all source languages and tools for the ISA\@.
   %
-  Third, we build \pname on a machine-checked abstraction that models arbitrary binary code and execution semantics within a dependently typed theorem prover, enabling verification over unbounded input spaces.
+  Third, we build \pname on a machine-checked abstraction that models arbitrary binary code and execution semantics within a dependently-typed theorem prover, enabling verification over unbounded input spaces.
   % Third, our approach offers a machine-checked abstraction for modeling arbitrary binary code and its execution semantics within a dependently-typed automated theorem proving environment. This foundation facilitates verification that generalizes beyond fixed inputs to unbounded classes of binaries.
 }
 
@@ -56,9 +56,9 @@ We present \pname, the first binary \cfi rewriter implementation with a complete
 Binary-level \cfi, built on static binary rewriting techniques~\cite{rewriter0, rewriter1, rewriter2,reassessor2023sec}, is a well-studied and mature domain\wc{area}. Yet formally verifying the correctness of a binary \cfi implementation, let alone the broader class of binary rewriters, remains an open challenge despite the long-standing availability of mature proof assistants such as Coq/\penalty0 Rocq~\cite{rocq} and Isabelle/HOL~\cite{hol}.
 
 % NOTE (@kjee): and its core challenges lie in ...
-The core difficulty is \emph{semantic generality}: rewriter soundness must hold for all possible input binaries, \kjee{arbitrary or near-arbitrary} whether compiled, hand-written, or otherwise, not merely those drawn from a particular toolchain or restricted to a compiler-sanctioned subset of the ISA\@.
+The core difficulty is \emph{semantic generality}: rewriter soundness must hold for all possible input binaries, whether compiled, hand-written, or otherwise, not merely those drawn from a particular toolchain or compiler-sanctioned subset of the ISA\@.
 %
-Prior work has been largely confined to verifying concrete, fixed binaries, falling short of this bar. RockSalt~\cite{rocksalt}, for instance, successfully verifies outputs from a specific \sfi algorithm on a per-case basis, but does not verify that any \sfi implementation always produces verifiably safe executable code, or that the full verifier implementation correctly implements all details of the design-level verification algorithm.
+Prior work has been largely confined to verifying concrete, fixed binaries, falling short of this bar. RockSalt~\cite{rocksalt}, for instance, successfully verifies outputs from a specific \sfi algorithm on a per-case basis, but does not verify that any \sfi rewriter always produces verifiably safe code, or that the full verifier implementation correctly implements all details of the design-level verification algorithm.
 %
 These implementation assurances are left to software quality control processes (\eg dynamic testing) that cannot comprehensively cover the input space of all possible binaries.
 
@@ -70,7 +70,8 @@ We address this key semantic generality obstacle by building on the \Picinae{} f
 
 Building on \Picinae's \isa{} abstractions, \pname accurately models the architecture-specific features of ARMv7, including conditional instruction prefixes, undefined and non-deterministic effects, memory access permissions, hardware exceptions, and indirect calls and returns. This faithful modeling enables \pname to serve as the first formally verified \cfi implementation for a widely deployed architecture.
 
-Exploring uncharted design space to close the assurance gap in widely deployed \cfi systems. As a result, this work makes the following contributions:
+Our work explores an uncharted design space to close the assurance gap in widely deployed \cfi systems.
+In summary, we offer the following contributions:
 
 \begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
   \item  We present \pname, a machine-checked binary \cfi framework with formalized and verified safety and security. We implement it as the first machine-checked \cfi rewriter for ARMv7 and achieve near-native overhead (\avgoh\% average on SPEC 2017).
@@ -81,7 +82,7 @@ Exploring uncharted design space to close the assurance gap in widely deployed \
   \item  We bridge \FM and binary-level security, deriving principled \FM-aware design guidelines and uncovering subtle but critical flaws that dynamic testing alone would have missed (\autoref{sec:fm_friendly} and \autoref{sec:case_studies})
 \end{itemize}
 
-Looking ahead, this work demonstrates how ISA-level abstractions provided by \Picinae{} enable the formal verification of security-sensitive binary rewriting tasks beyond CFI. We release the \pname codebase\footnote{\label{note0}\url{https://anonymous.4open.science/r/armcfi2026ccs}} and discuss key challenges for scaling this approach to broader classes of systems.
+Looking ahead, this demonstrates how ISA-level abstractions enable the formal verification of security-sensitive binary rewriting tasks beyond CFI. We release the \pname codebase\footnote{\label{note0}\url{https://anonymous.4open.science/r/armcfi2026ccs}} and discuss key challenges for scaling this approach to broader classes of systems.
 
 % Looking ahead, by building a binary rewriter framework on top of the ISA abstraction layer provided by \Picinae, this work takes a concrete step toward a broader and largely unexplored research direction: the formal verification of large families of security-sensitive binary rewriting tasks beyond \cfi.
 

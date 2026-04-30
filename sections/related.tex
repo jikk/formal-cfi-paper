@@ -25,7 +25,7 @@ Constructing control-flow policies is known to be undecidable in the general cas
 Our work assumes a trusted control-flow policy and proves the soundness of a static rewriter's enforcement of it, leaving policy-generation to related work.
 
 Early CFI works implement coarse-grained policies on source-free binary code~\cite{ccfir,bincfi}.
-BinCFI places jump targets in a bitmap and adds guards to all indirect jump instructions to enable lookups.
+binCFI places jump targets in a bitmap and adds guards to all indirect jump instructions to enable lookups.
 For every indirect jump, it checks whether target addresses are call-preceded of a part of a permissible target list.
 CCFIR works with relocation data, rerouting indirect jumps to a separate springboard section.
 While that offers an additional layer of protection from ROP attacks, both CCFIR and binCFI were shown vulnerable to advanced ROP attacks due to policy imprecision~\cite{outofcontrol}.
@@ -52,7 +52,9 @@ A recent CFI project $\mu$CFI~\cite{ceesay2024mucfi}, uses formal verification t
 Recent advances in \emph{formally verified lifting} have opened new avenues for formally verified binary analysis, enabling verification of both correctness and security properties~\cite{scalable_binary_lifter_validation,formally_verified_lifting,holba_sound_transpilation,verbeek2024verifiably}.
 However, existing frameworks focus on verifying concrete binaries and have limited support for properties of binary code in which some or all instructions are symbolic unknowns. This limits their applicability for verifying binary-to-binary code rewriters.
 
-
+Certified compilation~\cite{compcert,jasmin,barthe2019formal} reasons about non-concrete binary programs from source code, with the goal of proving compiler correctness through semantic transparency.
+These approaches typically rely upon translating source-level typing information through \IL representations to compiled binaries.
+This yields verified code from a particular source language and compiler toolchain.
 
 \kwh{[KWH] Formal verification of binary code in any form hasn't been around for very long (only a few years).  So let's not cast it as a well-established science.  Main thing to emphasize here is that apart from Picinae, all the systems take a complete, fully known binary code as input and verify it. They can't prove any property of binary code that isn't fully known at verification time.}
 
@@ -60,18 +62,19 @@ Careful modeling of real-world ISAs is necessary for symbolic reasoning about no
 % Overcoming this limitation requires more than a mature proof assistant. It requires an abstraction layer that faithfully models real-world ISAs while supporting symbolic reasoning. 
 \Picinae{}~\cite{picinae} builds upon Rocq to model machine code execution through memory state and execution traces, and represents program state symbolically, permitting proofs to treat the code as a proof variable.
 This enables verification results to generalize from a single program to the unbounded set of binaries a rewriter may encounter.
-Certified compilation~\cite{compcert,jasmin,barthe2019formal} reasons about non-concrete binary programs from source code, with the goal of proving compiler correctness through semantic transparency.
+Recent works have applied it to formally verify fault-tolerance of binary codes~\cite{averill26bar}, and security-critical timing properties of RTOS and cryptographic binaries~\cite{averill2025src}.
+%% We could cite bardin_ft here, but I'm not sure how it fits in.
 
-Binary-level verification has the benefit of reasoning about program behavior with respect to hardware-specific properties.
-Many recent works have developed general-purpose frameworks for reasoning about properties of binary code~\cite{islaris,isabil,myreen_hoare_rmmc,relational_hoare_logic_rmmc,trabin,forward_symb_reasoning_vmcai26}.
+Many recent works have developed general-purpose frameworks for reasoning about properties of concrete binary code such as correctness, CVE-reachability, and program equivalence~\cite{islaris,isabil,myreen_hoare_rmmc,relational_hoare_logic_rmmc,trabin,forward_symb_reasoning_vmcai26}.
+% Nope. Still not buying it. :)
+%\Picinae{} contributes to this list with the verification of binary rewriter soundness, fault-tolerance~\cite{averill26bar}, and precise timing properties~\cite{averill2025src}.
+Other works provide theorem-prover supported automated analyses for specific properties, such as pointer analysis~\cite{verified_pointers} and lifting~\cite{formally_verified_lifting}.
 % Because the a program's execution time is a function of the instructions it consists of, reasoning about concrete timing is impossible for source code.
 % Many works formally reason about the timing behavior of machine code, often for the purposes of constant-time cryptography or worst-case execution time guarantees~\cite{barthe2019formal}.
 % \Picinae{} has been extended to enable users to formally describe the concrete timing behavior of programs~\cite{averill2025src}, and is therefore also able to reason about the timing effects of program transformations in a similar manner to the technique described in this work.
-Most of these works are unable to reason about non-concrete code sections, and none have demonstrated it.
-% You keep trying to sell Picinae. No "Picinae was designed from the bottom up..." here.  The related work section is for getting reviewers who are authors of OTHER works to like our stuff.  Gotta cite other people, not just ourselves. (I love Picinae more than anyone, but we need to be strategic!)
-\Picinae{} has also been used to formally verify fault-tolerance of binary codes~\cite{averill26bar}, and security-critical binary timing properties~\cite{averill2025src}.
+% Most of these works are unable to reason about non-concrete code sections, and none have demonstrated it.
 %\Picinae{} has also been used to reason about binary-level fault tolerance~\cite{averill26bar}, and is a popular target for binary-level formal methods~\cite{bardin_ft}.
-Several projects have performed formal verification at the machine-code level for large projects such as separation kernels~\cite{sep_kernel} and programmable logic controllers~\cite{zhang2024binary}.
+Several projects have performed formal verification at the machine-code level for large binaries such as separation kernels~\cite{sep_kernel} and programmable logic controllers~\cite{zhang2024binary}.
 
 % This is a copy of the text that is already above
 % This capability is essential for \pname. Frameworks that operate on concrete binaries can verify individual rewritten outputs but cannot prove that the rewriter is correct for all inputs. \Picinae{} lifts reasoning from individual binaries to the rewriter’s behavior across all binaries, enabling the end-to-end correctness guarantees that \pname requires.
