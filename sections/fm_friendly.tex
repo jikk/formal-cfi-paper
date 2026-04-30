@@ -3,7 +3,7 @@
 
 Strategic design and implementation choices can substantially reduce the burden of formal verification. Our experience designing, implementing, and verifying \pname revealed a set of general principles for binary rewriter construction that make verification tractable. We discuss these principles and explains how they reduce proof complexity, improve modularity, and simplify reasoning.
 
-\subsubsection{Minimize Security Dependencies}\mbox{}
+% \subsubsection{Minimize Security Dependencies}\mbox{}
 %We first consider design choices that directly reduce proof search space size and complexity.
 
 \heading{Conditional instructions.}
@@ -24,7 +24,7 @@ In particular, a rewriter that generates nearly identical \Blocks for many diffe
 Our design uses the same sequence of instructions to guard every form of indirect branch in the ARM ISA,
 reducing most of our verification task to establishing security and safety of that one shared instruction sequence.
 
-\subsubsection{Localize Safety Enforcement}\mbox{}
+% \subsubsection{Localize Safety Enforcement}\mbox{}
 % We next consider principles that localize safety reasoning and eliminate the need for complex global invariants.
 
 \heading{Safety redundancy.}
@@ -45,7 +45,7 @@ For example, the soundness of label-based approaches (\cf \cite{abadi_cfi}) reli
 In contrast, safety of our table-based approach is a \Block-local, table-local property independent of any other \Block's code or data.
 This improves proof modularity and scalability.
 
-\subsubsection{Reify Security-relevant Abstractions}\mbox{}
+% \subsubsection{Reify Security-relevant Abstractions}\mbox{}
 % We further reduce verification complexity by minimizing dependencies across code regions.
 
 \heading{Evidence generation.}

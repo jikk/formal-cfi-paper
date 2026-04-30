@@ -3,7 +3,7 @@
 
 While this work focuses on the formal verification of a binary CFI rewriter’s soundness, we also evaluate \pname’s performance and soundness. We measure runtime overhead and code size growth, and assess security using representative proof-of-concept control-hijacking attacks and operational stability with real-world software.
 %
-All experiments run on a Raspberry Pi 5 Model B (rev. 1.1) with a Broadcom BCM2712 quad-core Arm Cortex-A76 @ 2.4 GHz and 16 GB memory, running PiOS (Debian 13 Trixie).
+All experiments run on a Raspberry Pi 5 Model B (rev. 1.1) with a Broadcom BCM2712 quad-core Arm Cortex-A76 @ 2.4 GHz and 16 GB memory, running PiOS (Debian 12 Bookworm).
 
 We then present case studies demonstrating how formal verification uncovers subtle implementation bugs and architectural irregularities.
 
@@ -28,9 +28,10 @@ The rewritten text segment is, on average, $1.36\times$ larger than the original
 For the policy table, we further measure the fraction of entries that correspond to non-abort program targets.
 %
 Some benchmarks exhibit higher code size overhead due to a larger number of unfilled table entries.
-This effect stems from our design choice of using a simple hash function (\eg, one without control or branch operations), which favors verification simplicity over space efficiency. On average, the policy table accounts for 73.5\% of the total size increase.
+This effect stems from our design choice of using a simple hash function (\eg one without control or branch operations), which favors verification simplicity over space efficiency. On average, the policy table accounts for 71.7\% of the total size increase.
 
-Overall, the rewritten binaries grow substantially in size; however, the increase remains on the order of a few megabytes and incurs negligible runtime memory overhead. As future work, we plan to refine the hash function and its interaction with the policy table to reduce space overhead while preserving minimal formal verification complexity.
+Overall, the rewritten binaries grow substantially in size; however, the increase remains on the order of a few megabytes and incurs negligible runtime memory overhead.
+Modifying the rewriter to use a better hash function to reduce space overhead can be achieved with minimal changes to the proof, further discussed in Appendix \ref{sec:hash_function}.
 
 \comment{%
     \autoref{fig:spec2017_size} measures the static size overhead of rewritten SPEC binaries.
