@@ -1,7 +1,7 @@
 %! root=../main.tex
 \section{Related Work}
 
-We first survey CFI literature, situate it within the broader framework of \irm through static binary rewriting, and conclude with an overview of binary \FM research.
+We first survey CFI literature, situate it within the broader context of static binary rewriting, and conclude with an overview of binary \FM research.
 
 \subsection{\cfi with Static Binary Rewriting}\label{sec:cfi_related}
 % rewriting this because it's AI'd
@@ -57,7 +57,7 @@ However, existing frameworks focus on verifying concrete binaries and have limit
 \kwh{[KWH] Formal verification of binary code in any form hasn't been around for very long (only a few years).  So let's not cast it as a well-established science.  Main thing to emphasize here is that apart from Picinae, all the systems take a complete, fully known binary code as input and verify it. They can't prove any property of binary code that isn't fully known at verification time.}
 
 Careful modeling of real-world ISAs is necessary for symbolic reasoning about non-concrete binary code.
-% Overcoming this limitation requires more than a mature proof assistant. It requires an abstraction layer that faithfully models real-world ISAs while supporting symbolic reasoning. 
+% Overcoming this limitation requires more than a mature proof assistant. It requires an abstraction layer that faithfully models real-world ISAs while supporting symbolic reasoning.
 \Picinae{}~\cite{picinae} builds upon Rocq to model machine code execution through memory state and execution traces, and represents program state symbolically, permitting proofs to treat the code as a proof variable.
 This enables verification results to generalize from a single program to the unbounded set of binaries a rewriter may encounter.
 Certified compilation~\cite{compcert,jasmin,barthe2019formal} reasons about non-concrete binary programs from source code, with the goal of proving compiler correctness through semantic transparency.
