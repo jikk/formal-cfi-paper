@@ -266,6 +266,7 @@ It also reduces the number of conditional instructions added to rewritten code, 
 %    \comment{Although in practice, these instructions usually just cause a hardware exception \mxz{maybe?},} This definition includes the possibility of performing unpermitted control flow.
     The rewriter must detect and remove all \unpredictable{} instructions to guarantee safety for arbitrary ISA-conformant cpus (see \S\ref{sec:cfi_motivation}). Most instruction types include at least a few \unpredictable{} variants, such as from unsafe uses of \PC register operands or invalid instruction encodings. The rewriter statically replaces these with safe aborts. Unpredictability of some instructions depends on dynamic argument values, including indirect control-flows to destinations with low-order bits $10$. This is enforced by storing only word-aligned addresses in tables~$T_D$.
 }
+Additional information about the instructions in each category can be found in Appendix \ref{tab:categories}.
 
 % python/ocaml extractor
 Once the CFI rewriter has generated a new code section, the \ELFPackager adds new segments to the original ELF for the rewritten instructions, the policy tables, and the abort handler with correct base addresses and permissions. The original text segment is changed to be non-executable. Finally, the entry point and symbol values are updated using the rewriter's \itoip function.
