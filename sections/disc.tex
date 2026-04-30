@@ -96,7 +96,7 @@ It is therefore approached through informal quality assurance testing (\S\ref{se
 Extending our approach to formally verify broader classes of secure IRMs is a natural and meaningful next step. IRMs transform an untrusted binary into a hardened version by embedding security checks into the code. This transformation partitions execution into two contexts: the guest context, which runs the original program, and the monitor context, which enforces the security policy.
 
 IRMs differ in their degree of statefulness. Static binary CFI, as implemented in \pname, is a stateless IRM: the control-flow policy remains fixed and requires no persistent monitor state. In contrast, stateful IRMs maintain evolving security state, such as shadow memory for information flow tracking or allocation histories for memory safety policies.
-%
+
 Regardless of statefulness, protecting the monitor context from interference by the untrusted guest context remains a central challenge. Both contexts execute at the same privilege level, and enforcing isolation must avoid prohibitive overhead. While this issue lies outside the stateless CFI setting considered in this work, it presents a compelling direction for future research in formally verified binary rewriting.
 
 \subsection{Cross-ISA Generalization and Applicability}
