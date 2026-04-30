@@ -3,16 +3,20 @@
 
 While this work primarily focuses on the formal verification of a binary CFI rewriter, a problem with strong security and real-world significance, we also follow conventional evaluation practices assessing \pname’s performance. In particular, we measure runtime overhead and code size of the rewritten binaries. We further evaluate both security and correctness by implementing representative proof-of-concept control-hijacking attacks and by testing \pname on mature, real-world software to validate the stability and correctness of its instrumentation.
 
-\subsection{Runtime Overhead}
-\autoref{tab:spec2017} evaluates the efficiency of \pname on rewritten SPEC CPU 2017 benchmarks.
-The benchmarks are performed on a Raspberry Pi 5 with 16GB of memory.
-For performance evaluation, the enforced policy is permissive, allowing any instruction to
-step to any other instruction in the code section.
-The average overhead is 19\%, matching overheads of prior ARM CFI rewriter works~\cite{walls_et_al}.
+All evaluations are conducted from Raspberry Pi 5 Model B 1.1 (Broadcom BCM2712 quad-core Arm Cortex A76 processor @ 2.4GHz) with 16GB of memory (PiOS; Debian 13 Trixie distribution).
+
+\subsection{Runtime and Space Overheads}
+
+\heading{SPEC 2017 evaluation.}
+\autoref{tab:spec2017}  evaluates the efficiency of ArmCFI on rewritten SPEC CPU 2017 benchmarks. To measure runtime overhead, we adopt a permissive policy that allows any instruction to transfer control to any other instruction within the code section. ArmCFI incurs an average overhead of 19\%, which is comparable to prior ARM-based CFI rewriters, although several benchmarks exhibit substantially higher slowdowns.
+
+In particular, \cd{500.perlbench_r} represents an interpreter-style workload with a high density of indirect control transfers, such as switch-based dispatch and function pointer invocations. \cd{541.leela_r}, a Go engine based on Monte Carlo Tree Search (MCTS), exhibits highly irregular, data-dependent control flow and frequent function calls due to its recursive search structure. In both cases, the dynamic frequency of control-flow events is high, which amplifies the cost of CFI instrumentation.
+
+These effects are further exacerbated by architectural characteristics of ARM, including pervasive conditional execution and flexible \cd{PC}-relative addressing semantics, both of which complicate efficient instrumentation and increase the cost of enforcing control-flow checks.
 
 \input{tables/spec2017_tab2}
 
-\subsection{Space Overhead}
+\heading{Code size growth.}
 \autoref{fig:spec2017_size} measures the static size overhead of rewritten SPEC binaries.
 Rewritten text segments are $1.36\times$ larger on average due to inserted security guard code.
 For the table segment, we also measure how many entries contain non-abort program addresses.
