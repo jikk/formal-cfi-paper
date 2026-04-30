@@ -12,6 +12,7 @@ At the front end, we do not verify the decoder and lifter. The lifter implements
 
 We also do not verify the Gallina to OCaml extraction process, or the OCaml to native code compilation process, both of which are the subject of extensive bodies of work outside our scope.
 Since extraction verification is not our focus, our we implement a simple extraction strategy that reifies Rocq unbounded integers $\mathsf{Z}$ as OCaml machine integers $\mathtt{int}$ rather than OCaml unbounded integers.
+\mxz{i also extracted the code that creates i2i' to use an array instead of a list, and part of the table creation code to use a hashtbl instead of creating a new function on every table insertion}
 A more rigorous extraction could use isomorphic data types and prove extraction soundness.
 
 The ELF packaging stage is also trusted by our framework because its correctness depends on the OS's process loader, which is outside our model.
@@ -51,7 +52,7 @@ It is therefore approached through informal quality assurance testing (\S\ref{se
     Creating trustworthy mechanized semantics of ISAs is a subject of ongoing research~\cite{isla,islaris,archsem,armstrong19isasem,liblisa,goel17x86isa}.
     While extraction from Rocq to OCaml is verified~\cite{fv_ocaml_extraction}, the extracted code makes one undermining translation to make the rewriter run faster.
     It translates Rocq's unbounded integer type \texttt{Z} to OCaml's bounded machine integers \texttt{int}.
-    Rocq offers facilities for proving the soundness of this extraction choice, but we leave it as future work.
+    Rocq offers facilities for proving the soundness of this extraction choice, but we leave it as future work.instructions
     The \ELFPackager is trusted, but its verification relies on the behavior of the loader that loads the binary and as such requires a formally verified loader.
     Creating such a component is an open problem, thus verifying the \ELFPackager is out of scope.
 

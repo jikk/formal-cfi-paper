@@ -7,14 +7,15 @@
     \centering
     % \includegraphics[width=0.9\linewidth]{verification.pdf}
     \includegraphics[width=0.9\linewidth]{figs/CFI_Overview_Redo_shadows.drawio.pdf}
-    \caption{Verification and extraction of the core rewriting logic.\kjee{this figure can be extended to provide high-level overview/workflow.}\kjee{ELF editor -> ELF packager}}~\label{fig:cfi_verif}
+    \caption{Verification and extraction of the core rewriting logic\kjee{this figure can be extended to provide high-level overview/workflow.}\kjee{ELF editor -> ELF packager}}\label{fig:cfi_verif}
+    \vspace{-10pt}
 \end{figure}
 
-We first present a motivating example showing how formal methods expose subtle, hard-to-detect instances of ARM’s architecturally defined \unpredictable{} behavior.
+We first present a motivating example showing how \FM expose subtle, hard-to-detect instances of ARM’s architecturally defined \unpredictable{} behavior.
 %
-We then provide an overview of the \pname workflow and system architecture, including its key components and verification targets, discussing the fundamental challenges of formally reasoning about binary-to-binary rewriting.
+We then provide an overview of the \pname workflow and system architecture, including key components and verification targets, discussing the fundamental challenges of formally reasoning about binary-to-binary rewriting.
 %
-Finally, we describe our threat model and clarify the scope of the system, including the assumptions and limitations that guide our design and verification.
+Finally, we describe our threat model and clarify the scope of the system, including assumptions and limitations that guide design and verification.
 
 \subsection{Motivation: ARM Unpredictable Behavior}\label{sec:cfi_motivation}
 
@@ -25,11 +26,11 @@ A CFI-enforcing rewriter must ensure that all generated instruction sequences co
 
 A key challenge arises from \unpredictable behaviors in the ARM architecture~\cite{unpredictable_behaviors}. The ISA deliberately leaves certain execution outcomes unspecified to preserve implementation flexibility, avoid over-specifying ill-formed programs, and maintain backward compatibility. These behaviors introduce semantic nondeterminism, force conservative reasoning, and frustrate implementation independent correctness guarantees.
 
-In practice, many CPU implementations handle such cases by trapping or terminating execution, although the specification does not mandate a single outcome. As a result, compilers and toolchains avoid emitting instruction sequences that may trigger unpredictable behavior. \pname adopts the same discipline: it rejects any rewritten binary that could enter architecturally \unpredictable regions.
+In practice, many CPU implementations handle such cases by trapping or terminating execution, although the specification does not mandate a single outcome. As a result, compilers and toolchains avoid emitting instruction sequences that may trigger unpredictable behavior. \pname adopts the same discipline: it does not generate binaries that could enter architecturally \unpredictable regions.
 
-The requirement motivates formal verification. Dynamic testing explores only observed execution paths and cannot rule out latent violations. For a binary CFI rewriter, testing is further hindered by a combinatorial\wc{compounding} input space spanning (1) the input binary, (2) the CFI policy defining valid control transfers, (3) runtime inputs to the program, and (4) the ISA implementation. Exercising corner cases that trigger unpredictable behavior across these dimensions through testing is therefore unlikely.
+This requirement motivates formal verification. Dynamic testing explores only observed execution paths and cannot rule out latent violations. For a binary CFI rewriter, testing is further hindered by a combinatorial\wc{compounding} input space spanning (1) the input binary, (2) the CFI policy defining valid control transfers, (3) runtime inputs to the program, and (4) the ISA implementation. Exercising through testing all corner cases that may trigger unpredictable behavior across these dimensions is therefore infeasible.
 
-In contrast, formal verification reasons over all possible executions, ensuring that rewriting never introduces paths that trigger unpredictable behavior. More broadly, although CFI is widely deployed with low overhead, prior work has focused on design guarantees, performance, and policy generation, largely overlooking implementation correctness. Formal verification of CFI implementations against precise safety and security specifications remains underexplored. In \autoref{sec:case_studies}, we present two concrete error cases, branching to the PC register and unaligned PC loads, that surfaced during verification and would be difficult to detect through testing alone.
+In contrast, formal verification reasons over all possible executions, ensuring that rewriting never introduces paths that trigger unpredictable behavior. More broadly, although CFI is widely deployed with low overhead, prior work has focused on design guarantees, performance, and policy generation, largely overlooking implementation correctness. Formal verification of CFI implementations against precise safety and security specifications remains underexplored. Section~\ref{sec:case_studies} presents three concrete error cases that surfaced during verification and would be difficult to detect through testing alone.
 
 \comment{%
   \subsection{Motivation: ISA Compliant Sound CFI}\label{sec:cfi_motivation}

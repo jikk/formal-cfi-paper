@@ -4,7 +4,7 @@
 \section{Open Science}
 % We release our artifacts at \url{https://anonymous.4open.science/r/armcfi2026ccs}, including the full source code needed to understand, reproduce, and evaluate our system.
 
-We release our artifacts via anonymous repository~\footnoteref{note0}, including the full source code needed to understand, reproduce, and evaluate our system.
+We release our artifacts via anonymous repository,\footnoteref{note0} including the full source code needed to understand, reproduce, and evaluate our system.
 %
 The repository provides detailed documentation for rebuilding the formal proofs of compliance with both the CFI specification and the ARMv7 architecture, as well as instructions for building and compiling the \pname rewriter to generate CFI-instrumented binaries.
 We also include PoC attack cases (\autoref{tab:poc-attacks}) together with automatically profiled control-flow policies. To facilitate deployment and experimentation, we provide a containerized environment (\eg Docker) that enables users to run \pname on compatible ARMv7 platforms and evaluate it on custom binaries.
@@ -12,10 +12,10 @@ We also include PoC attack cases (\autoref{tab:poc-attacks}) together with autom
 \section{ARMv7 Instruction Categories}
 \ixb{The story here can be ``look at all these instructions whose \emph{operands} change how they need to be treated. Imagine how complex the implementation is. Imagine \emph{not} having a proof for its soundness!}
 
-Here we categorize ARMv7 user-mode instructions based on their control-flow effects as described in \autoref{sec:cfi_design}.
-There are a considerable number of instructions that can perform indirect control flow, mainly from the use of PC as an operand being permitted for data processing instructions.
+In Figure \ref{tab:categories} we categorize ARMv7 user-mode instructions based on their control-flow effects as described in \autoref{sec:cfi_design}.
+There are a considerable number of instructions that can perform indirect control flow, mainly from the use of \PC as an operand for data processing instructions.
 We instrument most of them in the same way using the following template,
-where \texttt{reg} is an arbitrary scratch register:
+where \texttt{reg} is a scratch register:
 
 \begin{lstlisting}[language=c, morekeywords={STR,MOVW,MOVT,BIC,LDR,reg,sp,pc}, linewidth=\linewidth,label={lst:armv7},xleftmargin=.3cm]
 STR reg, [sp, #-4]  // save the scratch register to the stack
@@ -29,10 +29,13 @@ LDR reg, [sp, #-4]   // restore original value of scratch register
 LDR pc, [sp, #-8]    // branch to table value
 \end{lstlisting}
 
-We prove that any \Block of this form is safe as long as the sanitized instruction does not perform control flow or violate any invariants,
-allowing us to prove most indirect control flow \Blocks by just applying this lemma.
-To improve efficiency, a more optimal rewriter can omit loading the original address into the scratch register when the original instruction does not use the program counter as part of the computation 
-or the shuffling of values from the stack if it determines that the scratch register does not need to be preserved.
+We prove that any \Block of this form is safe as long as the sanitized instruction does not transfer control or violate the invariants in \autoref{sec:formalization},
+allowing us to prove most indirect control flow \Blocks by applying this lemma.
+
+To improve efficiency, a more optimized rewriter can omit loading the original address into the scratch register when the original instruction does not use the \PC as part of the computation, 
+or shuffling values from the stack if it determines that the scratch register need not be preserved, at the cost of a larger proof.
+A similar \Block template that also stores the stack pointer in a scratch register is used for instructions that modify the SP,
+such as load instructions that write back to the SP.
 
 \begin{figure*}[b]
     \centering
@@ -47,15 +50,20 @@ or the shuffling of values from the stack if it determines that the scratch regi
        \hline
     \end{tabular}
     \caption{Categorized ARM instructions}
-    \label{tab:placeholder}
+    \label{tab:categories}
 \end{figure*}
 
 \section{Hash Function Replacement}
 
-This appendix outlines the work needed to replace the hash function with one that decreases the space overhead seen in \autoref{fig:spec2017_size} without compromising the soundness of the rewriter.
-In \autoref{sec:fm_friendly} we list FM friendly design principles.
-Another design principle that helps in this case is making the desired soundness/correctness properties independent of deep properties of the implementation.
-For instance, the soundness of the rewriter does not depend on the cryptographic security or collision avoidance of the hash function.
+This appendix outlines a methodology for replacing the hash function with one that reduces the space overhead in \autoref{fig:spec2017_size} without compromising rewriter soundness.
+Section~\ref{sec:fm_friendly} lists \FM friendly design principles, including reducing complexity of conditional expressions, and localizing soundness invariants away from global code properties.
+Our current rewriter obeys these principles by avoiding dependence on the cryptographic security or collision avoidance of the hash function.
+
+To update the implementation to use a different hash function, one would need to update the function that produces table lookup code
+and the function that generates the policy table for a given destination set.
+To update the proof to accommodate these changes, it suffices to prove that after executing the instructions for computing the new hash function,
+the hashed register contains a value less than the length of the table, and that the policy tables still only contains permitted destinations,
+with no other changes necessary.
 
 \comment{
 \section{Key Lemmas}
