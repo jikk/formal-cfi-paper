@@ -25,7 +25,7 @@ Constructing control-flow policies is known to be undecidable in the general cas
 Our work assumes a trusted control-flow policy and proves the soundness of a static rewriter's enforcement of it, leaving policy-generation to related work.
 
 Early CFI works implement coarse-grained policies on source-free binary code~\cite{ccfir,bincfi}.
-binCFI places jump targets in a bitmap and adds guards to all indirect jump instructions to enable lookups.
+BinCFI places jump targets in a bitmap and adds guards to all indirect jump instructions to enable lookups.
 For every indirect jump, it checks whether target addresses are call-preceded of a part of a permissible target list.
 CCFIR works with relocation data, rerouting indirect jumps to a separate springboard section.
 While that offers an additional layer of protection from ROP attacks, both CCFIR and binCFI were shown vulnerable to advanced ROP attacks due to policy imprecision~\cite{outofcontrol}.
@@ -36,9 +36,9 @@ This policy is enforced with a monitor using Intel PT to gather control-flow dat
 BinCC~\cite{bincc} is also similar to this implementation, dividing code into code continents instead of basic blocks.
 
 % TODO (@kjee): cite --- intel_cet,inte_bti,arm_ibt,arm_pac
-Due to its effectiveness, CFI has been widely adopted in practice. Modern processors provide hardware support for coarse-grained CFI primitives to reduce overhead~\cite{isacfi2019hasp,liljestrand2019pac}, while enabling extensions to finer-grained, policy-driven enforcement such as that implemented by \pname. As a result, many practical aspects of CFI deployment in real-world systems have been extensively explored~\cite{becker2024woot}.
+Due to its effectiveness, CFI has been widely adopted in practice. Modern processors provide hardware support for coarse-grained CFI to reduce overhead~\cite{isacfi2019hasp,liljestrand2019pac}, while enabling extensions to finer-grained, policy-driven enforcement such as that implemented by \pname. As a result, many practical aspects of CFI deployment in real-world systems have been extensively explored~\cite{becker2024woot}.
 
-Recent work such as $\mu$CFI~\cite{ceesay2024mucfi}  extends CFI enforcement into the microarchitectural domain. It defines a security property over cycle-level \cd{PC} updates and formally verifies that processor microcode enforces control-flow integrity even under speculative execution and timing-based behaviors.
+Recent work such as $\mu$CFI~\cite{ceesay2024mucfi}  extends CFI enforcement into the microarchitectural domain. It defines a security property over cycle-level \PC updates and formally verifies that processor microcode enforces CFI even under speculative execution and timing-based behaviors.
 %
 The proof guarantees that all indirect control transfers resolve to destinations permitted by a control-flow graph capturing correct hardware behavior. However, these guarantees are orthogonal to software-level CFI policies and do not address how such policies are constructed or enforced at the binary level.
 
