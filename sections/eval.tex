@@ -8,9 +8,9 @@ All evaluations are conducted from Raspberry Pi 5 Model B 1.1 (Broadcom BCM2712 
 \subsection{Runtime and Space Overheads}
 
 \heading{SPEC 2017 evaluation.}
-\autoref{tab:spec2017}  evaluates the efficiency of ArmCFI on rewritten SPEC CPU 2017 benchmarks. To measure runtime overhead, we adopt a permissive policy that allows any instruction to transfer control to any other instruction within the code section. ArmCFI incurs an average overhead of 19\%, which is comparable to prior ARM-based CFI rewriters, although several benchmarks exhibit substantially higher slowdowns.
+\autoref{tab:spec2017}  evaluates the efficiency of \pname on rewritten SPEC CPU 2017 benchmarks. To measure runtime overhead, we adopt a permissive policy that allows any instruction to transfer control to any other instruction within the code section. \pname incurs an average overhead of 19\%, which is comparable to prior ARM-based CFI rewriters, although prior benchmarks exhibit substantially higher slowdowns~\cite{}.
 
-In particular, \cd{500.perlbench_r} represents an interpreter-style workload with a high density of indirect control transfers, such as switch-based dispatch and function pointer invocations. \cd{541.leela_r}, a Go engine based on Monte Carlo Tree Search (MCTS), exhibits highly irregular, data-dependent control flow and frequent function calls due to its recursive search structure. In both cases, the dynamic frequency of control-flow events is high, which amplifies the cost of CFI instrumentation.
+In particular, \cd{500.perlbench\_r} represents an interpreter-style workload with a high density of indirect control transfers, such as switch-based dispatch and function pointer invocations. \cd{541.leela\_r}, a Go engine based on Monte Carlo Tree Search (MCTS), exhibits highly irregular, data-dependent control flow and frequent function calls due to its recursive search structure. In both cases, the dynamic frequency of control-flow events is high, which amplifies the cost of CFI instrumentation.
 
 These effects are further exacerbated by architectural characteristics of ARM, including pervasive conditional execution and flexible \cd{PC}-relative addressing semantics, both of which complicate efficient instrumentation and increase the cost of enforcing control-flow checks.
 
