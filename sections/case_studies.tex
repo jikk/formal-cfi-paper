@@ -34,6 +34,7 @@ An attacker can abuse this to manipulate a guarded indirect branch into directly
 
 This vulnerability evaded dynamic testing because it is only exhibited by carefully crafted binary code inputs not included in typical test sets.
 It evades design-level verification because the error is in the low-level implementation of the rewriter, not the high-level algorithm it is intended to implement.
+\mxz{doesnt the high level algorithm also have this problem? the definition of rel we give in 3.1 says that only old text indices change}
 
 It is nevertheless caught by formal verification when the policy table integrity proof raises an unprovable subgoal requiring table entries to equal invariant points defined by \Block boundaries.
 Our inability to prove this subgoal led us to fix the implementation bug by refining $\itoip$ to translate any index in the new text section to $\mai$, preventing non-invariant points from appearing as table entries.
