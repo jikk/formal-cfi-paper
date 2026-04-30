@@ -1,13 +1,13 @@
 %! root=../main.tex
 \section{Related Work}
 
-We first survey CFI literature, situate it within the broader context of static binary rewriting, and conclude with an overview of binary \FM research.
+We first survey CFI literature, situate it within the broader context of static binary rewriting, then overview binary \FM research.
 
 \subsection{\cfi with Static Binary Rewriting}\label{sec:cfi_related}
 % rewriting this because it's AI'd
 % CFI is a foundational security defense designed to protect against control hijacking attacks by restricting the set of valid control-flow transfers a program may execute at runtime.
 % The level at which CFI is enforced depends on the available program representation. When source code is accessible, CFI is typically implemented as a compiler pass, optionally leveraging hardware support such as Intel CET/PT for enforcement~\cite{ptcfi,ptcfi2}. When only a binary is available, CFI can be enforced via either dynamic instrumentation or static binary rewriting.
-CFI is a static defense for defending against control-flow hijacking attacks.
+CFI~\cite{abadi_cfi,burow2017survey} is a static defense for defending against control-flow hijacking attacks.
 Control-flow policies encode a whitelist of permitted control-flow edges.
 The policy is enforced by adding security guards that check impending jump targets against the policy.
 CFI can be applied to both source and binary code, optionally leveraging hardware support~\cite{ptcfi,ptcfi2}.
@@ -35,7 +35,12 @@ Similar to our work, jumps are permitted only if the destination address is an e
 This policy is enforced with a monitor using Intel PT to gather control-flow data in real time.
 BinCC~\cite{bincc} is also similar to this implementation, dividing code into code continents instead of basic blocks.
 
-A recent CFI project $\mu$CFI~\cite{ceesay2024mucfi}, uses formal verification to prove processor microcode immunity against hardware-based control-flow attacks for a given cpu architecture. The proof establishes that all indirect jumps reach permitted destinations defined by a CFG that describes correct hardware behavior. However this does not cover software-based policies and their enforcement.
+% TODO (@kjee): cite --- intel_cet,inte_bti,arm_ibt,arm_pac
+Due to its effectiveness, CFI has been widely adopted in practice. Modern processors provide hardware support for coarse-grained CFI primitives to reduce overhead~\cite{isacfi2019hasp,liljestrand2019pac}, while enabling extensions to finer-grained, policy-driven enforcement such as that implemented by \pname. As a result, many practical aspects of CFI deployment in real-world systems have been extensively explored~\cite{becker2024woot}.
+
+Recent work such as $\mu$CFI~\cite{ceesay2024mucfi}  extends CFI enforcement into the microarchitectural domain. It defines a security property over cycle-level \cd{PC} updates and formally verifies that processor microcode enforces control-flow integrity even under speculative execution and timing-based behaviors.
+%
+The proof guarantees that all indirect control transfers resolve to destinations permitted by a control-flow graph capturing correct hardware behavior. However, these guarantees are orthogonal to software-level CFI policies and do not address how such policies are constructed or enforced at the binary level.
 
 \subsection{Formal Verification on Binary Programs}\label{sec:fm_related}
 \comment{% NOTE (@kjee): I can't outline/write this section; just listing out items that I expect to see from the readers perspective.
