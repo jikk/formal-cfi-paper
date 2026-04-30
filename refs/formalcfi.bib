@@ -47,6 +47,7 @@
 }
 
 @INPROCEEDINGS{cfi2005ccs,
+    ids = {abadi_cfi},
   AUTHOR = {Abadi, Martin and Budiu, Mihai and Erlingsson, U lfar and Ligatti, Jay},
   BOOKTITLE =  proc # of # the # { \cnum{12th} ACM Conference on Computer and Communications Security},
   DATE = {2005},
@@ -284,7 +285,7 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
   AUTHOR = {Brumley, David and Jager, Ivan and Avgerinos, Thanassis and Schwartz, Edward J.},
   BOOKTITLE = proc # of # the # {\cnum{23rd}} # int # International # conf # on #{Computer Aided Verification \nym{CAV}},
   DATE = {2011},
-  IDS = {bap2011cav},
+  IDS = {bap2011cav,bap},
   PAGES = {463--469},
   TITLE = {{BAP}: A Binary Analysis Platform},
 }
@@ -343,7 +344,7 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
 
 @INPROCEEDINGS{outofcontrol,
   AUTHOR = {G"{o}ktas, Enes and Athanasopoulos, Elias and Bos, Herbert and Portokalidis, Georgios},
-  BOOKTITLE = {IEEE} # int # sym # on # {Security and Privacy \nym{SP}},
+  BOOKTITLE = {IEEE} # sym # on # {Security and Privacy \nym{SP}},
   DATE = {2014},
   TITLE = {Out of Control: Overcoming Control-Flow Integrity},
 }
@@ -353,6 +354,72 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
   DATE = {2020},
   JOURNALTITLE = {ACM Transactions} # on #{Embedded Computing Systems \nym{TECS}},
   TITLE = {BBB-CFI: Lightweight CFI Approach Against Code-Reuse Attacks Using Basic Block Information},
+}
+
+@inproceedings{isabil,
+  author       = {Matt Griffin and Brijesh Dongol and Azalea Raad},
+  title        = {IsaBIL: {A} Framework for Verifying (In)correctness of Binaries in Isabelle/HOL},
+  booktitle    = "\cnum{39} European " # conf # on # "{Object-Oriented}" # prog # " \nym{ECOOP}",
+  IGNOREseries       = {LIPIcs},
+  IGNOREvolume       = {333},
+  IGNOREpages        = {14:1--14:30},
+  IGNOREpages        = {1--30},
+  IGNOREpublisher    = {Schloss Dagstuhl - Leibniz-Zentrum f{\"{u}}r Informatik},
+  year         = {2025},
+  IGNOREurl          = {https://doi.org/10.4230/LIPIcs.ECOOP.2025.14},
+}
+
+@inproceedings{forward_symb_reasoning_vmcai26,
+  author       = {Andreas Lindner and Karl Palmskog and Scott Constable and Mads Dam and Roberto Guanciale and Hamed Nemati},
+  title        = {Forward Symbolic Execution for Trustworthy Automation of Binary Code Verification},
+  IGNOREbooktitle    = {Verification, Model Checking, and Abstract Interpretation - 27th International Conference, {VMCAI} 2026, Rennes, France, January 12-13, 2026, Proceedings},
+  booktitle    = {Verification, Model Checking, and Abstract Interpretation \nym{VMCAI}},
+  IGNOREpages        = {147--172},
+  year         = {2026},
+  IGNOREurl          = {https://doi.org/10.1007/978-3-032-15700-3\_8},
+}
+
+@inproceedings{relational_hoare_logic_rmmc,
+  author       = {Denis Mazzucato and Abdalrhman Mohamed and Juneyoung Lee and Clark W. Barrett and Jim Grundy and John Harrison and Corina S. Pasareanu},
+  title        = {Relational Hoare Logic for Realistically Modelled Machine Code},
+  booktitle    = "\cnum{37}" # int # conf # on # " Computer Aided Verification \nym{CAV}",
+  IGNOREseries       = {Lecture Notes in Computer Science},
+  IGNOREvolume       = {15931},
+  IGNOREpages        = {389--413},
+  IGNOREpublisher    = {Springer},
+  year         = {2025},
+  IGNOREurl          = {https://doi.org/10.1007/978-3-031-98668-0\_19},
+}
+
+@article{trabin,
+  title = {TrABin: Trustworthy analyses of binaries},
+  journal = "Science" # of # "Computer Programming",
+  IGNOREvolume = {174},
+  IGNOREpages = {72-89},
+  year = {2019},
+  IGNOREissn = {0167-6423},
+  IGNOREurl = {https://www.sciencedirect.com/science/article/pii/S0167642318301667},
+  author = {Andreas Lindner and Roberto Guanciale and Roberto Metere},
+}
+
+@inproceedings{myreen_hoare_rmmc,
+  author       = {Magnus O. Myreen and Michael J. C. Gordon},
+  title        = {Hoare Logic for Realistically Modelled Machine Code},
+  booktitle = "Tools and Algorithms " # for # the # "Construction and Analysis" # of # "Systems \nym{TACAS}",
+  IGNOREseries       = {Lecture Notes in Computer Science},
+  IGNOREvolume       = {4424},
+  IGNOREpages        = {568--582},
+  IGNOREpublisher    = {Springer},
+  year         = {2007},
+  IGNOREurl          = {https://doi.org/10.1007/978-3-540-71209-1\_44},
+}
+
+@INPROCEEDINGS{zhang2024binary,
+  author={Zhang, Xuankai and Li, Jianhua and Wu, Jun and Chen, Guoxing and Meng, Yan and Zhu, Haojin and Zhang, Xiaosong},
+  journal={IEEE} # trans # on # {Dependable and Secure Computing},
+  title={Binary-Level Formal Verification Based Automatic Security Ensurement for PLC in Industrial IoT}, 
+  year={2025},
+  pages={2211--2226},
 }
 
 @INPROCEEDINGS{ceesay2024mucfi,
@@ -365,7 +432,6 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
 @INPROCEEDINGS{scalable_binary_lifter_validation,
   AUTHOR = {Dasgupta, Sandeep and Dinesh, Sushant and Venkatesh, Deepan and Adve, Vikram S. and Fletcher, Christopher W.},
   BOOKTITLE = proc # of # the #{ \cnum{41rd} ACM SIGPLAN Conference on Programming Language Design and Implementation \nym{PLDI}},
-  
   DATE = {2020},
   TITLE = {Scalable validation of binary lifters},
 }
@@ -410,7 +476,7 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
 @ARTICLE{archsem,
   AUTHOR = {Pérami, Thibaut and Bauereiss, Thomas and Campbell, Brian and Liu, Zongyuan and Lauermann, Nils and Armstrong, Alasdair and Sewell, Peter},
   DATE = {2026},
-  JOURNALTITLE = proc # of # the # {ACM } # on #{Programming Languages},
+  JOURNALTITLE = proc # of # the # {ACM} # on #{Programming Languages},
   TITLE = {ArchSem: Reusable Rigorous Semantics of Relaxed Architectures},
   VOLUME = {10},
 }
@@ -526,4 +592,50 @@ doi = {10.1145/2818000.2818017},
 booktitle = proc # of # the # {\cnum{31st} Annual Computer Security Applications Conference},
 pages = {331–340},
 series = {ACSAC '15}
+}
+
+@inproceedings{armv8semantics1,
+author = {Flur, Shaked and Gray, Kathryn E. and Pulte, Christopher and Sarkar, Susmit and Sezgin, Ali and Maranget, Luc and Deacon, Will and Sewell, Peter},
+title = {Modelling the {ARMv8} architecture, operationally: concurrency and ISA},
+year = {2016},
+url = {https://doi.org/10.1145/2837614.2837615},
+booktitle = proc # ofthe # "\cnum{43rd} ACM SIGPLAN-SIGACT" # sym # on # "Principles" # of # "Programming Languages \nym{POPL}",
+pages = {608--621},
+}
+
+@InProceedings{walls_et_al,
+  author = {Walls, Robert J. and Brown, Nicholas F. and Le Baron, Thomas and Shue, Craig A. and Okhravi, Hamed and Ward, Bryan C.},
+  title =	{Control-Flow Integrity for Real-Time Embedded Systems},
+  booktitle =	{31st Euromicro Conference on Real-Time Systems (ECRTS 2019)},
+  pages =	{2:1--2:24},
+  series = {Leibniz International Proceedings in Informatics (LIPIcs)},
+  year = {2019},
+  volume = {133},
+  publisher =	{Schloss Dagstuhl -- Leibniz-Zentrum f{\"u}r Informatik},
+  URL = {https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ECRTS.2019.2},
+}
+
+@article{armv8semantics2,
+author = {Armstrong, Alasdair and Bauereiss, Thomas and Campbell, Brian and Reid, Alastair and Gray, Kathryn E. and Norton, Robert M. and Mundkur, Prashanth and Wassell, Mark and French, Jon and Pulte, Christopher and Flur, Shaked and Stark, Ian and Krishnaswami, Neel and Sewell, Peter},
+title = {ISA semantics for {ARMv8-A}, {RISC-V}, and {CHERI-MIPS}},
+year = {2019},
+url = {https://doi.org/10.1145/3290384},
+journal = proc # ofthe # "ACM" # on # "Principles" # of # "Programming Languages \nym{POPL}",
+}
+
+@InProceedings{armv8semantics3,
+author="Simner, Ben and Flur, Shaked and Pulte, Christopher and Armstrong, Alasdair and Pichon-Pharabod, Jean and Maranget, Luc and Sewell, Peter",
+title="{ARMv8-A} System Semantics: Instruction Fetch in Relaxed Architectures",
+IGNOREbooktitle="Programming Languages and Systems",
+booktitle= "European" # sym # on # "Programming \nym{ESOP}",
+year="2020",
+pages="626--655",
+}
+
+@inproceedings{armv8semantics4,
+  title={Trustworthy specifications of ARM{\textregistered} v8-A and v8-M system level architecture},
+  author={Reid, Alastair},
+  booktitle={Formal Methods in Computer-Aided Design \nym{FMCAD}},
+  pages={161--168},
+  year={2016},
 }

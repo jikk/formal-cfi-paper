@@ -13,7 +13,7 @@
 The benchmarks are performed on a Raspberry Pi 5 with 16GB of memory.
 For performance evaluation, the enforced policy is permissive, allowing any instruction to
 step to any other instruction in the code section.
-The average overhead is 19\%.
+The average overhead is 19\%, matching overheads of prior ARM CFI rewriter works~\cite{walls_et_al}.
 
 \input{tables/spec2017_tab2}
 
@@ -28,7 +28,7 @@ The table segment on average contributes 73.5\% of the added size.
 
 \input{tables/spec2017_size}
 
-\subsection{Functionality}
+\subsection{Functionality}\label{sec:functionality_evaluation}
 The SPEC CPU test suite includes self-tests for correct outputs,
 and all rewritten programs pass all the self-tests.
 We also tested the rewriter for functionality on the GNU Core Utilities suite, Lua, CPython, Vim, Git, and SQLite.

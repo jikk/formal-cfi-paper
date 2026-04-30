@@ -6,19 +6,32 @@
 
 \subsection{Verification Scope and Trusted Assumptions}\label{sec:elf_packager_fm}
 
-\pname provides high assurance by formally verifying the binary rewriter under a small set of trusted components and modeling assumptions.
-%
+\pname provides high assurance by formally verifying the binary rewriter under a small set of modeling assumptions and in the context of a few trusted components.
+
 At the front end, we do not verify the decoder and lifter. The lifter implements ARMv7 ISA semantics in Gallina and translates binary instructions into \Picinae \IL statements. We treat it as trusted, but two factors reduce the risk: ARMv7 has an existing formal specification, and prior work has extensively explored verified and semi-verified decoding and lifting pipelines, indicating a path toward full verification (see \autoref{sec:fm_related}).
 
-Building trustworthy mechanized ISA semantics remains challenging. Although Rocq verifies extraction to OCaml, we introduce a performance-driven refinement by mapping unbounded integers ($Z$) to bounded machine integers ($int$). Rocq supports proving this refinement sound, but we leave that proof for future work.
+We also do not verify the Gallina to OCaml extraction process, or the OCaml to native code compilation process, both of which are the subject of extensive bodies of work outside our scope.
+Since extraction verification is not our focus, our we implement a simple extraction strategy that reifies Rocq unbounded integers $\mathsf{Z}$ as OCaml machine integers $\mathtt{int}$ rather than OCaml unbounded integers.
+A more rigorous extraction could use isomorphic data types and prove extraction soundness.
 
-We also trust the ELF packaging stage. Its correctness depends on the program loader, which lies outside our model. Verifying this stage therefore requires reasoning about binary loading, making end-to-end guarantees an open problem.
+The ELF packaging stage is also trusted by our framework because its correctness depends on the OS's process loader, which is outside our model.
+Specifically, the ELF format has no \emph{formal} specification other than a process loader's translation of its content into a binary process image.
+Verifying this stage therefore requires verified binary loading, which is an open research challenge.
 
 \Picinae{}'s ISA model further abstracts away concurrency, shared memory, and system calls. As a result, our guarantees apply only to isolated execution and do not cover OS-level attacks such as sigreturn-oriented programming. The current design also assumes a single contiguous code section.
+These environmental assumptions are reflective of some but not all ARMv7 computing contexts.
 
-Extending verification to the full rewriting pipeline remains future work. A promising direction is *program loader verification*, which seeks to formally specify and verify binary loading semantics, though it introduces substantial challenges.
+%%% [KWH:] The following two paragraphs seem redundant...
 
-Finally, our formalization focuses on the \cd{.text} section and treats other binary components, including ELF metadata, relocations, and dynamic linking structures, as trusted. Extending guarantees to these components is a natural next step toward fully verified binary rewriting.
+%Extending verification to the full rewriting pipeline remains future work. A promising direction is \emph{program loader verification}, which seeks to formally specify and verify binary loading semantics, though it introduces substantial challenges.
+
+%Finally, our formalization focuses on the \cd{.text} section and treats other binary components, including ELF metadata, relocations, and dynamic linking structures, as trusted. Extending guarantees to these components is a natural next step toward fully verified binary rewriting.
+
+Our machine-checked proof verifies soundness (security and safety) of the rewriter, but not semantic transparency.
+This is because all CFI implementations violate transparency by design, even for policy-compliant input codes.
+For example, an input program that parses its symbol tables and prints their values intentionally prints new, relocated values after rewriting.
+Semantic transparency is hence difficult to formally define in the context of binary hardening.
+It is therefore approached through informal quality assurance testing (\S\ref{sec:functionality_evaluation}), wherein humans subjectively decide whether intended functionalities have been suitably preserved.
 
 \comment{%
     mainly about (apparent) limitations
@@ -79,15 +92,15 @@ Finally, our formalization focuses on the \cd{.text} section and treats other bi
 
 \subsection{Secure In-lined Reference Monitors (IRMs)}
 \kjee{Here we want to mention another aspect that the effort needs to go by hand-in-hand binary security and FMs. Generalization via framework building can be very ambitious but highly rewarding next research milestone.}
-Extending our approach to formally verify broader classes of secure IRMs is a natural and meaningful next step. IRMs transform an untrusted binary into a hardened version by embedding security checks directly into the code. This transformation partitions execution into two contexts: the guest context, which runs the original program, and the monitor context, which enforces the security policy.
+Extending our approach to formally verify broader classes of secure IRMs is a natural and meaningful next step. IRMs transform an untrusted binary into a hardened version by embedding security checks into the code. This transformation partitions execution into two contexts: the guest context, which runs the original program, and the monitor context, which enforces the security policy.
 
 IRMs differ in their degree of statefulness. Static binary CFI, as implemented in \pname, is a stateless IRM: the control-flow policy remains fixed and requires no persistent monitor state. In contrast, stateful IRMs maintain evolving security state, such as shadow memory for information flow tracking or allocation histories for memory safety policies.
 
 Regardless of statefulness, protecting the monitor context from interference by the untrusted guest context remains a central challenge. Both contexts execute at the same privilege level, and enforcing isolation must avoid prohibitive overhead. While this issue lies outside the stateless CFI setting considered in this work, it presents a compelling direction for future research in formally verified binary rewriting.
 
 \subsection{Cross-ISA Generalization and Applicability}
-Our verification approach generalizes to other architectures supported by \Picinae{}. For each ISA, an internal lifter implemented in Gallina decodes instructions and translates them into \pil\@. Given such a lifter, one can construct proofs analogous to those in this work to establish comparable security guarantees.
+Our verification approach generalizes to other architectures supported by \Picinae{}. For each ISA, an internal lifter implemented in Gallina decodes instructions to its ISA-general \IL. For any such lifter, one can construct proofs analogous to those in this work to establish comparable security guarantees.
 
 More broadly, our verification methodology and the design principles outlined in \autoref{sec:fm_friendly} extend beyond CFI to other binary rewriting applications, including emulators, dynamic patchers, and profilers. These principles help reduce verification complexity but do not impose strict constraints on system design.
 
-For example, \pname is not fully stack-independent, as it uses the stack to save registers. Similarly, rewriters that maintain mutable security state remain verifiable in principle, but they introduce additional proof obligations and typically require greater verification effort.
+For example, \pname is not fully stack-independent, as it uses the stack to save registers. Similarly, rewriters that maintain mutable security state remain verifiable in principle, but introduce additional proof obligations and typically require greater verification effort.

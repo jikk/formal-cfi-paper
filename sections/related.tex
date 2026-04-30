@@ -63,10 +63,14 @@ This enables verification results to generalize from a single program to the unb
 Certified compilation~\cite{compcert,jasmin,barthe2019formal} reasons about non-concrete binary programs from source code, with the goal of proving compiler correctness through semantic transparency.
 
 Binary-level verification has the benefit of reasoning about program behavior with respect to hardware-specific properties.
-Because the a program's execution time is a function of the instructions it consists of, reasoning about concrete timing is impossible for source code.
-Many works formally reason about the timing behavior of machine code, often for the purposes of constant-time cryptography or worst-case execution time guarantees~\cite{barthe2019formal}.
-\Picinae{} has been extended to enable users to formally describe the concrete timing behavior of programs~\cite{averill2025src}, and is therefore also able to reason about the timing effects of program transformations in a similar manner to the technique described in this work.
-It has also been extended~\cite{averill26bar} to reason about \emph{fault tolerance}, a property that is most meaningfully expressed at the binary level, and is a popular target for binary-level formal methods~\cite{bardin_ft}.
+Many recent works have developed general-purpose frameworks for reasoning about properties of binary code~\cite{islaris,isabil,myreen_hoare_rmmc,relational_hoare_logic_rmmc,trabin,forward_symb_reasoning_vmcai26}.
+% Because the a program's execution time is a function of the instructions it consists of, reasoning about concrete timing is impossible for source code.
+% Many works formally reason about the timing behavior of machine code, often for the purposes of constant-time cryptography or worst-case execution time guarantees~\cite{barthe2019formal}.
+% \Picinae{} has been extended to enable users to formally describe the concrete timing behavior of programs~\cite{averill2025src}, and is therefore also able to reason about the timing effects of program transformations in a similar manner to the technique described in this work.
+Most of these works are unable to reason about non-concrete code sections, and none have demonstrated it.
+% You keep trying to sell Picinae. No "Picinae was designed from the bottom up..." here.  The related work section is for getting reviewers who are authors of OTHER works to like our stuff.  Gotta cite other people, not just ourselves. (I love Picinae more than anyone, but we need to be strategic!)
+\Picinae{} has also been used to formally verify fault-tolerance of binary codes~\cite{averill26bar}, and security-critical binary timing properties~\cite{averill2025src}.
+%\Picinae{} has also been used to reason about binary-level fault tolerance~\cite{averill26bar}, and is a popular target for binary-level formal methods~\cite{bardin_ft}.
 Several projects have performed formal verification at the machine-code level for large projects such as separation kernels~\cite{sep_kernel} and programmable logic controllers~\cite{zhang2024binary}.
 
 % This is a copy of the text that is already above
