@@ -1,29 +1,22 @@
 %! root=../main.tex
 \subsection{FM-friendly Rewriter Design Principles}\label{sec:fm_friendly}
-\ixb{@KJEE, if not for leading into \S~4 I would think this subsection should go before the Design, making the order "Design Principles -> Design -> Proof Setup". I understand that it's a good lead into Picin\ae{}, but going before design means (1) maybe we can reduce the size of the Design section, which is almost 2 whole pages, and (2) in the design section we can say "this is how we implemented design principle X, see?" Thoughts on reordering?}
 
-Strategic design and implementation choices can ease the burden of formal verification. Our experience designing, implementing, and verifying \pname{} led us to general binary rewriter development principles that proved important for keeping the verification task tractable. This section presents these principles with explanations of how and why they impact \FM verification.
+Strategic design and implementation choices can substantially reduce the burden of formal verification. Our experience designing, implementing, and verifying \pname revealed a set of general principles for binary rewriter construction that make verification tractable. We discuss these principles and explains how they reduce proof complexity, improve modularity, and simplify reasoning.
 
-\subsubsection{Reducing Proof Complexity} we consider static binary rewriter development tactics to reduce th complexity of formal proofs.
+\subsubsection{Reducing Proof Complexity}
+We first consider design choices that directly reduce the size and complexity of the proof search space.
 
 \heading{Minimize conditionals.}
-Each security-relevant conditional instruction that a rewriter adds increases the state space of control-flow paths that a proof must consider.
-Minimizing conditional introduction therefore significantly affects verification feasibility.
+Each security-relevant conditional instruction increases the number of control-flow paths that a proof must consider. Reducing the number of introduced conditionals therefore directly improves verification feasibility.
 
-Each tested condition's complexity likewise impacts proof complexity.
-For example, the \texttt{EQ} conditional on ARM is a symbolic expression of the form $e=0$ during formal verification,
-but the \texttt{LE} conditional is a much more complex symbolic expression of the form $\mathrm{toZ}_{32}(e_1)\leq\mathrm{toZ}_{32}(e_2)$, where $\mathrm{toZ}_{32}$ performs 32-bit two's complement conversion from Rocq unsigned binary numbers $\mathsf{N}$ to Rocq signed binary numbers $\mathsf{Z}$.
-Such expressions frustrate automated verification because $\mathrm{toZ}$ entails non-linear binary arithmetic, and is therefore not approachable by linear integer arithmetic solvers.
+The complexity of each condition also matters. For example, the \cd{EQ} conditional on ARM corresponds to a simple symbolic expression $e = 0$, whereas \cd{LE} yields a more complex expression $\mathrm{toZ}_{32}(e_1) \leq \mathrm{toZ}_{32}(e_2)$, where $\mathrm{toZ}_{32}$ converts 32-bit unsigned values ($\mathsf{N}$) to signed integers ($\mathsf{Z}$). Such expressions involve non-linear bitvector reasoning and are difficult for automated solvers to handle.
 
-Rewriters that introduce many complex conditional guards are therefore more difficult to verify than rewriters that use fewer, simpler conditional tests.
-Our design enforces the policy without conditionals by implementing each indirect jump as an unconditional policy table lookup.
-Table integrity hence provably implies control-flow integrity without increasing the rewritten CFG\@.
+Rewriters that introduce many complex guards are therefore significantly harder to verify than those that rely on fewer, simpler conditions. Our design eliminates conditionals entirely for indirect control transfers by implementing each as an unconditional policy table lookup. As a result, table integrity directly implies control-flow integrity without increasing the complexity of the rewritten CFG\@.
 
 \heading{Immutable security state.}
 All mutable, security-critical data requires a proof of integrity during formal verification.
 Such proofs typically entail verifying every memory-write operation in the rewritten code, raising significant scalability obstacles.
 Our design places all policy data in non-writable sections, allowing proofs to infer policy data integrity from static memory access permissions.
-
 
 \heading{Code reuse.}
 Code-reuse in rewritten binaries leads to proof-reuse during verification.
@@ -31,24 +24,23 @@ In particular, a rewriter that generates nearly identical \Blocks for many diffe
 Our design uses the same sequence of instructions to guard every form of indirect branch in the ARM ISA,
 reducing most of our verification task to establishing security and safety of that one shared instruction sequence.
 
-
-
-\subsubsection{Localizing and Simplifying Safety Enforcement} We encourage the in-place the safety and security checks to global invariants and avoid the complex stack reasoning to make safety proofs local and redundant.
+\subsubsection{Localizing and Simplifying Safety Enforcement}
+We next consider principles that localize safety reasoning and eliminate the need for complex global invariants.
 
 \heading{Safety redundancy.}
 Binaries that implement safety double-checks or extra sanitization with negligible overhead can be much easier to formally verify, because they reduce the need for proofs to maintain (and prove) complex preconditions for safety.
 For example, our rewriter chooses a hash function $h$ whose image is constrained by definition to the bounds of the table it indexes.
 This trivializes a proof of boundedness that would otherwise entail tracking and maintaining numerical invariants that imply boundedness whenever hash values flow to table indexing operations.
 Similarly, to ensure stack pointer alignment (\autoref{sec:case_studies}) our rewriter force-aligns the stack pointer whenever alignment is critical for safety, without checking whether it is already aligned or attempting to prevent it from becoming unaligned.
-This relieves the proof from the obligation of verifying that the pointer remains aligned.
-
+This shifts complexity from the proof into the implementation, simplifying verification.
 
 \heading{Stack independence.}
 Security state that flows to the stack is a particularly common case of the mutable security state challenge.
 Integrity of such data depends on proving stack integrity, which is a complex data structure on most ISAs\@.
 Rewriters that distrust all stack data, such as by revalidating it or sanitizing it once popped into registers, are therefore easier to formally verify.
 
-\subsubsection{Reducing Proof Dependencies} We encourage the clear separation of inter-chunk / global reasoning to reduce proof complexity.
+\subsubsection{Reducing Proof Dependencies}
+We further reduce verification complexity by minimizing dependencies across code regions.
 
 \heading{Global state independence.}
 Rewriters whose soundness depends on global code properties, such as uniqueness of security-relevant values across all executions, raise significant challenges for formal verification.
@@ -65,7 +57,8 @@ This strategic choice of output format allows formal verification to construct a
 The proof positions coinductive invariants at \Block boundaries.
 This eliminates the considerable challenge of discovering invariant locations sufficient to prove safety of the abstract binary during verification, allowing the rewriter to divulge the code's underlying structure as an untrusted, verifiable hint.
 
-\subsubsection{Handling ISA-Level Nondeterminism} By leveraging the precise and extensible abstraction layer, we can handle complex and diverse behavior of underlying hardware ISA.
+\subsubsection{Handling ISA-Level Nondeterminism}
+Finally, we address challenges arising from the underlying ISA semantics.
 
 \heading{Nondeterminism independence.}
 Real-world ISAs include many \unpredictable{} operations, some of which seem predictable in practice because they behave consistently across most hardware instantiations.
