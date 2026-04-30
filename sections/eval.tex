@@ -26,7 +26,7 @@ These effects are exacerbated by architectural characteristics of ARMv7, includi
 
 The rewritten text segment is, on average, $1.36\times$ larger than the original due to the insertion of security guard code.
 For the policy table, we further measure the fraction of entries that correspond to non-abort program targets.
-
+%
 Some benchmarks exhibit higher code size overhead due to a larger number of unfilled table entries.
 This effect stems from our design choice of using a simple hash function (\eg, one without control or branch operations), which favors verification simplicity over space efficiency. On average, the policy table accounts for 73.5\% of the total size increase.
 
