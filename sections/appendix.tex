@@ -29,7 +29,7 @@ We also include PoC attack cases (\autoref{tab:poc-attacks}) together with autom
 \section{ARMv7 Instruction Categories}\label{sec:armv7_categories}
 \ixb{The story here can be ``look at all these instructions whose \emph{operands} change how they need to be treated. Imagine how complex the implementation is. Imagine \emph{not} having a proof for its soundness!}
 
-In Figure \ref{tab:categories} we categorize ARMv7 user-mode instructions based on their control-flow effects as described in \autoref{sec:cfi_design}.
+In Table \ref{tab:categories} we categorize ARMv7 user-mode instructions based on their control-flow effects as described in \autoref{sec:cfi_design}.
 There are a considerable number of instructions that can perform indirect control flow, mainly from the use of \PC as an operand for data processing instructions.
 We instrument most of them in the same way using the following template,
 where \texttt{reg} is a scratch register:
