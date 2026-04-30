@@ -39,16 +39,14 @@ Security state that flows to the stack is a particularly common case of the muta
 Integrity of such data depends on proving stack integrity, which is a complex data structure on most ISAs\@.
 Rewriters that distrust all stack data, such as by revalidating it or sanitizing it once popped into registers, are therefore easier to formally verify.
 
-\subsubsection{Reduce Proof Dependencies}\mbox{}
-% We further reduce verification complexity by minimizing dependencies across code regions.
-
-
 \heading{Global state independence.}
 Rewriters whose soundness depends on global code properties, such as uniqueness of security-relevant values across all executions, raise significant challenges for formal verification.
 For example, the soundness of label-based approaches (\cf \cite{abadi_cfi}) relies on label uniqueness properties that span the rewritten binary code.
 In contrast, safety of our table-based approach is a \Block-local, table-local property independent of any other \Block's code or data.
 This improves proof modularity and scalability.
 
+\subsubsection{Reify Security-relevant Abstractions}\mbox{}
+% We further reduce verification complexity by minimizing dependencies across code regions.
 
 \heading{Evidence generation.}
 Code generators often internally synthesize evidence of security and safety in the form of data structures that are later discarded.
@@ -58,11 +56,11 @@ This strategic choice of output format allows formal verification to construct a
 The proof positions coinductive invariants at \Block boundaries.
 This eliminates the considerable challenge of discovering invariant locations sufficient to prove safety of the abstract binary during verification, allowing the rewriter to divulge the code's underlying structure as an untrusted, verifiable hint.
 
-\subsubsection{Handle Nondeterminism}\mbox{}
+%\subsubsection{Handle Nondeterminism}\mbox{}
 % Finally, we address challenges arising from the underlying ISA semantics.
 
-\heading{Nondeterminism independence.}
+\heading{Explicit Nondeterminism modeling.}
 Real-world ISAs include many \unpredictable{} operations, some of which seem predictable in practice because they behave consistently across most hardware instantiations.
 Rewriters must nevertheless carefully avoid generating code whose safety relies on seemingly consistent yet ISA-unspecified behaviors.
 The choice of verification framework must likewise include foundational support for nondeterministic ISA operational semantics, which is critical for modeling how real ISAs behave across arbitrary ISA implementations.
-\Picinae supports this through a nondeterministic expression language that faithfully models \unpredictable{} operations, forcing proofs to cover all possible effects.
+\Picinae supports this through a nondeterministic \IL that faithfully models \unpredictable{} operations, forcing proofs to cover all possible effects.

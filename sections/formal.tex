@@ -147,7 +147,7 @@ This leads to five main proof cases:
 The rewritten \Block for most instructions consists solely of the original (abstract) instruction.
 This case is verified by proving that the semantics of all instructions preserved by the rewriter
 (1) fall through to the next instruction or raise a hardware exception, and
-(2) do not corrupt any elements of the invariant (\eg endianness mode).
+(2) do not corrupt any elements of the invariant (\eg endianness changes).
 We achieve this with tactic automation that symbolically executes every instruction in the ISA with abstract arguments, establishing symbolic equality of security-relevant machine state elements before and after execution.
 
 \heading{Non-control change.}
