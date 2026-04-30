@@ -28,8 +28,8 @@ The rewritten text segment is, on average, $1.36\times$ larger than the original
 For the policy table, we further measure the fraction of entries that correspond to non-abort program targets.
 
 Some benchmarks exhibit higher code size overhead due to a larger number of unfilled table entries.
-This effect stems from our design choice of using a simple hash function (\eg, one without control or branch operations), which favors verification simplicity over space efficiency.
-On average, the policy table accounts for 73.5\% of the total size increase.
+This effect stems from our design choice of using a simple hash function (\eg one without control or branch operations), which favors verification simplicity over space efficiency.
+On average, the policy table accounts for 71.8\% of the total size increase.
 
 Overall, the rewritten binaries grow substantially in size; however, the increase remains on the order of a few megabytes and incurs negligible runtime memory overhead.
 As future work, we plan to refine the hash function and its interaction with the policy table to reduce space overhead while preserving minimal formal verification complexity.
