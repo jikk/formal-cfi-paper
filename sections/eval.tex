@@ -16,7 +16,7 @@ In particular, \cd{500.perlbench\_r} represents an interpreter-style workload wi
     These effects are further exacerbated by architectural characteristics of ARM, including pervasive conditional execution and flexible \cd{PC}-relative addressing semantics, both of which complicate efficient instrumentation and increase the cost of enforcing control-flow checks.
 }
 
-\pname’s runtime overhead can be further reduced by leveraging emerging hardware support such as ARM Pointer Authentication (PAC) and Indirect Branch Tracking (IBT). These features can be integrated with minimal changes to the existing software-only, binary-to-binary rewriter, while requiring only modest extensions to the formal verification effort.
+\pname’s runtime overhead can be further reduced by leveraging emerging hardware support. These features can be integrated with minimal changes to the existing software-only, binary-to-binary rewriter, while requiring only modest extensions to the formal verification effort.
 
 
 \input{tables/spec2017_tab2}
