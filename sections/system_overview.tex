@@ -288,7 +288,7 @@ Once the CFI rewriter has generated a new code section, the \ELFPackager adds ne
 %We do not formally verify the correctness of the the \ELFPackager,
 %instead only focusing on the core rewriting logic that transforms the instruction bytes.
 
-Although mainstream \FM frameworks such as Rocq and Isabelle/\penalty0 HOL have built-in support for machine-proving properties of concrete codes implemented in their respective specification languages, they do not natively support verifying properties of codes expressed in other languages or produced by other tools.
+Although mainstream \FM frameworks such as Rocq and Isabelle/\penalty0 HOL have built-in support for machine-proving properties of concrete codes implemented in their respective specification languages, they do not natively support verifying properties of codes expressed in other languages or from other tools.
 Therefore, although implementing our rewriter as a Gallina function affords Rocq the capacity to directly reason about its implementation, it does not afford the capability of proving properties of the machine code that it outputs.
 
 This presents a difficult \FM challenge:

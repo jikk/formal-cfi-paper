@@ -151,14 +151,15 @@ IGNOREpages = {475–488},
 
 @BOOK{hol,
   AUTHOR = {Nipkow, Tobias and Wenzel, Markus and Paulson, Lawrence C.},
-  LOCATION = {Berlin, Heidelberg},
+  PUBLISHER = {Springer Berlin, Heidelberg},
   DATE = {2002},
   TITLE = {{Isabelle/HOL}: a proof assistant for higher-order logic},
+  IGNOREdoi={https://doi.org/10.1007/3-540-45949-9},
 }
 
 @INPROCEEDINGS{rocksalt2012pldi,
   AUTHOR = {Morrisett, Greg and Tan, Gang and Tassarotti, Joseph and Tristan, Jean-Baptiste and Gan, Edward},
-  BOOKTITLE = {ACM SIGPLAN} # conf # on #{ Programming Language Design and Implementation \nym{PLDI}},
+  BOOKTITLE = proc # ofthe # {\cnum{33rd} ACM SIGPLAN} # conf # on # {Programming Language Design and Implementation \nym{PLDI}},
   DATE = {2012},
   IDS = {rocksalt},
   IGNOREpages = {395--404},
@@ -167,7 +168,7 @@ IGNOREpages = {475–488},
 
 @INPROCEEDINGS{hamlen19feast,
   AUTHOR = {Hamlen, Kevin W. and Fisher, Dakota and Lundquist, Gilmore R.},
-  BOOKTITLE = proc # ofthe # {\nym{3} ACM Workshop} # on # {Forming an Ecosystem Around Software Transformation \nym{FEAST}},
+  BOOKTITLE = proc # ofthe # {\cnum{3} ACM Workshop} # on # {Forming an Ecosystem Around Software Transformation \nym{FEAST}},
   DATE = {2019},
   IDS = {picinae},
   TITLE = {Source-free Machine-checked Validation of Native Code in {Coq}},
@@ -216,7 +217,7 @@ IGNOREpages = {475–488},
 
 @BOOK{patterson2016computer,
   AUTHOR = {Patterson, David A and Hennessy, John L},
-  PUBLISHER = {Morgan kaufmann},
+  PUBLISHER = {Morgan Kaufmann},
   DATE = {2016},
   TITLE = {Computer organization and design ARM edition: the hardware software interface},
 }
@@ -278,11 +279,13 @@ IGNOREpages = {475–488},
 }
 
 @MISC{UsingasT39:online,
-  AUTHOR = {Dean Elsner, Jay Fenlason},
+  AUTHOR = {Dean Elsner and Jay Fenlason and friends},
   DATE = {1994},
   IDS = {gas_manual},
   NOTE = {[Online; accessed 2026-04-17]},
-  TITLE = {Using as - Table of Contents},
+  TITLE = {Using as},
+  SUBTITLE = {The {GNU} Assembler},
+  url = {https://ftp.gnu.org/old-gnu/Manuals/gas-2.9.1/html_chapter/as_toc.html},
 }
 
 @INPROCEEDINGS{ptcfi,
@@ -309,13 +312,13 @@ IGNOREpages = {475–488},
 
 @INPROCEEDINGS{coarse_cfi,
   AUTHOR = {Davi, Lucas and Sadeghi, Ahmad-Reza and Lehmann, Daniel and Monrose, Fabian},
-  BOOKTITLE = {\cnum{23rd} USENIX Security Symposium},
+  BOOKTITLE = proc # ofthe # {\cnum{23rd} USENIX Security Symposium},
   DATE = {2014},
   TITLE = {Stitching the Gadgets: On the Ineffectiveness of {Coarse-Grained} {Control-Flow} Integrity Protection},
 }
 
 @INPROCEEDINGS{outofcontrol,
-  AUTHOR = {G"{o}ktas, Enes and Athanasopoulos, Elias and Bos, Herbert and Portokalidis, Georgios},
+  AUTHOR = {G\"{o}ktas, Enes and Athanasopoulos, Elias and Bos, Herbert and Portokalidis, Georgios},
   BOOKTITLE = {IEEE} # sym # on # {Security and Privacy \nym{SP}},
   DATE = {2014},
   TITLE = {Out of Control: Overcoming Control-Flow Integrity},
@@ -331,7 +334,7 @@ IGNOREpages = {475–488},
 @inproceedings{isabil,
   author       = {Matt Griffin and Brijesh Dongol and Azalea Raad},
   title        = {IsaBIL: {A} Framework for Verifying (In)correctness of Binaries in Isabelle/HOL},
-  booktitle    = "\cnum{39} European " # conf # on # "{Object-Oriented}" # prog # " \nym{ECOOP}",
+  booktitle    = "\cnum{39th} European " # conf # on # "{Object-Oriented}" # prog # " \nym{ECOOP}",
   IGNOREseries       = {LIPIcs},
   IGNOREvolume       = {333},
   IGNOREpages        = {14:1--14:30},
@@ -450,10 +453,10 @@ IGNOREpages = {475–488},
   TITLE = {{ISA} Semantics for {ARMv8-a}, {RISC-V}, and {CHERI-MIPS}},
 }
 
-@ARTICLE{liblisa,
+@INPROCEEDINGS{liblisa,
   AUTHOR = {Craaijo, Jos and Verbeek, Freek and Ravindran, Binoy},
   DATE = {2024},
-  JOURNALTITLE = proc # of # the # {ACM } # on #{Programming Languages},
+  BOOKTITLE = proc # of # the # {ACM } # on #{Programming Languages},
   TITLE = {{libLISA}: Instruction Discovery and Analysis on {x86-64}},
 }
 
@@ -470,7 +473,7 @@ IGNOREpages = {475–488},
 @inproceedings {static_cfi_perf,
     author = {Caroline Tice and Tom Roeder and Peter Collingbourne and Stephen Checkoway and {\'U}lfar Erlingsson and Luis Lozano and Geoff Pike},
     title = {Enforcing {Forward-Edge} {Control-Flow} Integrity in {GCC} \& {LLVM}},
-    booktitle = {\cnum{23rd} USENIX Security Symposium},
+    booktitle = proc # ofthe # {\cnum{23rd} USENIX Security Symposium},
     date = {2014},
     IGNOREpages = {941--955},
 }
@@ -492,7 +495,7 @@ IGNOREpages = {475–488},
 @inproceedings{russo2010dynamic,
   title={Dynamic vs. static flow-sensitive security analysis},
   author={Russo, Alejandro and Sabelfeld, Andrei},
-  booktitle={\cnum{23rd}} #  {IEEE Computer Security Foundations} # sym,
+  booktitle= {\cnum{23rd} IEEE Computer Security Foundations} # sym,
   IGNOREpages={186--199},
   date={2010},
 }
@@ -524,7 +527,6 @@ IGNOREpages = {475–488},
   title={Formal verification of a constant-time preserving C compiler},
   author={Barthe, Gilles and Blazy, Sandrine and Gr{\'e}goire, Benjamin and Hutin, R{\'e}mi and Laporte, Vincent and Pichardie, David and Trieu, Alix},
   journal=proc # of # the # {ACM } # on #{Programming Languages},
-  volume={4},
   date={2019},
 }
 
@@ -555,7 +557,7 @@ IGNOREpages = {331–340},
 author = {Flur, Shaked and Gray, Kathryn E. and Pulte, Christopher and Sarkar, Susmit and Sezgin, Ali and Maranget, Luc and Deacon, Will and Sewell, Peter},
 title = {Modelling the {ARMv8} architecture, operationally: concurrency and ISA},
 date = {2016},
-url = {url{https://doi.org/10.1145/2837614.2837615}},
+IGNOREurl = {\url{https://doi.org/10.1145/2837614.2837615}},
 booktitle = proc # ofthe # "\cnum{43rd} ACM SIGPLAN-SIGACT" # sym # on # "Principles" # of # "Programming Languages \nym{POPL}",
 IGNOREpages = {608--621},
 }
@@ -568,12 +570,12 @@ IGNOREpages = {608--621},
   IGNOREURL = {https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ECRTS.2019.2},
 }
 
-@article{armv8semantics2,
+@inproceedings{armv8semantics2,
 author = {Armstrong, Alasdair and Bauereiss, Thomas and Campbell, Brian and Reid, Alastair and Gray, Kathryn E. and Norton, Robert M. and Mundkur, Prashanth and Wassell, Mark and French, Jon and Pulte, Christopher and Flur, Shaked and Stark, Ian and Krishnaswami, Neel and Sewell, Peter},
 title = {ISA semantics for {ARMv8-A}, {RISC-V}, and {CHERI-MIPS}},
 date = {2019},
 IGNOREurl = {https://doi.org/10.1145/3290384},
-journal = proc # ofthe # "ACM" # on # "Principles" # of # "Programming Languages \nym{POPL}",
+booktitle = proc # ofthe # "ACM" # on # "Principles" # of # "Programming Languages \nym{POPL}",
 }
 
 @InProceedings{armv8semantics3,
@@ -603,7 +605,7 @@ IGNOREpages="626--655",
 
 @article{burow2017survey,
 DATE = {2017},
-title = {{Control-Flow Integrity: Precision, Security, and Performance.}},
+title = {Control-Flow Integrity: Precision, Security, and Performance.},
 author = {Burow, Nathan and Carr, Scott A and Nash, Joseph and Larsen, Per and Franz, Michael and Brunthaler, Stefan and Payer, Mathias},
 journal = {ACM Computing Surveys \nym{CSUR}},
 }
@@ -620,7 +622,7 @@ booktitle = proc # ofthe # {\cnum{8th}} # work # on # {Hardware and Architectura
   ids = {arm_pac},
   TITLE={{PAC} it up: Towards pointer integrity using {ARM} pointer authentication},
   AUTHOR={Liljestrand, Hans and Nyman, Thomas and Wang, Kui and Perez, Carlos Chinea and Ekberg, Jan-Erik and Asokan, N},
-  BOOKTITLE=proc # ofthe # {\cnum{28th}} # {{USENIX}} # conf # on # {Security} # sym,
+  BOOKTITLE=proc # ofthe # {\cnum{28th} {USENIX}} # conf # on # {Security} # sym,
   IGNOREPAGES={177--194},
   DATE={2019}
 }

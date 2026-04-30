@@ -19,7 +19,7 @@ Across all cases, the proof obligations force reasoning over all possible inputs
     \caption{Translation between original and new address spaces.
     A \naive \itoip only remaps indices in \texttt{.text},
     leading to the erroneous mapping of an external index to an arbitrary \texttt{.newtext} index (red edge),
-    making the rewriter unsound. The corrected \itoip uses the green edge instead.}~\label{fig:address_translation}
+    making the rewriter unsound. The corrected \itoip uses the green edge instead.}\label{fig:address_translation}
 \end{figure}
 The rewriter maintains both the original and rewritten text segments, making address translation between them subtle.
 % A natural implementation of the translation function $\itoip$ leaves indices outside the original text segment unchanged, mirroring the inverse mapping $\iptoi$.
