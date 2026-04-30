@@ -3,15 +3,15 @@
 
 Strategic design and implementation choices can substantially reduce the burden of formal verification. Our experience designing, implementing, and verifying \pname revealed a set of general principles for binary rewriter construction that make verification tractable. We discuss these principles and explains how they reduce proof complexity, improve modularity, and simplify reasoning.
 
-\subsubsection{Reducing Proof Complexity}
-We first consider design choices that directly reduce the size and complexity of the proof search space.
+\subsubsection{Minimize Security Dependencies}\mbox{}
+%We first consider design choices that directly reduce proof search space size and complexity.
 
-\heading{Minimize conditionals.}
+\heading{Conditional Introduction.}
 Each security-relevant conditional instruction increases the number of control-flow paths that a proof must consider. Reducing the number of introduced conditionals therefore directly improves verification feasibility.
 
 The complexity of each condition also matters. For example, the \cd{EQ} conditional on ARM corresponds to a simple symbolic expression $e = 0$, whereas \cd{LE} yields a more complex expression $\mathrm{toZ}_{32}(e_1) \leq \mathrm{toZ}_{32}(e_2)$, where $\mathrm{toZ}_{32}$ converts 32-bit unsigned values ($\mathsf{N}$) to signed integers ($\mathsf{Z}$). Such expressions involve non-linear bitvector reasoning and are difficult for automated solvers to handle.
 
-Rewriters that introduce many complex guards are therefore significantly harder to verify than those that rely on fewer, simpler conditions. Our design eliminates conditionals entirely for indirect control transfers by implementing each as an unconditional policy table lookup. As a result, table integrity directly implies control-flow integrity without increasing the complexity of the rewritten CFG\@.
+Rewriters that introduce many complex guards are therefore significantly harder to verify than those that rely on fewer, simpler conditions. Our design eliminates conditionals entirely for indirect control transfers by implementing each as an unconditional policy table lookup. As a result, table integrity directly implies control-flow integrity without increasing the rewritten CFG's complexity.
 
 \heading{Immutable security state.}
 All mutable, security-critical data requires a proof of integrity during formal verification.
@@ -24,8 +24,8 @@ In particular, a rewriter that generates nearly identical \Blocks for many diffe
 Our design uses the same sequence of instructions to guard every form of indirect branch in the ARM ISA,
 reducing most of our verification task to establishing security and safety of that one shared instruction sequence.
 
-\subsubsection{Localizing and Simplifying Safety Enforcement}
-We next consider principles that localize safety reasoning and eliminate the need for complex global invariants.
+\subsubsection{Localize Safety Enforcement}\mbox{}
+% We next consider principles that localize safety reasoning and eliminate the need for complex global invariants.
 
 \heading{Safety redundancy.}
 Binaries that implement safety double-checks or extra sanitization with negligible overhead can be much easier to formally verify, because they reduce the need for proofs to maintain (and prove) complex preconditions for safety.
@@ -39,8 +39,9 @@ Security state that flows to the stack is a particularly common case of the muta
 Integrity of such data depends on proving stack integrity, which is a complex data structure on most ISAs\@.
 Rewriters that distrust all stack data, such as by revalidating it or sanitizing it once popped into registers, are therefore easier to formally verify.
 
-\subsubsection{Reducing Proof Dependencies}
-We further reduce verification complexity by minimizing dependencies across code regions.
+\subsubsection{Reduce Proof Dependencies}\mbox{}
+% We further reduce verification complexity by minimizing dependencies across code regions.
+
 
 \heading{Global state independence.}
 Rewriters whose soundness depends on global code properties, such as uniqueness of security-relevant values across all executions, raise significant challenges for formal verification.
@@ -57,8 +58,8 @@ This strategic choice of output format allows formal verification to construct a
 The proof positions coinductive invariants at \Block boundaries.
 This eliminates the considerable challenge of discovering invariant locations sufficient to prove safety of the abstract binary during verification, allowing the rewriter to divulge the code's underlying structure as an untrusted, verifiable hint.
 
-\subsubsection{Handling ISA-Level Nondeterminism}
-Finally, we address challenges arising from the underlying ISA semantics.
+\subsubsection{Handle Nondeterminism}\mbox{}
+% Finally, we address challenges arising from the underlying ISA semantics.
 
 \heading{Nondeterminism independence.}
 Real-world ISAs include many \unpredictable{} operations, some of which seem predictable in practice because they behave consistently across most hardware instantiations.

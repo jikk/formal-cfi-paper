@@ -33,7 +33,7 @@
 Concrete binary code is first lifted to a low-level \IL that encodes each machine instruction's operational effects upon the machine state.
 Lifting can be performed externally or internally.
 External lifting uses a separate binary reverse-engineering tool, such as NSA Ghidra~\cite{ghidra} or the Binary Analysis Platform (BAP)~\cite{brumley11cav}, to convert machine code to the tool's \IL (P-code or BIL, respectively), which translates directly to \Picinae{}'s IL\@.
-Internal lifters implement this process within Rocq rather than using an external tool.
+Internal lifters implement this within Rocq rather than as an external tool.
 
 To realize \pname, we implement an internal lifter for ARMv7\@.
 Internal lifting has the advantage that it need not be applied to concrete machine code.
