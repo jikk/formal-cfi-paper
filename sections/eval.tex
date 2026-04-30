@@ -21,13 +21,33 @@ These effects are exacerbated by architectural characteristics of ARMv7, includi
 \input{tables/spec2017_tab2}
 
 \subsection{Code Size Growth}
-\autoref{fig:spec2017_size} measures the static size overhead of rewritten SPEC binaries.
-Rewritten text segments are $1.36\times$ larger on average due to inserted security guard code.
-For the table segment, we also measure how many entries contain non-abort program addresses.
-Some benchmarks have high space overhead from unfilled entries when a large table is needed to avert hash collisions.
-For example,
+\autoref{fig:spec2017_size} reports the static code size overhead of rewritten SPEC binaries.
+\pname generates a rewritten ELF binary by augmenting the original with a new instrumented text segment and an additional section that stores the policy table.
 
-In these cases, a better hash function can reduce size overhead. The table segment on average contributes 73.5\% of the added size.
+The rewritten text segment is, on average, $1.36\times$ larger than the original due to the insertion of security guard code.
+For the policy table, we further measure the fraction of entries that correspond to non-abort program targets.
+
+Some benchmarks exhibit higher code size overhead due to a larger number of unfilled table entries.
+This effect stems from our design choice of using a simple hash function (\eg, one without control or branch operations), which favors verification simplicity over space efficiency.
+On average, the policy table accounts for 73.5\% of the total size increase.
+
+Overall, the rewritten binaries grow substantially in size; however, the increase remains on the order of a few megabytes and incurs negligible runtime memory overhead.
+As future work, we plan to refine the hash function and its interaction with the policy table to reduce space overhead while preserving minimal formal verification complexity.
+
+
+\comment{%
+    \autoref{fig:spec2017_size} measures the static size overhead of rewritten SPEC binaries.
+    \pname produces the rewritten ELF binary packaged with new text will policy table in additional all section from the original ELF.
+    Rewritten text segments results in on average  $1.36\times$ larger than the old text due to inserted security guard code.
+    For the policy table segment, we also measure how many entries contain non-abort program addresses.
+
+        - Some benchmark items resulted in larger code size than others due to unfilled table entries.
+            - In these cases, a better hash function can reduce size overhead. The table segment on average contributes 73.5\% of the added size.
+            - this is due to our design choice to have simplistic hash function (\eg no control/branch operations inside).
+        - As a result, the size of rewritten binary have grown substantial.
+        - Yet, it will be only in order of a few megabytes; incurring only negligible memory footprint at runtime.
+            - We also plan to refine/improve the hash function structure access/tranlating policy table still maintaintaining minimal formal proof requirement.
+}
 
 \input{tables/spec2017_size}
 
