@@ -9,7 +9,7 @@ We then present case studies demonstrating how formal verification uncovers subt
 
 \subsection{Runtime Overheads}
 
-\autoref{tab:spec2017}  evaluates \pname's runtime performance on rewritten SPEC CPU 2017 benchmarks. To measure overhead, we adopt a permissive policy that allows any instruction to transfer control to any other instruction within the code section. \pname incurs an average overhead of 19\%, which is comparable to prior ARM-based CFI rewriters, although several benchmarks exhibit higher slowdowns.
+\autoref{tab:spec2017}  evaluates \pname's runtime performance on rewritten SPEC CPU 2017 benchmarks. To measure overhead, we adopt a permissive policy that allows any instruction to transfer control to other instruction within the code section. \pname incurs an average overhead of 19\%, which is comparable to prior ARM-based CFI rewriters~\cite{walls_et_al}, although some benchmarks exhibit higher slowdowns.
 
 In particular, \cd{500.perlbench\_r} runs an interpreter-style workload with a high density of indirect control transfers, such as switch-based dispatch and function pointer invocations. Benchmark \cd{541.leela\_r} is a Go engine based on Monte Carlo Tree Search (MCTS). It exhibits highly irregular, data-dependent control flow and frequent function calls due to its recursive search structure. In both cases, the dynamic frequency of control-flow events is high, which amplifies the cost of CFI instrumentation.
 %
@@ -22,18 +22,15 @@ These effects are exacerbated by architectural characteristics of ARMv7, includi
 
 \subsection{Code Size Growth}
 \autoref{fig:spec2017_size} reports the static code size overhead of rewritten SPEC binaries.
-\pname generates a rewritten ELF binary by augmenting the original with a new instrumented text segment and an additional section that stores the policy table.
+\pname generates a rewritten ELF binary by augmenting the original with a new instrumented text segment and an additional section for the policy table.
 
 The rewritten text segment is, on average, $1.36\times$ larger than the original due to the insertion of security guard code.
 For the policy table, we further measure the fraction of entries that correspond to non-abort program targets.
 
 Some benchmarks exhibit higher code size overhead due to a larger number of unfilled table entries.
-This effect stems from our design choice of using a simple hash function (\eg one without control or branch operations), which favors verification simplicity over space efficiency.
-On average, the policy table accounts for 71.8\% of the total size increase.
+This effect stems from our design choice of using a simple hash function (\eg, one without control or branch operations), which favors verification simplicity over space efficiency. On average, the policy table accounts for 73.5\% of the total size increase.
 
-Overall, the rewritten binaries grow substantially in size; however, the increase remains on the order of a few megabytes and incurs negligible runtime memory overhead.
-As future work, we plan to refine the hash function and its interaction with the policy table to reduce space overhead while preserving minimal formal verification complexity.
-
+Overall, the rewritten binaries grow substantially in size; however, the increase remains on the order of a few megabytes and incurs negligible runtime memory overhead. As future work, we plan to refine the hash function and its interaction with the policy table to reduce space overhead while preserving minimal formal verification complexity.
 
 \comment{%
     \autoref{fig:spec2017_size} measures the static size overhead of rewritten SPEC binaries.

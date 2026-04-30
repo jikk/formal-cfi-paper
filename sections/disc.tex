@@ -96,12 +96,12 @@ It is therefore approached through informal quality assurance testing (\S\ref{se
 Extending our approach to formally verify broader classes of secure IRMs is a natural and meaningful next step. IRMs transform an untrusted binary into a hardened version by embedding security checks into the code. This transformation partitions execution into two contexts: the guest context, which runs the original program, and the monitor context, which enforces the security policy.
 
 IRMs differ in their degree of statefulness. Static binary CFI, as implemented in \pname, is a stateless IRM: the control-flow policy remains fixed and requires no persistent monitor state. In contrast, stateful IRMs maintain evolving security state, such as shadow memory for information flow tracking or allocation histories for memory safety policies.
-
+%
 Regardless of statefulness, protecting the monitor context from interference by the untrusted guest context remains a central challenge. Both contexts execute at the same privilege level, and enforcing isolation must avoid prohibitive overhead. While this issue lies outside the stateless CFI setting considered in this work, it presents a compelling direction for future research in formally verified binary rewriting.
 
 \subsection{Cross-ISA Generalization and Applicability}
 Our verification approach generalizes to other architectures supported by \Picinae{}. For each ISA, an internal lifter implemented in Gallina decodes instructions to its ISA-general \IL. For any such lifter, one can construct proofs analogous to those in this work to establish comparable security guarantees.
 
 More broadly, our verification methodology and the design principles outlined in \autoref{sec:fm_friendly} extend beyond CFI to other binary rewriting applications, including emulators, dynamic patchers, and profilers. These principles help reduce verification complexity but do not impose strict constraints on system design.
-
+%
 For example, \pname is not fully stack-independent, as it uses the stack to save registers. Similarly, rewriters that maintain mutable security state remain verifiable in principle, but introduce additional proof obligations and typically require greater verification effort.
