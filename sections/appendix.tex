@@ -1,6 +1,6 @@
 %! root=../main.tex
 \appendix %% CCS: DO NOT REMOVE
-
+\newpage
 \section{Open Science}
 % We release our artifacts at \url{https://anonymous.4open.science/r/armcfi2026ccs}, including the full source code needed to understand, reproduce, and evaluate our system.
 
@@ -10,25 +10,45 @@ The repository provides detailed documentation for rebuilding the formal proofs 
 We also include PoC attack cases (\autoref{tab:poc-attacks}) together with automatically profiled control-flow policies. To facilitate deployment and experimentation, we provide a containerized environment (\eg Docker) that enables users to run \pname on compatible ARMv7 platforms and evaluate it on custom binaries.
 
 \section{ARMv7 Instruction Categories}
-
-Here we categorize all \mxz{we cant do all, the manual has over 400 separate instructions (though some are variants of the same inst)} ARMv7 user-mode instructions based on their control-flow effects as described in \S~\autoref{sec:cfi_design}.
 \ixb{The story here can be ``look at all these instructions whose \emph{operands} change how they need to be treated. Imagine how complex the implementation is. Imagine \emph{not} having a proof for its soundness!}
 
+Here we categorize ARMv7 user-mode instructions based on their control-flow effects as described in \autoref{sec:cfi_design}.
+There are a considerable number of instructions that can perform indirect control flow, mainly from the use of PC as an operand being permitted for data processing instructions.
+We instrument most of them in the same way using the following template,
+where \texttt{reg} is an arbitrary scratch register:
 
-\begin{figure}[b]
+\begin{lstlisting}[language=c, morekeywords={STR,MOVW,MOVT,BIC,LDR,reg,sp,pc}, linewidth=\linewidth,label={lst:armv7},xleftmargin=.3cm]
+STR reg, [sp, #-4]  // save the scratch register to the stack
+MOVW reg, #a[16:0]  // load the original address to reg
+MOVT reg, #a[32:16] // (in case pc was also used for computation)
+<sanitized inst>   // run the original inst with pc replaced with reg
+<table lookup code using reg>
+BIC sp, sp, #0b11    // clear lower bits to word-align sp
+STR reg, [sp, #-8]   // save table value to stack
+LDR reg, [sp, #-4]   // restore original value of scratch register
+LDR pc, [sp, #-8]    // branch to table value
+\end{lstlisting}
+
+We prove that any \Block of this form is safe as long as the sanitized instruction does not perform control flow or violate any invariants,
+allowing us to prove most indirect control flow \Blocks by just applying this lemma.
+To improve efficiency, a more optimal rewriter can omit loading the original address into the scratch register when the original instruction does not use the program counter as part of the computation 
+or the shuffling of values from the stack if it determines that the scratch register does not need to be preserved.
+
+\begin{figure*}[b]
     \centering
-    \begin{tabularx}{\linewidth}{|X|X|}
+    \begin{tabular}{|p{0.2\linewidth}|p{0.8\linewidth}|}
        \hline Category & Instructions \\
        \hline Direct control flow & B, BL, BX with Rm = 15 \\ 
        \hline Indirect control flow & Data processing instructions (AND, EOR, SUB, RSB, ADD, ADC, SBC, RSC, ORR, MOV, LSL, LSR, ASR, RRX, ROR, BIC, MVN) with Rd = 15, BX with Rm != 15, BLX (register), LDR with Rt = 15, Block data transfer (Load) instructions (LDMDA, LDM/POP, LDMDB, LDMIB) with bit15 = 1 \\
-       \hline Non-control-flow change & Data processing instructions with Rd != 15 and Rm = 15 or Rt = 15, \\
-       \hline Unsupported & BXJ, BLX (immediate), instructions from non-ARM modes, other instructions not supported by decoder/lifter (\eg SIMD) \\
+       \hline Non-control-flow change & Data processing instructions with Rd != 15 and Rm/Rn = 15, Load/Store intructions with Rt != 15 and Rn = 15 \\
+       \hline Unsupported & BXJ, BLX (immediate), SETEND, instructions from non-ARM modes, other instructions treated as \unpredictable{} due to missing decoder/lifter support (\eg SIMD instructions) \\
        \hline \unpredictable{} & Some variants of almost all instructions \\
+       \hline Unchanged & Everything else \\
        \hline
-    \end{tabularx}
+    \end{tabular}
     \caption{Caption}
     \label{tab:placeholder}
-\end{figure}
+\end{figure*}
 
 \section{Hash Function Replacement}
 
@@ -37,7 +57,9 @@ In \autoref{sec:fm_friendly} we list FM friendly design principles.
 Another design principle that helps in this case is making the desired soundness/correctness properties independent of deep properties of the implementation.
 For instance, the soundness of the rewriter does not depend on the cryptographic security or collision avoidance of the hash function.
 
+\comment{
 \section{Key Lemmas}
+\mxz{not really sure what to put here, a lot of the proofs are ugly/incomprehensible in isolation/subject to change since i still need to fix some broken parts}
 
 We showcase here some of our important lemmas.
 \autoref{fig:rewrite_no_table_overflow} addresses the unsound behavior we discussed in \autoref{sec:cfi_motivation} that allows maliciously crafted inputs to overflow the space allowed for the jump table.
@@ -56,3 +78,4 @@ Qed.
     \caption{Proof the policy table does not wrap around memory.}
     \label{fig:rewrite_no_table_overflow}
 \end{figure}
+}

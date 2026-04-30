@@ -91,11 +91,11 @@ In contrast, formal verification reasons over all possible executions, ensuring 
 
 \subsection{\pname Overview}
 
-\autoref{fig:cfi_verif} illustrates the high-level workflow of \pname. To build a verified rewriter, we decompose the system into three components.
+\autoref{fig:cfi_verif} illustrates the high-level workflow of \pname. To build a verified rewriter, we organize the system into three components.
 
-\heading{ARMv7 decoder and lifter.} The rewriter's frontend component decodes byte sequences extracted from the \texttt{.text} section of well-formed ELF binaries. Within the soundness proof, the lifter \emph{lifts} the rewritten code into the \pil, enabling symbolic reasoning over arbitrary binary inputs.
+\heading{ARMv7 decoder and lifter.} The rewriter's frontend component decodes byte sequences extracted from the \texttt{.text} section of well-formed ELF binaries. Within the soundness proof, the lifter \emph{lifts} the rewritten code into \Picinae's \IL, enabling symbolic reasoning over arbitrary binary inputs.
 
-We target the ARMv7 ISA because it admits a formal specification~\cite{arm_decoder_spec}, making it amenable to rigorous reasoning.
+We target the ARMv7 ISA because it admits a formal specification~\cite{arm_decoder_spec,armv7formalization}, making it amenable to rigorous reasoning.
 {% NOTE (@kjee) maybe redundant.
     In contrast, ISAs such as Intel x86 exhibit substantial semantic complexity and irregularity, which complicate full formalization.
 }
@@ -115,7 +115,7 @@ This component is the primary focus. We formally verify two properties for rewri
 
 We formalize these safety and security properties as ISA-level specifications that apply uniformly to all binaries. Once defined, they do not depend on a particular input program or rewriter instance.
 
-\heading{ELF Packager.} The final stage packages the rewritten code into an executable integrating\wc{combining} rewitten and original \texttt{.text} sections, policy tables and sundry metadata from the original binary.  We implement this step as a Python script using the LIEF library~\cite{lief} and treat it as out of scope. We discuss its limitations and potential hardening strategies in \autoref{sec:elf_packager_fm}.
+\heading{\ELFPackager.} The final stage packages the rewritten code into an executable integrating\wc{combining} rewritten and original \texttt{.text} sections, policy tables and sundry metadata from the original binary.  We implement this step as a Python script using the LIEF library~\cite{lief} and treat it as out of scope. We discuss its limitations and potential hardening strategies in \autoref{sec:elf_packager_fm}.
 
 % In the following, we motivate the problem with a class of bugs that elude even experienced developers and resist exhaustive dynamic testing.
 

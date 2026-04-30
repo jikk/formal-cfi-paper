@@ -1,10 +1,10 @@
 %! root=../main.tex
 \section{Conclusion}
 
-We present \pname{}, the first formally verified binary CFI rewriter implementation.
-Verifying binary rewriters is a challenging process as the verifier must reason about non-concrete code.
-This is facilitated by the \Picinae{} framework in Rocq.
-We present formal verification friendly design principles to guide future binary rewriter designs and present case studies of test-evading bugs that were caught in thanks to program-proof co-development.
+We present \pname{}, the first formally verified binary CFI rewriter implementation for a mainstream ISA\@.
+Verifying binary rewriters is challenging as the verifier must reason about non-concrete code.
+\pname{} addresses this challenge through a dependently-typed, coinductive proof strategy based on Rocq and \Picinae.
+We present formal verification-friendly design principles to guide future binary rewriter designs, and present case studies of test-evading bugs that were caught in thanks to program-proof co-development.
 
 \comment{
     Spot checked 4 works from CCS'25 Formal Methods+PL track
@@ -41,10 +41,10 @@ We present formal verification friendly design principles to guide future binary
     
     This work also highlights the trusted components left to secure.
     % Among these is the internal lifter, used to translate code bytes to their computational semantics in PIL.
-    This includes the internal lifter and the ELF Packager.
+    This includes the internal lifter and the \ELFPackager.
     The internal lifter is ISA specific, and so far we only support ARMv7 and RISC-V.
     Creating a lifter for another ISA requires formalizing its instruction decoders and instruction semantics in Gallina, an especially daunting task for CISC architectures.
-    The ELF Packager combines the secured text section with the original ELF executable.
+    The \ELFPackager combines the secured text section with the original ELF executable.
     At present, its correctness specification is impossible to formulate as it requires a formal correct implementation of a system loader, which has not been achieved.
     
     Future directions can also expand on the binary features supported by CFI (\eg system calls, dynamic linking) and apply this technique to other binary rewriting applications (\eg instrumentation, dynamic patching).

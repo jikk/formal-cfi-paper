@@ -18,17 +18,22 @@ We formalize this below.
 \heading{Safety of a single trace.}
 Static CFI policies $\Pol$ are sets of virtual address edges $(a,a')\in\mathbb{N}^2$.
 A trace $\tau$ is safe if all its computational steps are confined to edges in $\Pol$:
-\begin{align*}
+\begin{equation}
+\safe{trace}(\Pol,\tau) \equiv (\mathit{steps}(\tau)\subseteq\Pol)
+\end{equation}
+where a trace's computational $\mathit{steps}$ are defined by
+\begin{equation}
+\begin{aligned}
 \mathit{steps}(\langle a,\sigma\rangle) &= [\,] \\
-\mathit{steps}\big(\langle a_1,\sigma_1\rangle :: \langle a_2,\sigma_2\rangle :: \tau\big) &= (a_1,a_2)::\mathit{steps}\big(\langle a_2,\sigma_2\rangle :: \tau\big) \\
-\safe{trace}(\Pol,\tau) &\equiv (\mathit{steps}(\tau)\subseteq\Pol)
-\end{align*}
+\mathit{steps}\big(\langle a_1,\sigma_1\rangle :: \langle a_2,\sigma_2\rangle :: \tau\big) &= (a_1,a_2)::\mathit{steps}\big(\langle a_2,\sigma_2\rangle :: \tau\big)
+\end{aligned}
+\end{equation}
 %\optional{We do not care if the trace ends by throwing a hardware exception, so this definition only considers steps between two addresses.}
 
 \heading{Safety of a rewritten trace.}
 % \ixb{@MAX: in equations, you need to wrap multi-letter variable and function names in mathit, mathtt, mathrm. If you do not they will be set as a product of the individual letters.
 % Note the difference between $txt'$ and $\mathit{txt'}$.}
-Since rewriters relocate and add instructions, the policy $\Pol\kern1pt'$ for the rewritten code must reinterpret policy $\Pol$ in three ways:
+Since rewriters relocate and add instructions, policy $\Pol\kern1pt'$ for the rewritten code \emph{reinterprets} policy $\Pol$ in three ways:
 (1) Addresses in $\Pol$ must be mapped to their rewritten locations.
 This remapping is defined by function \itoip (\autoref{eq:itoip}).
 (2) New permissible edges must be added for inserted security checks, to allow the new checks to execute.
@@ -37,7 +42,7 @@ These three reinterpretations are formalized as
 \begin{equation}
 \begin{aligned}
   \Pol\kern1pt' =\:& \{(4\itoip(a_1/4),4\itoip(a_2/4))\:|\:(a_1,a_2)\in\Pol\}\:\cup \\
-                  &\{(a_1',a_2')\:|\:a_1',a_2'\in[\itoip(i),\itoip(i+1)), i\in[0,|\ell|)\}\:\cup \\
+                  &\{(4i'_1,4i'_2)\:|\:i_1',i_2'\in[\itoip(i),\itoip(i+1)), 0\leq i<|\ell|\}\:\cup \\
                   &(\mathbb{N}\times\{\mai\})
 %  \iptoi(i') = \begin{cases}
 %    \mathit{\bi} + n & \text{if } i' \in [\bip, \bip + |\texttt{flatten}(\txtp)|-1] \\
@@ -45,7 +50,7 @@ These three reinterpretations are formalized as
 %  \end{cases}
 \end{aligned}
 \end{equation}
-where $|\ell|$ is the size of the original code segment.
+where $|\ell|$ is the length of the original code segment.
 
 % Note that this permitted step definition allows a block to step to the corresponding index in the old text segment,
 %Note, \Polp{} permits a rewritten \Block to step to its corresponding instruction in the old text segment
@@ -71,8 +76,7 @@ We prove safety of rewritten code in program $p$ under the following assumptions
 (4) the text and table segments have non-writable permissions,
 and
 (5) the starting \PC in $\sigma_0$ is the start of a \Block.
-These starting assumptions are properties of the ELF editor and OS process loader,
-whose verification is out-of-scope.
+These initial assumptions are properties of the \ELFPackager and OS process loader (whose verification is out-of-scope).
 
 %% KWH: I understand what you're saying below, but it's a complex corner case and sounds very alarming to a casual reader ("safe" traces can leave the code segment?!), so I'm omitting it for now.
 
@@ -125,12 +129,12 @@ This proves that non-terminating programs continue to obey the policy, including
 
 To perform the coinduction, the proof asserts an invariant at every \Block entry point, and proves that any trace slice that starts in an invariant-satisfying machine state either eventually reaches another invariant-satisfying state or never leaves the \Block.
 The invariant consists of the five assumptions listed in \autoref{sec:verification}.
-In particular, it posits that the instruction mode, code and policy data, endianness mode, and access permissions of security-critical sections have not been corrupted, and that the \PC is at a \Block boundary.
+In particular, it posits that the instruction mode, code and policy data, endianness mode, and access permissions of security-critical sections have not already been corrupted, and that the \PC is at a \Block boundary.
 
 \Picinae transforms this invariant set into a case distinction that asks for a proof of invariant-preservation for every \Block that Rocq infers that the rewriter implementation could generate.
 Each of these cases therefore proves that if the trace begins at the start of a \Block in an invariant-satisfying state, then execution eventually
 (a) reaches the start of another \Block in a state that also satisfies the invariant,
-(b) exits to a policy-permitted, non-\Block location (\eg, the abort handler),
+(b) exits to a policy-permitted, non-\Block location (\eg the abort handler),
 (c) raises a hardware exception, or
 (d) never exits the \Block.
 Moreover, the trace slice exhibited during this process is policy-satisfying (no prohibited steps).
@@ -151,7 +155,7 @@ Some instructions are changed for non-control reasons, such as those that refere
 Most of these are verified with tactic automation similar to that for unchanged blocks.
 However, a special case arises for conditional instructions, which our rewriter converts to multi-instruction \Blocks with an opposite-condition branch at the start.
 The lemma for this case therefore proves that if a \Block is provably safe according to the other cases, then prepending a branch to the next \Block preserves its safety.
-The branch is verified by proving that the rewriter correctly computes an encoding of a branch with the proper offset.
+The branch is verified by proving that the rewriter correctly computes an encoding of a branch instruction that transfers control to the correct destination when executed.
 
 \heading{Direct control flow.}
 The rewriter statically retargets direct control-flow transfer instructions to their new destinations in the rewritten binary.
@@ -163,7 +167,7 @@ are replaced with a branch to the abort handler, for which the proof of safety i
 
 \heading{Indirect control flow.}
 Verifying the code to lookup a destination from an instruction's policy table is the most difficult case of the proof,
-but is the same for all indirect control-flow instructions, reducing overall proof complexity.
+but is shared across all indirect control-flow instructions, reducing overall proof complexity.
 The code of each indirect control-flow transfer \Block is a function of the original instruction's destination operand, the parameters of the hash function chosen for its policy table during rewriting, and the address of its table.
 We first symbolically execute soundness-irrelevant code in the \Block that is not responsible for enforcing safety, proving that it satisfies the policy and yields an invariant-satisfying abstract state.
 We next symbolically execute the table-lookup code, proving that the result register receives some value from the table.

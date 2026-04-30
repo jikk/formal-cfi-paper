@@ -36,6 +36,7 @@
 
 \usepackage{tabularray}
 \UseTblrLibrary{booktabs}
+\usepackage{dcolumn}
 
 \usepackage{amsmath}
 
@@ -51,6 +52,8 @@
 }}}
 \makeatother
 \newcommand\fallthru{\downmapsto}
+
+\newcolumntype{d}[1]{D{.}{.}{#1}}
 
 \newcommand\ofwidth[1]{\kern.7pt_{\fboxsep=1pt\boxed{\kern-.5pt\scalebox{.7}{$#1$}\kern-.5pt}}}
 % memwidthexp allows using a consistent expression in the boxed \ofwidth of expressions and in

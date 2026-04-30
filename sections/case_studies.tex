@@ -1,6 +1,8 @@
 %! root=../main.tex
 \subsection{Case studies}\label{sec:case_studies}
-We present three case studies in which formal verification exposed subtle correctness bugs in the CFI binary rewriter. Each bug arises from a corner case that is easy to overlook in implementation, difficult to trigger through dynamic testing, yet systematically revealed during the proof process. The first case stems from the inherent complexity of binary rewriting, while the latter two arise from obscure instructions and \unpredictable{} behaviors in the ARMv7 ISA.
+Formal verification exposed several implementation errors that evaded design-level verification and dynamic testing during our development.
+We present three representative case studies.
+Each arises from a corner case that is easy to overlook in implementation, difficult to trigger through dynamic testing, yet cannot escape systematic proof. The first case stems from the inherent complexity of binary rewriting, while the latter two arise from obscure instructions and \unpredictable{} behaviors in the ARMv7 ISA\@.
 
 \optional{% NOTE (@kjee): the following text can be moved to section 2.2
     These case studies illustrate a common theme: assumptions that hold for compiler-generated code or benign execution environments do not hold for arbitrary binaries. Dynamic testing rarely exercises these edge cases, particularly when they depend on rare ISA behaviors or adversarial inputs. In contrast, formal verification exposes such issues by requiring correctness over all executions permitted by the ISA specification, and it guides systematic fixes that eliminate entire classes of errors.
@@ -24,22 +26,32 @@ The rewriter maintains both the original and rewritten text segments, making add
 % A natural implementation of the translation function $\itoip$ leaves indices outside the original text segment unchanged, mirroring the inverse mapping $\iptoi$.
 %This behavior appears reasonable and aligns with common co-allocation designs used in static binary rewriting. 
 %However, it implicitly assumes that such indices are benign, overlooking the possibility that they may refer to attacker-controlled locations in the rewritten code.
-A natural implementation of the translation function $\itoip$ only remaps original text segment indices to the corresponding new text segment index, leaving all other indices alone, shown in Figure \ref{fig:address_translation}. 
-However, to ensure policy enforcement $\itoip$ also needs to modify indices from new text segment.
+A natural implementation of the translation function $\itoip$ only remaps original text segment indices to corresponding new text segment indices, leaving other indices unchanged.
+
+\autoref{fig:address_translation} illustrates how this can lead to a subtle yet critical vulnerability.
+If the original policy $\Pol$ permits a jump to an external address that becomes part of the new text section during rewriting (due to section insertion and resizing), the $\itoip$ implementation above fails to accurately reflect the \emph{reinterpreted policy} defined by $\Pol\kern1pt'$ for the rewritten binary.
+This allows the policy table to contain an arbitrary new text section address that does not start a \Block.
+An attacker can abuse this to manipulate a guarded indirect branch into directly stepping to another indirect branch, bypassing the guard code and violating the policy.
+
+This vulnerability evaded dynamic testing because it is only exhibited by carefully crafted binary code inputs not included in typical test sets.
+It evades design-level verification because the error is in the low-level implementation of the rewriter, not the high-level algorithm it is intended to implement.
+
+It is nevertheless caught by formal verification when the policy table integrity proof raises an unprovable subgoal requiring table entries to equal invariant points defined by \Block boundaries.
+Our inability to prove this subgoal led us to fix the implementation bug by refining $\itoip$ to translate any index in the new text section to $\mai$, preventing non-invariant points from appearing as table entries.
 
 % How FM detected during proof?
 % The issue emerges when proving that all indirect control-flow transfers land on \emph{invariant points} (\eg properly instrumented entry points).
-The issue emerges when proving that all policy table entries are invariant point addresses.
+%The issue emerges when proving that all policy table entries are invariant point addresses.
 % The proof fails because $\itoip$ may map a policy entry to an index within the rewritten text segment that is not the start of a valid control-flow \Block.
-The proof fails because if an original policy permitted a jump to an external address that becomes part of the new text segment after rewriting,
-then the policy table can contain an arbitrary new text segment address that does not start a \Block, which is not an invariant point.
+%The proof fails because if an original policy permitted a jump to an external address that becomes part of the new text segment after rewriting,
+%then the policy table can contain an arbitrary new text segment address that does not start a \Block, which is not an invariant point.
 % This allows a jump to bypass the guard code that enforces the policy. 
-This allows a guarded indirect branch to directly step to another indirect branch while bypassing the guard code that enforces the policy, violating rewriter soundness.
+%This allows a guarded indirect branch to directly step to another indirect branch while bypassing the guard code that enforces the policy, violating rewriter soundness.
 % While individual steps remain locally safe, the global invariant, which all reachable targets are instrumented, does not hold.
 
 % How we fixed?
 % To fix the bug, we refine $\mathit{rel}$ to eliminate this ambiguity. Any index that does not correspond to a valid location in the original text segment is conservatively mapped to a safe abort location (\ie $\ensuremath{i_\mathit{abort}}$ or \texttt{abort()}). This ensures that all policy table entries correspond either to valid, instrumented targets or to a safe termination point. The revised definition restores the invariant and discharges the proof obligation.
-To fix the bug, we refine $\itoip$ to translate any index in the new text segment to $\mai$, preventing non-\Block-starting addresses from appearing in a policy table.
+%To fix the bug, we refine $\itoip$ to translate any index in the new text segment to $\mai$, preventing non-\Block-starting addresses from appearing in a policy table.
 
 
 \comment{% Old/original
@@ -69,14 +81,13 @@ To fix the bug, we refine $\itoip$ to translate any index in the new text segmen
 }
 
 \heading{Branching to PC.}
-Most ARMv7 instructions treat the program counter \cd{(PC, r15)} as an invalid operand, resulting in \unpredictable{} behavior. Consequently, implementations often assume that such cases can be ignored or filtered out early. However, \cd{BX pc} is a subtle exception: while largely meaningless in ARM mode, it is still a valid instruction with defined semantics; the instruction behaves exactly the same as a static branch with an offset of 8, so there is no reason to use it (the GNU assembler will explicitly warn that ``use of r15 in bx in ARM mode is not really useful'' if you try~\cite{gas_manual}).
-This rare corner case is unlikely to be generated by compilers and therefore easily escapes attention during implementation and testing.
+Most ARMv7 instructions treat the \PC as an invalid operand, resulting in \unpredictable{} behavior. Our rewriter implementation therefore removes most, but instruction \cd{BX\:pc} is a subtle exception that must be preserved. It has a valid semantics in ARM mode (even though it behaves as an inefficient form of branch~\cite{gas_manual}) because it is useful for quickly switching from Thumb to ARM mode.
 
-% How FM detected during proof?
-The proof requires that all rewritten instruction sequences are well-defined under the ISA semantics. When the rewriter treats \cd{BX pc} like a generic indirect branch, it may generate instrumentation that writes to the PC using instructions (\eg \cd{UBFX}) for which PC operands are \unpredictable. The formal model flags this as a violation, since the resulting execution may exhibit nondeterministic control flow, breaking the CFI guarantee.
+However, rewriting \cd{BX\:pc} like other \cd{BX} instructions results in policy-violating rewritten code because it generates a \Block containing other instructions (\eg \cd{UBFX}) for which PC operands are \unpredictable.
+This error was not caught by dynamic testing because \cd{BX\:pc} is a rare instruction not generated by compilers targeting ARM mode, and not all ARMv7 hardware or emulators reliably exhibit any unusual behavior when the resulting \Block executes.
 
-% How we fixed?
-To fix, we explicitly recognize and handle \cd{BX pc} as a special case in the rewriter. Instead of applying the generic instrumentation scheme, we rewrite it into a semantically equivalent, well-defined sequence (\eg a direct branch) that avoids any \unpredictable{} use of \cd{PC}\@. This ensures that the rewritten code remains within the defined subset of the ISA and preserves control-flow integrity.
+During formal verification, symbolic evaluation against the ISA specification semantics yields a proof state that is nondeterministic, preventing the proof from progressing.
+To fix it, we added code to explicitly recognize and handle \cd{BX\:pc} as a special case during rewriting. Instead of applying the generic instrumentation, we rewrite it into a semantically equivalent, well-defined sequence (\eg a direct branch) that avoids \unpredictable{} uses of \PC\@. This ensures that the rewritten code remains within the defined subset of the ISA and preserves control-flow integrity.
 
 \comment{% old/original text.
     Most instructions other than those in the data processing or load/store categories are defined to be \unpredictable{}
@@ -92,14 +103,13 @@ To fix, we explicitly recognize and handle \cd{BX pc} as a special case in the r
 }
 
 
-\heading{Unaligned (Misaligned) \cd{PC} load.}
-ARMv7 requires that loads into the \cd{PC} operate on word-aligned addresses; otherwise, the behavior is \unpredictable{}. In practice, implementations assume that the stack pointer is always aligned, as mandated by the calling convention. However, this invariant is not enforced by hardware and can be violated by adversarial or malformed binaries. As a result, rewriter-generated sequences that load a return address from the stack may inadvertently rely on an unstated alignment assumption.
+\heading{Misaligned \PC loads.}
+ARMv7 specifies that loading a pointer into the \PC from a misaligned address causes \unpredictable{} behavior.
+Our early implementation of \pname carefully aligned source addresses for most \PC loads, but not for returns, which load \PC addresses from the stack pointer address.
+Stack pointers remain aligned for all binaries that obey the ARM standard calling conventions, so this vulnerability was not detected during testing.
+However, formal verification revealed that symbolic interpretation of a return instruction in an abstract machine state with arbitrary stack pointer value yields a nondeterministic state, making soundness unprovable for that implementation.
 
-% How FM detected during proof?
-The proof considers arbitrary initial machine states, including those that violate calling convention assumptions. When reasoning about a block that loads the \cd{PC} from the stack, the proof fails to establish well-defined behavior if the stack pointer is misaligned. Since \unpredictable{} behavior is modeled conservatively, this introduces nondeterminism that invalidates the correctness argument.
-
-% How we fixed?
-To fix, we modify the generated code to enforce alignment explicitly before performing the load. This involves realigning the stack pointer or masking the address to ensure word alignment prior to loading into the \cd{PC}. By eliminating dependence on external invariants, the rewritten code becomes robust to adversarial inputs and satisfies the proof obligations.
+To fix this, our verified implementation modifies the generated code to enforce alignment explicitly before performing the load. This involves realigning the stack pointer or masking the address to ensure word-alignment prior to loading into the \PC. By eliminating dependence on external invariants, the rewritten code becomes robust to adversarial inputs that violate the calling conventions, and satisfies the proof obligations.
 
 \comment{%
     \ixb{Do we really mean loading an address from an address? As in, an indirect jump by reading from VMEM?}
