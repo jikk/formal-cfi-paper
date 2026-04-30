@@ -6,7 +6,7 @@ Strategic design and implementation choices can substantially reduce the burden 
 \subsubsection{Minimize Security Dependencies}\mbox{}
 %We first consider design choices that directly reduce proof search space size and complexity.
 
-\heading{Conditional Introduction.}
+\heading{Conditional instructions.}
 Each security-relevant conditional instruction increases the number of control-flow paths that a proof must consider. Reducing the number of introduced conditionals therefore directly improves verification feasibility.
 
 The complexity of each condition also matters. For example, the \cd{EQ} conditional on ARM corresponds to a simple symbolic expression $e = 0$, whereas \cd{LE} yields a more complex expression $\mathrm{toZ}_{32}(e_1) \leq \mathrm{toZ}_{32}(e_2)$, where $\mathrm{toZ}_{32}$ converts 32-bit unsigned values ($\mathsf{N}$) to signed integers ($\mathsf{Z}$). Such expressions involve non-linear bitvector reasoning and are difficult for automated solvers to handle.
@@ -59,7 +59,7 @@ This eliminates the considerable challenge of discovering invariant locations su
 %\subsubsection{Handle Nondeterminism}\mbox{}
 % Finally, we address challenges arising from the underlying ISA semantics.
 
-\heading{Explicit Nondeterminism modeling.}
+\heading{Explicit nondeterminism modeling.}
 Real-world ISAs include many \unpredictable{} operations, some of which seem predictable in practice because they behave consistently across most hardware instantiations.
 Rewriters must nevertheless carefully avoid generating code whose safety relies on seemingly consistent yet ISA-unspecified behaviors.
 The choice of verification framework must likewise include foundational support for nondeterministic ISA operational semantics, which is critical for modeling how real ISAs behave across arbitrary ISA implementations.

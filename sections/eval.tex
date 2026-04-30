@@ -1,33 +1,57 @@
 %! root=../main.tex
 \section{Evaluation}\label{sec:eval}
 
-While this work primarily focuses on the \emph{formal} verification of a binary CFI rewriter's soundness, we also follow conventional evaluation practices assessing \pname’s performance and compatibility. In particular, we measure runtime overhead and code size of the rewritten binaries, and evaluate both security and compatibility by implementing representative proof-of-concept control-hijacking attacks and testing \pname on mature, real-world software to validate the stability and correctness of its instrumentation.
+While this work focuses on the formal verification of a binary CFI rewriter’s soundness, we also evaluate \pname’s performance and soundness. We measure runtime overhead and code size growth, and assess security using representative proof-of-concept control-hijacking attacks and operational stability with real-world software.
+%
+All experiments run on a Raspberry Pi 5 Model B (rev. 1.1) with a Broadcom BCM2712 quad-core Arm Cortex-A76 @ 2.4 GHz and 16 GB memory, running PiOS (Debian 13 Trixie).
 
-All evaluations are conducted on a Raspberry Pi 5 Model B 1.1 (Broadcom BCM2712 quad-core Arm Cortex A76 processor @ 2.4GHz) with 16GB of memory (PiOS; Debian 12 Bookworm distribution).
+We then present case studies demonstrating how formal verification uncovers subtle implementation bugs and architectural irregularities.
 
-\subsection{Runtime and Space Overheads}
+\subsection{Runtime Overheads}
 
-\heading{SPEC 2017 evaluation.}
 \autoref{tab:spec2017}  evaluates \pname's runtime performance on rewritten SPEC CPU 2017 benchmarks. To measure overhead, we adopt a permissive policy that allows any instruction to transfer control to any other instruction within the code section. \pname incurs an average overhead of 19\%, which is comparable to prior ARM-based CFI rewriters, although several benchmarks exhibit higher slowdowns.
 
 In particular, \cd{500.perlbench\_r} runs an interpreter-style workload with a high density of indirect control transfers, such as switch-based dispatch and function pointer invocations. Benchmark \cd{541.leela\_r} is a Go engine based on Monte Carlo Tree Search (MCTS). It exhibits highly irregular, data-dependent control flow and frequent function calls due to its recursive search structure. In both cases, the dynamic frequency of control-flow events is high, which amplifies the cost of CFI instrumentation.
-
+%
 These effects are exacerbated by architectural characteristics of ARMv7, including pervasive conditional execution and PC-relative addressing semantics, both of which complicate efficient instrumentation and increase the cost of enforcing control-flow checks.
+
+\pname’s runtime overhead can be further reduced by leveraging emerging hardware support. These features can be integrated with minimal changes to the existing software-only, binary-to-binary rewriter, while requiring only modest extensions to the formal verification effort.
+
 
 \input{tables/spec2017_tab2}
 
-\heading{Code size growth.}
-\autoref{fig:spec2017_size} measures the static size overhead of rewritten SPEC binaries.
-Rewritten text segments are $1.36\times$ larger on average due to inserted security guard code.
-For the table segment, we also measure how many entries contain non-abort program addresses.
-Some benchmarks have high space overhead from unfilled entries
-when a large table is needed to avert hash collisions.
-In these cases, a better hash function can reduce size overhead.
-The table segment on average contributes 73.5\% of the added size.
+\subsection{Code Size Growth}
+\autoref{fig:spec2017_size} reports the static code size overhead of rewritten SPEC binaries.
+\pname generates a rewritten ELF binary by augmenting the original with a new instrumented text segment and an additional section that stores the policy table.
+
+The rewritten text segment is, on average, $1.36\times$ larger than the original due to the insertion of security guard code.
+For the policy table, we further measure the fraction of entries that correspond to non-abort program targets.
+
+Some benchmarks exhibit higher code size overhead due to a larger number of unfilled table entries.
+This effect stems from our design choice of using a simple hash function (\eg, one without control or branch operations), which favors verification simplicity over space efficiency.
+On average, the policy table accounts for 73.5\% of the total size increase.
+
+Overall, the rewritten binaries grow substantially in size; however, the increase remains on the order of a few megabytes and incurs negligible runtime memory overhead.
+As future work, we plan to refine the hash function and its interaction with the policy table to reduce space overhead while preserving minimal formal verification complexity.
+
+
+\comment{%
+    \autoref{fig:spec2017_size} measures the static size overhead of rewritten SPEC binaries.
+    \pname produces the rewritten ELF binary packaged with new text will policy table in additional all section from the original ELF.
+    Rewritten text segments results in on average  $1.36\times$ larger than the old text due to inserted security guard code.
+    For the policy table segment, we also measure how many entries contain non-abort program addresses.
+
+        - Some benchmark items resulted in larger code size than others due to unfilled table entries.
+            - In these cases, a better hash function can reduce size overhead. The table segment on average contributes 73.5\% of the added size.
+            - this is due to our design choice to have simplistic hash function (\eg no control/branch operations inside).
+        - As a result, the size of rewritten binary have grown substantial.
+        - Yet, it will be only in order of a few megabytes; incurring only negligible memory footprint at runtime.
+            - We also plan to refine/improve the hash function structure access/tranlating policy table still maintaintaining minimal formal proof requirement.
+}
 
 \input{tables/spec2017_size}
 
-\subsection{Functionality}\label{sec:functionality_evaluation}
+\subsection{Operational Stability}\label{sec:functionality_evaluation}
 The SPEC CPU test suite includes self-tests for correct outputs,
 and all rewritten programs pass all the self-tests.
 We also tested the rewriter for functionality on the GNU Core Utilities suite, Lua, CPython, Vim, Git, and SQLite.
