@@ -1,6 +1,7 @@
 %! root=../main.tex
 \begin{figure}
     \centering
+    \resizebox{.9\linewidth}{!}{
     \begin{tikzpicture}
         \begin{axis}[
             ybar stacked,
@@ -90,7 +91,7 @@
 
         \legend{Original, New Text, Filled Table, Unfilled Table}
         \end{axis}
-    \end{tikzpicture}
+    \end{tikzpicture}}
     \caption{Space overhead for each benchmark showing the contributions of the new text and table segments. Unfilled table entries can be decreased with a better hash function.\ixb{Notice that 2 benchmarks with little unfilled data have really high overheads (leela~34\%, xalancbkm~20\%)}}
     \label{fig:spec2017_size}
 \end{figure}
