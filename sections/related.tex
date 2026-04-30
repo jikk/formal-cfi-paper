@@ -18,7 +18,7 @@ For every indirect jump, it checks whether target addresses are call-preceded of
 CCFIR works with relocation data, rerouting indirect jumps to a separate Springboard section.
 While that offers an additional layer of protection from ROP attacks, in 2014, both CCFIR and binCFI were proven vulnerable to advanced ROP attacks due to the "looser" nature of their policies~\cite{outofcontrol}.
 
-CFIs using basic blocks are a low overhead option as well~\cite{bbb_cfi}. Similar to our work, jumps are only legal if the destination address is an entry point of a basic block. This policy is enforced with a monitor using Intel PT to gather control-flow data in real time.
+CFIs using basic blocks are a low overhead option as well~\cite{bbb_cfi}. Similar to our work, jumps are only legal if the destination address is an entry point of a basic block. This policy is enforced with a monitor using Intel PT to gather control-flow data in real time. BinCC is also similar to this implementation, dividing their code into code continents instead of basic blocks.
 
 % A more recent CFI project most similar to ours, muCFI, uses formal verification, proving an absence of hardware-based control flow attacks for a given CPU architecture~\cite{ceesay2024mucfi}. For a given CPU, all indirect jumps reach a valid destination defined by the CFG by keeping track of the PC value. However, while excellent at protecting against constant-time attacks and hardware-level control flow hijackings, software-related vulnerabilities, such as buffer overflows, are out of scope for muCFI.
 
@@ -35,11 +35,11 @@ CFIs using basic blocks are a low overhead option as well~\cite{bbb_cfi}. Simila
  % \kjee{Current text is a place holder draft. We may want to provide high-level discussion on Picinae framework.}
 
 Recent advances in \emph{formally verified lifting} have opened new avenues for formally verified binary analysis, enabling verification of both correctness and security properties~\cite{scalable_binary_lifter_validation,formally_verified_lifting,holba_sound_transpilation}.
-However, existing frameworks reason over concrete binaries and cannot generalize to prove properties in which some or all the binary code is unknown. This limits their practical applicability to binaries known at verification time.
+However, existing frameworks focus on verifying concrete binaries and have limited or no support for properties of binary code in which some or all instructions are symbolic unknowns. This limits their applicability for verifying binary-to-binary code rewriters.
 
 \kwh{[KWH] Formal verification of binary code in any form hasn't been around for very long (only a few years).  So let's not cast it as a well-established science.  Main thing to emphasize here is that apart from Picinae, all the systems take a complete, fully known binary code as input and verify it. They can't prove any property of binary code that isn't fully known at verification time.}
 
-  Overcoming this limitation requires more than a proof assistant. Rather, it requires an abstraction layer that faithfully models real-world ISAs while supporting symbolic reasoning. \Picinae~\cite{picinae} provides this foundation. Built on Rocq, it models machine execution through memory state and execution traces and represents program state symbolically, allowing proofs that treat the binary itself as a variable. This enables verification results to generalize from a single program to the unbounded set of binaries a rewriter may encounter.
+  Overcoming this limitation requires more than a mature proof assistant. It requires an abstraction layer that faithfully models real-world ISAs while supporting symbolic reasoning. \Picinae~\cite{picinae} builds upon Rocq to model machine code execution through memory state and execution traces, and represents program state symbolically, allowing proofs that treat the code as a proof variable. This enables verification results to generalize from a single program to the unbounded set of binaries a rewriter may encounter.
 
   This capability is essential for \pname. Frameworks that operate on concrete binaries can verify individual rewritten outputs but cannot prove that the rewriter is correct for all inputs. \Picinae~\xspace lifts reasoning from individual binaries to the rewriter’s behavior across all binaries, enabling the end-to-end correctness guarantees that \pname requires.
 }

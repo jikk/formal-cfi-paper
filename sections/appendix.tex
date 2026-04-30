@@ -19,9 +19,9 @@ Here we categorize all \mxz{we cant do all, the manual has over 400 separate ins
     \centering
     \begin{tabularx}{\linewidth}{|X|X|}
        \hline Category & Instructions \\
-       \hline Direct control flow & B, BL, BX with Rm=15 \\ 
-       \hline Indirect control flow & Data processing instructions (AND, EOR, SUB, RSB, ADD, ADC, SBC, RSC, ORR, MOV, LSL, LSR, ASR, RRX, ROR, BIC, MVN) with Rd=15, BX with Rm<>15, BLX (register), LDR with Rt=15, Block data transfer (Load) instructions (LDMDA, LDM/POP, LDMDB, LDMIB) with bit15=1 \\
-       \hline Non-control-flow change & Data processing instructions with Rd<>15 and Rm=15 or Rt=15 , ...\\
+       \hline Direct control flow & B, BL, BX with Rm = 15 \\ 
+       \hline Indirect control flow & Data processing instructions (AND, EOR, SUB, RSB, ADD, ADC, SBC, RSC, ORR, MOV, LSL, LSR, ASR, RRX, ROR, BIC, MVN) with Rd = 15, BX with Rm != 15, BLX (register), LDR with Rt = 15, Block data transfer (Load) instructions (LDMDA, LDM/POP, LDMDB, LDMIB) with bit15 = 1 \\
+       \hline Non-control-flow change & Data processing instructions with Rd != 15 and Rm = 15 or Rt = 15, \\
        \hline Unsupported & BXJ, BLX (immediate), instructions from non-ARM modes, other instructions not supported by decoder/lifter (\eg SIMD) \\
        \hline \unpredictable{} & Some variants of almost all instructions \\
        \hline

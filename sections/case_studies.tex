@@ -11,11 +11,20 @@ Across all cases, the proof obligations force reasoning over all possible inputs
 \kjee{We may consider to have a figure for the case study 1.}
 \heading{Address translation.}
 % Why overlooked.
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figs/address_translation.pdf}
+    % maybe a bit too long
+    \caption{Translation between original and new address spaces.
+    A \naive \itoip only remaps indices in \texttt{.text},
+    leading to the erroneous mapping of an external index to an arbitrary \texttt{.newtext} index (red edge),
+    making the rewriter unsound. The corrected \itoip uses the green edge instead.}~\label{fig:address_translation}
+\end{figure}
 The rewriter maintains both the original and rewritten text segments, making address translation between them subtle.
 % A natural implementation of the translation function $\itoip$ leaves indices outside the original text segment unchanged, mirroring the inverse mapping $\iptoi$.
 %This behavior appears reasonable and aligns with common co-allocation designs used in static binary rewriting. 
 %However, it implicitly assumes that such indices are benign, overlooking the possibility that they may refer to attacker-controlled locations in the rewritten code.
-A natural implementation of the translation function $\itoip$ only remaps original text segment addresses to the corresponding new text segment address, leaving all other addresses alone. 
+A natural implementation of the translation function $\itoip$ only remaps original text segment indices to the corresponding new text segment index, leaving all other indices alone, shown in Figure \ref{fig:address_translation}. 
 However, to ensure policy enforcement $\itoip$ also needs to modify indices from new text segment.
 
 % How FM detected during proof?

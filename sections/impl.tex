@@ -36,14 +36,14 @@ The first artifact provides a formal semantics of the ARMv7 instruction set expr
 Each instruction is specified as a Gallina function that maps a machine state (register file and memory) to an updated state, encoding all architectural effects including register writes, memory operations, and control-flow transfers.
 This semantics is shared across the verification of both the decoder and the rewriter, forming the trusted base for all subsequent proofs.
 
-\heading{CFI Rewriter (\texttt{armcfi.v}).}
+\heading{CFI Rewriter (\texttt{cfi.v}).}
 The second artifact implements the CFI binary rewriter described in \autoref{sec:overview} as a Gallina function.
 Given the original instruction stream, base addresses $(bi, bi', tbi)$, and a CFI policy $\pol$, the function produces the rewritten code blocks $\codep$ and dispatch tables $\tables$.
 Internally, the rewriter decodes the input byte stream to identify each instruction and classify it into one of the cases described in \autoref{sec:overview}: static control flow, PC-relative data access, dynamic control flow, or unsupported instruction.
 It then constructs the corresponding instrumented block and, for dynamic branches, synthesizes the appropriate hash table entries.
 \kjee{Note: the disassembler component embedded here has not yet been formally verified; its correctness is assumed as a pre-condition of the overall proof.}
 
-\heading{Correctness Proofs (\texttt{armcfi\_proof.v}).}
+\heading{Correctness Proofs (\texttt{cfi\_proof.v}).}
 The third artifact contains the machine-checked proofs establishing that the rewriter satisfies the CFI safety theorem of \autoref{sec:formal}.
 Concretely, for any input program and any execution trace of the rewritten binary, the proofs guarantee that every control-flow transfer is permitted by $\pol$.
 These proofs are discharged entirely within Rocq, providing a machine-verified certificate that ships alongside the rewriter.

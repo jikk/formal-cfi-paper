@@ -128,64 +128,49 @@ The invariant consists of the five assumptions listed in \autoref{sec:verificati
 In particular, it posits that the instruction mode, code and policy data, endianness mode, and access permissions of security-critical sections have not been corrupted, and that the \PC is at a \Block boundary.
 
 \Picinae transforms this invariant set into a case distinction that asks for a proof of invariant-preservation for every \Block that Rocq infers that the rewriter implementation could generate.
-Each of these cases therefore proves that if the trace begins at the start of a \Block in a state that satisfies the assumptions, then execution eventually
-(a) reaches the start of another \Block in a state that also satisfies the assumptions,
-(b) exits to a policy-permitted, non-block location (\eg, the abort handler),
+Each of these cases therefore proves that if the trace begins at the start of a \Block in an invariant-satisfying state, then execution eventually
+(a) reaches the start of another \Block in a state that also satisfies the invariant,
+(b) exits to a policy-permitted, non-\Block location (\eg, the abort handler),
 (c) raises a hardware exception, or
 (d) never exits the \Block.
-Moreover, the trace slice exhibited during this process is policy-satisfying.
+Moreover, the trace slice exhibited during this process is policy-satisfying (no prohibited steps).
 
 Each of these cases entails proving properties of abstract code, since most generated \Blocks are functions of the input instruction that they replace, not a fixed, concrete list of instructions.
 For example, \Block code may copy operands from an original instruction into encodings of new instructions that it generates.
+This leads to five main proof cases:
 
 \heading{Unchanged \Block.}
-The corresponding \Block for most instructions just contains
-the original instruction. We define an instruction to be safe if it can only
-ever fall through to the next instruction or raise a hardware exception and can never change the
-CPU's instruction mode or endianness. For these cases, we prove as a lemma that a \Block containing
-a single safe instruction is safe as long as fallthrough is policy-permitted,
-and that whenever the \Block remains unchanged,
-the original instruction was a safe instruction where fallthrough is permitted.
+The rewritten \Block for most instructions consists solely of the original (abstract) instruction.
+This case is verified by proving that the semantics of all instructions preserved by the rewriter
+(1) fall through to the next instruction or raise a hardware exception, and
+(2) do not corrupt any elements of the invariant (\eg endianness mode).
+We achieve this with tactic automation that symbolically executes every instruction in the ISA with abstract arguments, establishing symbolic equality of security-relevant machine state elements before and after execution.
 
-\heading{Non-control-flow change.}
-For instructions that are changed for non-control-flow reasons,
-such as instructions that just reference the PC register without modifying it, we prove a
-lemma similar to the previous case about \Blocks consisting entirely of safe instructions.
-However, conditional instructions become \Blocks with a conditional branch at the start,
-which is not a safe instruction, as it does not always fallthrough or raise an exception.
-To handle this, we prove another lemma that if a \Block is safe, it is still safe after inserting a branch to the next
-\Block at the beginning, which requires us to prove that the rewriter correctly computes an encoding that decodes to a
-branch with the proper offset. With these lemmas, we can prove the safety of all \Blocks changed for non-control-flow reasons.
+\heading{Non-control change.}
+Some instructions are changed for non-control reasons, such as those that reference the \PC without modifying it.
+Most of these are verified with tactic automation similar to that for unchanged blocks.
+However, a special case arises for conditional instructions, which our rewriter converts to multi-instruction \Blocks with an opposite-condition branch at the start.
+The lemma for this case therefore proves that if a \Block is provably safe according to the other cases, then prepending a branch to the next \Block preserves its safety.
+The branch is verified by proving that the rewriter correctly computes an encoding of a branch with the proper offset.
 
 \heading{Direct control flow.}
-Instructions that perform direct control flow must be modified to account for
-the additional instructions we insert. We prove that our rewriter computes and uses the correct new offset when the destination
-is permitted by the policy or replaces the instruction with a branch to the abort handler, and that both cases are safe.
+The rewriter statically retargets direct control-flow transfer instructions to their new destinations in the rewritten binary.
+Our proof therefore verifies that this retargeting computation is correct, or that it returns the address of the abort handler.
 
 \heading{Unsupported instructions.}
-Instructions that we do not support,
-such as those that always change the instruction mode or \unpredictable{} instructions,
-are replaced with a branch to the abort handler, which we prove safe similarly to the previous case.
+Prohibited instructions, such as those that change the instruction mode or exhibit \unpredictable{} behavior,
+are replaced with a branch to the abort handler, for which the proof of safety is trivial.
 
 \heading{Indirect control flow.}
-The code to lookup a destination from an instruction's policy table is the same for all indirect control flow instructions,
-parameterized by the register containing the destination, the bits extracted by the hash function, and the address of the table.
-We prove a lemma about this code that after executing this portion of the \Block,
-the register contains some value from the table,
-and a separate lemma that the relevant table consists entirely of permitted destination addresses for the instruction in question.
-Proving the safety of indirect control flow \Blocks simply involves
-(1) skipping over all of the instructions up to the table lookup,
-since they are all either safe or a conditional branch to the next \Block
-(2) applying the lemma about the table lookup code to skip to a state afterwards where we have
-loaded from the table
-(3) executing the rest of the \Block and reaching a state where we have transferred control
-to the address from the table
-(4) applying the lemma about the addresses in the table and concluding that we have
-successfully reached another invariant point, since we are in a state in the same instruction mode and endianness
-either at the start of a \Block for a permitted destination or the abort handler.
+Verifying the code to lookup a destination from an instruction's policy table is the most difficult case of the proof,
+but is the same for all indirect control-flow instructions, reducing overall proof complexity.
+The code of each indirect control-flow transfer \Block is a function of the original instruction's destination operand, the parameters of the hash function chosen for its policy table during rewriting, and the address of its table.
+We first symbolically execute soundness-irrelevant code in the \Block that is not responsible for enforcing safety, proving that it satisfies the policy and yields an invariant-satisfying abstract state.
+We next symbolically execute the table-lookup code, proving that the result register receives some value from the table.
+A separate lemma proves that all tables produced by the rewriter consist entirely of destination addresses permitted by the policy for their respective instructions.
+Finally, we symbolically execute the remainder of the \Block, proving that its final exit targets the destination from the table, and is therefore policy-satisfying.
 
-These cases cover every possible \Block generated by our CFI implementation, so a \Block is always safe.
-Thus, we conclude that for all programs produced by the rewriter,
-any trace beginning at the start of a \Block will only take steps permitted by the policy as long as it remains in the new text segment,
-meaning our implementation is sound.
-\qed
+\vspace{.5ex}
+
+These cases cover every \Block generated by the rewriter implementation, completing the coinductive proof.
+Exhaustiveness of the case distinction is verified by the Rocq core at Qed\@.
