@@ -20,7 +20,7 @@
 
 @INPROCEEDINGS{bincfi,
   AUTHOR = {Zhang, Mingwei and Sekar, R.},
-  BOOKTITLE = proc # of # the # {\cnum{31st} Annual Computer Security Applications Conference},
+  BOOKTITLE = proc # of # the # {\cnum{31st} Annual Computer Security Applications Conference \nym{ACSAC}},
   DATE = {2015},
   TITLE = {Control Flow and Code Integrity for COTS binaries: An Effective Defense Against Real-World ROP Attacks},
 }
@@ -58,7 +58,7 @@
 
 @INPROCEEDINGS{li2020ccs,
   AUTHOR = {Li, Yuan and Wang, Mingzhe and Zhang, Chao and Chen, Xingman and Yang, Songtao and Liu, Ying},
-  BOOKTITLE = {ACM} # conf # on # {Computer and Communications Security \nym{CCS}},
+  BOOKTITLE = proc # ofthe # {ACM} # conf # on # {Computer and Communications Security \nym{CCS}},
   DATE = {2020},
   IGNOREPAGES = {1821--1835},
   RMSERIES = {ACM conference on Computer and Communications Security (CCS)},
@@ -68,13 +68,9 @@
 @inproceedings{heartbleed,
 author = {Durumeric, Zakir and Li, Frank and Kasten, James and Amann, Johanna and Beekman, Jethro and Payer, Mathias and Weaver, Nicolas and Adrian, David and Paxson, Vern and Bailey, Michael and Halderman, J. Alex},
 title = {The Matter of Heartbleed},
-year = {2014},
-isbn = {9781450332132},
-publisher = {Association for Computing Machinery},
-doi = {10.1145/2663716.2663755},
+date = {2014},
 booktitle = proc # of # the # {Conference on Internet Measurement Conference},
-pages = {475–488},
-keywords = {heartbleed, internet-wide scanning, openssl, security},
+IGNOREpages = {475–488},
 }
 
 @MISC{shellshock,
@@ -92,54 +88,42 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
 }
 
 @ARTICLE{fuzzing,
-  AUTHOR = {Manès, Valentin JM and Han, HyungSeok and Han, Choongwoo and Cha, Sang Kil and Egele, Manuel and Schwartz, Edward J and Woo, Maverick},
+  AUTHOR = {Man\`es, Valentin JM and Han, HyungSeok and Han, Choongwoo and Cha, Sang Kil and Egele, Manuel and Schwartz, Edward J and Woo, Maverick},
   DATE = {2019},
-  JOURNALTITLE = {IEEE Transactions on Software Engineering},
-  NUMBER = {11},
-  PAGES = {2312--2331},
+  JOURNALTITLE = {IEEE} # trans # on # {Software Engineering},
+  IGNOREpages = {2312--2331},
   TITLE = {The art, science, and engineering of fuzzing: A survey},
-  VOLUME = {47},
 }
 
 @ARTICLE{symbolic_execution,
   AUTHOR = {Baldoni, Roberto and Coppa, Emilio and D’elia, Daniele Cono and Demetrescu, Camil and Finocchi, Irene},
   DATE = {2018},
-  JOURNALTITLE = {ACM Computing Surveys (CSUR)},
-  NUMBER = {3},
-  PAGES = {1--39},
+  JOURNALTITLE = {ACM Computing Surveys \nym{CSUR}},
+  IGNOREpages = {1--39},
   TITLE = {A survey of symbolic execution techniques},
-  VOLUME = {51},
 }
 
 @ARTICLE{model_checking,
   AUTHOR = {Jhala, Ranjit and Majumdar, Rupak},
   DATE = {2009},
-  JOURNALTITLE = {ACM Computing Surveys (CSUR)},
-  NUMBER = {4},
-  PAGES = {1--54},
+  JOURNALTITLE = {ACM Computing Surveys \nym{CSUR}},
+  IGNOREpages = {1--54},
   TITLE = {Software model checking},
-  VOLUME = {41},
 }
 
 @ARTICLE{rewriter0,
   AUTHOR = {Wenzl, Matthias and Merzdovnik, Georg and Ullrich, Johanna and Weippl, Edgar},
-  ARTICLENO = {49},
   DATE = {2019-06},
-  DOI = {10.1145/3316415},
-  JOURNALTITLE = {ACM Computing Surveys (CSUR)},
-  KEYWORDS = {Binary rewriting,binary hardening,dynamic rewriting,full-translation,minimal-invasive,reassembly,static rewriting},
-  NUMBER = {3},
+  JOURNALTITLE = {ACM Computing Surveys \nym{CSUR}},
   TITLE = {From Hack to Elaborate Technique---A Survey on Binary Rewriting},
-  VOLUME = {52},
 }
 
 @INPROCEEDINGS{e9patch2020pldi,
   AUTHOR = {Duck, Gregory J. and Gao, Xiang and Roychoudhury, Abhik},
-  DATE = {2020-06},
-  DOI = {10.1145/3385412.3385972},
+  DATE = {2020},
   IDS = {e9patch,rewriter1},
-  PAGES = {151--163},
-  SERIES = {ACM SIGPLAN Conference on Programming Language Design and Implementation},
+  IGNOREpages = {151--163},
+  RMSERIES = {ACM SIGPLAN Conference on Programming Language Design and Implementation},
   TITLE = {{Binary rewriting without control flow recovery}},
 }
 
@@ -152,8 +136,8 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
 
 @INPROCEEDINGS{reassessor2023sec,
   AUTHOR = {Kim, Hyungseok and Kim, Soomin and Lee, Junoh and Jee, Kangkook and Cha, Sang Kil},
-  BOOKTITLE = {USENIX Security Symposium(SEC)},
-  DATE = {2023-08},
+  BOOKTITLE = {USENIX Security Symposium},
+  DATE = {2023},
   KEYWORDS = {kjee,kjee:paper},
   TITLE = {{Reassembly is Hard: A Reflection on Challenges and Strategies}},
 }
@@ -168,9 +152,7 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
 @BOOK{hol,
   AUTHOR = {Nipkow, Tobias and Wenzel, Markus and Paulson, Lawrence C.},
   LOCATION = {Berlin, Heidelberg},
-  PUBLISHER = {Springer-Verlag},
   DATE = {2002},
-  ISBN = {3540433767},
   TITLE = {{Isabelle/HOL}: a proof assistant for higher-order logic},
 }
 
@@ -179,24 +161,22 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
   BOOKTITLE = {ACM SIGPLAN} # conf # on #{ Programming Language Design and Implementation \nym{PLDI}},
   DATE = {2012},
   IDS = {rocksalt},
-  PAGES = {395--404},
+  IGNOREpages = {395--404},
   TITLE = {RockSalt: better, faster, stronger SFI for the x86},
-  VOLUME = {47},
 }
 
 @INPROCEEDINGS{hamlen19feast,
   AUTHOR = {Hamlen, Kevin W. and Fisher, Dakota and Lundquist, Gilmore R.},
-  BOOKTITLE = {Proceedings of the \nym{3} Workshop on Forming an Ecosystem Around Software Transformation \nym{FEAST}},
+  BOOKTITLE = proc # ofthe # {\nym{3} ACM Workshop} # on # {Forming an Ecosystem Around Software Transformation \nym{FEAST}},
   DATE = {2019},
+  IDS = {picinae},
   TITLE = {Source-free Machine-checked Validation of Native Code in {Coq}},
 }
 
 @INPROCEEDINGS{averill26bar,
   AUTHOR = {Averill, Charles and Buzzetti, Ilan and Bellon, Alex and Hamlen, Kevin W.},
   DATE = {2026},
-  DOI = {10.14722/bar.2026.23046},
-  SERIES = proc # of # the # {Binary Analysis Research Workshop},
-  BOOKTITLE={},
+  BOOKTITLE = proc # of # the # {Binary Analysis Research Workshop \nym{BAR}},
   TITLE = {LAPSE: Automatic, Formal Fault-Tolerant Correctness Proofs for Native Code},
 }
 
@@ -208,7 +188,7 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
 
 @INPROCEEDINGS{unpredictable_behaviors,
   AUTHOR = {Qin, Shisong and Zhang, Chao and Chen, Kaixiang and Li, Zheming},
-  BOOKTITLE = proc # of # the #{ \cnum{30th} ACM SIGSOFT International Symposium on Software Testing and Analysis},
+  BOOKTITLE = proc # of # the #{ \cnum{30th} ACM SIGSOFT International Symposium} # on # {Software Testing and Analysis},
   DATE = {2021},
   TITLE = {iDEV: exploring and exploiting semantic deviations in ARM instruction processing},
 }
@@ -224,15 +204,13 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
   AUTHOR = {Leroy, Xavier},
   DATE = {2009},
   JOURNALTITLE = {Communications of the ACM \nym{CACM}},
-  NUMBER = {7},
   TITLE = {Formal Verification of a Realistic Compiler},
-  VOLUME = {52},
 }
 
 @ARTICLE{arm_field_growth,
   AUTHOR = {Rahman, Tahmid Noor and Khan, Nusaiba and Zaman, Zarif Ishmam},
   DATE = {2024},
-  JOURNALTITLE = {World Journal of Advanced Research and Reviews},
+  JOURNALTITLE = {World Journal} # of # {Advanced Research and Reviews},
   TITLE = {Redefining Computing: Rise of ARM from consumer to Cloud for energy efficiency},
 }
 
@@ -245,9 +223,9 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
 
 @INPROCEEDINGS{tau_cfi,
   AUTHOR = {Muntean, Paul and Fischer, Matthias and Tan, Gang and Lin, Zhiqiang and Grossklags, Jens and Eckert, Claudia},
-  BOOKTITLE = {Proceedings of the International Symposium on Research in Attacks, Intrusions, and Defenses \nym{RAID}},
+  BOOKTITLE = proc # ofthe # int # sym # on # {Research in Attacks, Intrusions, and Defenses \nym{RAID}},
   DATE = {2018},
-  PAGES = {423--444},
+  IGNOREpages = {423--444},
   TITLE = {{$\tau$CFI:} Type-assisted Control Flow Integrity for {x86-64} Binaries},
 }
 
@@ -255,18 +233,16 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
   AUTHOR = {Abadi, Martín and Budiu, Mihai and Erlingsson, Ulfar and Ligatti, Jay},
   DATE = {2009},
   JOURNALTITLE = {ACM Transactions on Information and System Security \nym{TISSEC}},
-  NUMBER = {1},
+  JOURNALTITLE = {ACM} # trans # on # {Information and System Security \nym{TISSEC}},
   TITLE = {Control-flow integrity principles, implementations, and applications},
-  VOLUME = {13},
 }
 
 @ARTICLE{fv_ocaml_extraction,
   AUTHOR = {Forster, Yannick and Sozeau, Matthieu and Tabareau, Nicolas},
-  ARTICLENO = {149},
   DATE = {2024},
   JOURNALTITLE = {Proceedings of the ACM on Programming Language Design and Implementation},
+  JOURNALTITLE = proc # ofthe # {ACM} # on # {Programming Language Design and Implementation \nym{PLDI}},
   TITLE = {Verified Extraction from {Coq} to {OCaml}},
-  VOLUME = {8},
 }
 
 @MISC{Ghidra60:online,
@@ -279,10 +255,10 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
 
 @INPROCEEDINGS{brumley11cav,
   AUTHOR = {Brumley, David and Jager, Ivan and Avgerinos, Thanassis and Schwartz, Edward J.},
-  BOOKTITLE = proc # of # the # {\cnum{23rd}} # int # International # conf # on #{Computer Aided Verification \nym{CAV}},
+  BOOKTITLE = proc # of # the # {\cnum{23rd}} # int # conf # on # {Computer Aided Verification \nym{CAV}},
   DATE = {2011},
   IDS = {bap2011cav,bap},
-  PAGES = {463--469},
+  IGNOREpages = {463--469},
   TITLE = {{BAP}: A Binary Analysis Platform},
 }
 
@@ -296,7 +272,7 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
 
 @INPROCEEDINGS{unpredictable_pc,
   AUTHOR = {{Sahin, Onur and Coskun, Ayse K. and Egele, Manuel}},
-  BOOKTITLE = {Research in Attacks, Intrusions, and Defenses \nym{RAID}},
+  BOOKTITLE = proc # ofthe # int # sym # on # {Research in Attacks, Intrusions, and Defenses \nym{RAID}},
   DATE = {{2018}},
   TITLE = {{Proteus: Detecting Android Emulators from Instruction-Level Profiles}},
 }
@@ -311,7 +287,7 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
 
 @INPROCEEDINGS{ptcfi,
   AUTHOR = {Gu, Yufei and Zhao, Qingchuan and Zhang, Yinqian and Lin, Zhiqiang},
-  BOOKTITLE = proc # of # the# {\cnum{7th} ACM } # conf # on #{Data and Application Security and Privacy \nym{CODASPY}},
+  BOOKTITLE = proc # of # the # {\cnum{7th} ACM } # conf # on #{Data and Application Security and Privacy \nym{CODASPY}},
   DATE = {2017},
   TITLE = {PT-CFI: Transparent Backward-Edge Control Flow Violation Detection Using Intel Processor Trace},
 }
@@ -324,7 +300,7 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
 }
 
 @REPORT{ropguard,
-  AUTHOR = {Fratrić, Ivan},
+  AUTHOR = {Fratri\c{c}, Ivan},
   INSTITUTION = {University of Zagreb},
   DATE = {2012},
   TITLE = {ROPGuard: Runtime Prevention of Return-Oriented Programming Attacks},
@@ -361,7 +337,7 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
   IGNOREpages        = {14:1--14:30},
   IGNOREpages        = {1--30},
   IGNOREpublisher    = {Schloss Dagstuhl - Leibniz-Zentrum f{\"{u}}r Informatik},
-  year         = {2025},
+  date         = {2025},
   IGNOREurl          = {https://doi.org/10.4230/LIPIcs.ECOOP.2025.14},
 }
 
@@ -371,19 +347,19 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
   IGNOREbooktitle    = {Verification, Model Checking, and Abstract Interpretation - 27th International Conference, {VMCAI} 2026, Rennes, France, January 12-13, 2026, Proceedings},
   booktitle    = {Verification, Model Checking, and Abstract Interpretation \nym{VMCAI}},
   IGNOREpages        = {147--172},
-  year         = {2026},
+  date         = {2026},
   IGNOREurl          = {https://doi.org/10.1007/978-3-032-15700-3\_8},
 }
 
 @inproceedings{relational_hoare_logic_rmmc,
   author       = {Denis Mazzucato and Abdalrhman Mohamed and Juneyoung Lee and Clark W. Barrett and Jim Grundy and John Harrison and Corina S. Pasareanu},
   title        = {Relational Hoare Logic for Realistically Modelled Machine Code},
-  booktitle    = "\cnum{37}" # int # conf # on # " Computer Aided Verification \nym{CAV}",
+  BOOKTITLE = proc # of # the # {\cnum{37th}} # int # conf # on # {Computer Aided Verification \nym{CAV}},
   IGNOREseries       = {Lecture Notes in Computer Science},
   IGNOREvolume       = {15931},
   IGNOREpages        = {389--413},
   IGNOREpublisher    = {Springer},
-  year         = {2025},
+  date         = {2025},
   IGNOREurl          = {https://doi.org/10.1007/978-3-031-98668-0\_19},
 }
 
@@ -392,7 +368,7 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
   journal = "Science" # of # "Computer Programming",
   IGNOREvolume = {174},
   IGNOREpages = {72-89},
-  year = {2019},
+  date = {2019},
   IGNOREissn = {0167-6423},
   IGNOREurl = {https://www.sciencedirect.com/science/article/pii/S0167642318301667},
   author = {Andreas Lindner and Roberto Guanciale and Roberto Metere},
@@ -406,16 +382,16 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
   IGNOREvolume       = {4424},
   IGNOREpages        = {568--582},
   IGNOREpublisher    = {Springer},
-  year         = {2007},
+  date         = {2007},
   IGNOREurl          = {https://doi.org/10.1007/978-3-540-71209-1\_44},
 }
 
 @INPROCEEDINGS{zhang2024binary,
   author={Zhang, Xuankai and Li, Jianhua and Wu, Jun and Chen, Guoxing and Meng, Yan and Zhu, Haojin and Zhang, Xiaosong},
-  journal={IEEE} # trans # on # {Dependable and Secure Computing},
-  title={Binary-Level Formal Verification Based Automatic Security Ensurement for PLC in Industrial IoT},
-  year={2025},
-  pages={2211--2226},
+  booktitle={IEEE} # trans # on # {Dependable and Secure Computing},
+  title={Binary-Level Formal Verification Based Automatic Security Ensurement for PLC in Industrial IoT}, 
+  date={2025},
+  IGNOREpages={2211--2226},
 }
 
 @INPROCEEDINGS{ceesay2024mucfi,
@@ -427,14 +403,14 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
 
 @INPROCEEDINGS{scalable_binary_lifter_validation,
   AUTHOR = {Dasgupta, Sandeep and Dinesh, Sushant and Venkatesh, Deepan and Adve, Vikram S. and Fletcher, Christopher W.},
-  BOOKTITLE = proc # of # the #{ \cnum{41rd} ACM SIGPLAN Conference on Programming Language Design and Implementation \nym{PLDI}},
+  BOOKTITLE = proc # of # the # {\cnum{41st} ACM SIGPLAN} # conf # on # {Programming Language Design and Implementation \nym{PLDI}},
   DATE = {2020},
   TITLE = {Scalable validation of binary lifters},
 }
 
 @INPROCEEDINGS{formally_verified_lifting,
   AUTHOR = {Verbeek, Freek and Bockenek, Joshua A. and Fu, Zhoulai and Ravindran, Binoy},
-  BOOKTITLE = proc # of # the #{ \cnum{43rd} ACM SIGPLAN Conference on Programming Language Design and Implementation \nym{PLDI}},
+  BOOKTITLE = proc # of # the # {\cnum{43rd} ACM SIGPLAN} # conf # on # {Programming Language Design and Implementation \nym{PLDI}},
   DATE = {2022},
   TITLE = {Formally Verified Lifting of {C}-compiled {x86-64} Binaries},
 }
@@ -446,60 +422,46 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
   TITLE = {Sound Transpilation from Binary to Machine-Independent Code},
 }
 
-@INPROCEEDINGS{picinae,
-  AUTHOR = {Hamlen, Kevin W. and Fisher, Dakota and Lundquist, Gilmore R.},
-  BOOKTITLE = {Proceedings of the \cnum{3rd} ACM Workshop on Forming an Ecosystem Around Software Transformation \nym{FEAST}},
-  DATE = {2019},
-  TITLE = {Source-free Machine-checked Validation of Native Code in {Coq}},
-}
-
 @ARTICLE{isla,
   AUTHOR = {Armstrong, Alasdair and Campbell, Brian and Simner, Ben and Pulte, Christopher and Sewell, Peter},
   DATE = {2024},
   JOURNALTITLE = {Formal Methods in System Design},
-  NUMBER = {1},
   TITLE = {{Isla}: Integrating Full-scale {ISA} Semantics and Axiomatic Concurrency Models (extended version)},
-  VOLUME = {63},
 }
 
 @INPROCEEDINGS{islaris,
   AUTHOR = {Sammler, Michael and Hammond, Angus and Lepigre, Rodolphe and Campbell, Brian and Pichon{-}Pharabod, Jean and Dreyer, Derek and Garg, Deepak and Sewell, Peter},
-  BOOKTITLE = proc # of # the # {\cnum{43rd} ACM SIGPLAN International Conference on Programming Language Design and Implementation},
+  BOOKTITLE = proc # of # the # {\cnum{43rd} ACM SIGPLAN} # int # conf # on # {Programming Language Design and Implementation \nym{PLDI}},
   DATE = {2022},
   TITLE = {Islaris: verification of machine code against authoritative {ISA} semantics},
 }
 
 @ARTICLE{archsem,
-  AUTHOR = {Pérami, Thibaut and Bauereiss, Thomas and Campbell, Brian and Liu, Zongyuan and Lauermann, Nils and Armstrong, Alasdair and Sewell, Peter},
+  AUTHOR = {P{\'e}rami, Thibaut and Bauereiss, Thomas and Campbell, Brian and Liu, Zongyuan and Lauermann, Nils and Armstrong, Alasdair and Sewell, Peter},
   DATE = {2026},
   JOURNALTITLE = proc # of # the # {ACM} # on #{Programming Languages},
   TITLE = {ArchSem: Reusable Rigorous Semantics of Relaxed Architectures},
-  VOLUME = {10},
 }
 
 @ARTICLE{armstrong19isasem,
   AUTHOR = {Armstrong, Alasdair and Bauereiss, Thomas and Campbell, Brian and Reid, Alastair and Gray, Kathryn E. and Norton, Robert M. and Mundkur, Prashanth and Wassell, Mark and French, Jon and Pulte, Christopher and Flur, Shaked and Stark, Ian and Krishnaswami, Neel and Sewell, Peter},
   DATE = {2019},
   JOURNALTITLE = proc # of # the # {ACM } # on #{Programming Languages},
-  NUMBER = {{POPL}},
   TITLE = {{ISA} Semantics for {ARMv8-a}, {RISC-V}, and {CHERI-MIPS}},
-  VOLUME = {3},
 }
 
 @ARTICLE{liblisa,
   AUTHOR = {Craaijo, Jos and Verbeek, Freek and Ravindran, Binoy},
   DATE = {2024},
   JOURNALTITLE = proc # of # the # {ACM } # on #{Programming Languages},
-  NUMBER = {{OOPSLA2}},
   TITLE = {{libLISA}: Instruction Discovery and Analysis on {x86-64}},
-  VOLUME = {8},
 }
 
 @INPROCEEDINGS{goel17x86isa,
   AUTHOR = {Goel, Shilpi and Jr., Warren A. Hunt and Kaufmann, Matt},
   BOOKTITLE = {Provably Correct Systems},
   DATE = {2017},
-  SERIES = {{NASA} Monographs in Systems and Software Engineering},
+  RMSERIES = {{NASA} Monographs in Systems and Software Engineering},
   TITLE = {Engineering a Formal, Executable x86 {ISA} Simulator for Software Verification}
 }
 
@@ -508,58 +470,54 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
 @inproceedings {static_cfi_perf,
     author = {Caroline Tice and Tom Roeder and Peter Collingbourne and Stephen Checkoway and {\'U}lfar Erlingsson and Luis Lozano and Geoff Pike},
     title = {Enforcing {Forward-Edge} {Control-Flow} Integrity in {GCC} \& {LLVM}},
-    booktitle = {\cnum{23rd} USENIX Security Symposium (USENIX Security 14)},
-    year = {2014},
-    pages = {941--955},
+    booktitle = {\cnum{23rd} USENIX Security Symposium},
+    date = {2014},
+    IGNOREpages = {941--955},
 }
 
 @inproceedings{verbeek2024verifiably,
   title={Verifiably correct lifting of position-independent x86-64 binaries to symbolized assembly},
   author={Verbeek, Freek and Naus, Nico and Ravindran, Binoy},
-  booktitle=proc # of #the #{ACM SIGSAC} # conf # on# {Computer and Communications Security},
-  pages={2786--2798},
-  year={2024}
+  booktitle=proc # of #the #{ACM SIGSAC} # conf # on # {Computer and Communications Security \nym{CCS}},
+  IGNOREpages={2786--2798},
+  date={2024}
 }
 
 @MISC{verified_pointers,
   author = "Freek Verbeek and Ali Shokri and Daniel Engel and Binoy Ravindran",
   title = "Formally Verified Binary-level Pointer Analysis",
   howpublished = "\url{https://arxiv.org/abs/2501.17766}",
-  year = 2025,
+  date = 2025,
 }
 @inproceedings{russo2010dynamic,
   title={Dynamic vs. static flow-sensitive security analysis},
   author={Russo, Alejandro and Sabelfeld, Andrei},
   booktitle={\cnum{23rd}} #  {IEEE Computer Security Foundations} # sym,
-  pages={186--199},
-  year={2010},
+  IGNOREpages={186--199},
+  date={2010},
 }
 
 @inproceedings{jasmin,
   title={Jasmin: High-assurance and high-speed cryptography},
   author={Almeida, Jos{\'e} Bacelar and Barbosa, Manuel and Barthe, Gilles and Blot, Arthur and Gr{\'e}goire, Benjamin and Laporte, Vincent and Oliveira, Tiago and Pacheco, Hugo and Schmidt, Benedikt and Strub, Pierre-Yves},
   booktitle=proc # of #the #{ACM SIGSAC} # conf # on# {Computer and Communications Security},
-  pages={1807--1823},
-  year={2017}
+  IGNOREpages={1807--1823},
+  date={2017}
 }
 @inproceedings{sep_kernel,
     author = {Dam, Mads and Guanciale, Roberto and Khakpour, Narges and Nemati, Hamed and Schwarz, Oliver},
     title = {Formal verification of information flow security for a simple arm-based separation kernel},
-    year = {2013},
-    doi = {10.1145/2508859.2516702},
-    booktitle = proc # of # the #{ACM SIGSAC} # conf # on # { Computer and Communications Security},
-    pages = {223–234},
-    numpages = {12},
-    keywords = {separation kernel, information flow security, hypervisor, formal verification},
+    date = {2013},
+    booktitle = proc # of # the #{ACM SIGSAC} # conf # on # {Computer and Communications Security \nym{CCS}},
+    IGNOREpages = {223–234},
 }
 
 @inproceedings{bardin_ft,
   title={Adversarial reachability for program-level security analysis},
   author={Ducousso, Soline and Bardin, S{\'e}bastien and Potet, Marie-Laure},
-  booktitle={European Symposium on Programming},
-  pages={59--89},
-  year={2023},
-  organization={Springer}
+  booktitle={European Symposium on Programming \nym{ESOP}},
+  IGNOREpages={59--89},
+  date={2023},
 }
 
 @article{barthe2019formal,
@@ -567,131 +525,102 @@ keywords = {heartbleed, internet-wide scanning, openssl, security},
   author={Barthe, Gilles and Blazy, Sandrine and Gr{\'e}goire, Benjamin and Hutin, R{\'e}mi and Laporte, Vincent and Pichardie, David and Trieu, Alix},
   journal=proc # of # the # {ACM } # on #{Programming Languages},
   volume={4},
-  year={2019},
+  date={2019},
 }
 
 @article{averill2025src,
   title={Formally-Verified, Tight Timing Constraints for Machine Code},
   author={Averill, Charles},
-  journal={Programming Languages Design and Implementation Student Research Competition},
-  year={2025}
+  journal={Programming Languages Design and Implementation Student Research Competition \nym{PLDI SRC}},
+  date={2025}
 }
 
 @InProceedings{armv7formalization,
 author="Fox, Anthony and Myreen, Magnus O.",
 title="A Trustworthy Monadic Formalization of the ARMv7 Instruction Set Architecture",
 booktitle="Interactive Theorem Proving \nym{ITP}",
-year="2010",
-pages="243--258",
+date="2010",
+IGNOREpages="243--258",
 }
 
 @Inproceedings{bincc,
 author = {Wang, Minghua and Yin, Heng and Bhaskar, Abhishek Vasisht and Su, Purui and Feng, Dengguo},
 title = {Binary Code Continent: Finer-Grained Control Flow Integrity for Stripped Binaries},
-year = {2015},
-publisher = {Association for Computing Machinery},
-doi = {10.1145/2818000.2818017},
-booktitle = proc # of # the # {\cnum{31st} Annual Computer Security Applications Conference},
-pages = {331–340},
-series = {ACSAC '15}
+date = {2015},
+booktitle = proc # of # the # {\cnum{31st} Annual Computer Security Applications} # conf # {\nym{ACSAC}},
+IGNOREpages = {331–340},
 }
 
 @inproceedings{armv8semantics1,
 author = {Flur, Shaked and Gray, Kathryn E. and Pulte, Christopher and Sarkar, Susmit and Sezgin, Ali and Maranget, Luc and Deacon, Will and Sewell, Peter},
 title = {Modelling the {ARMv8} architecture, operationally: concurrency and ISA},
-year = {2016},
-url = {https://doi.org/10.1145/2837614.2837615},
+date = {2016},
+url = {url{https://doi.org/10.1145/2837614.2837615}},
 booktitle = proc # ofthe # "\cnum{43rd} ACM SIGPLAN-SIGACT" # sym # on # "Principles" # of # "Programming Languages \nym{POPL}",
-pages = {608--621},
+IGNOREpages = {608--621},
 }
 
 @InProceedings{walls_et_al,
-  author = {Walls, Robert J. and Brown, Nicholas F. and Le Baron, Thomas and Shue, Craig A. and Okhravi, Hamed and Ward, Bryan C.},
+  author       = {Robert J. Walls and Nicholas F. Brown and Thomas Le Baron and Craig A. Shue and Hamed Okhravi and Bryan C. Ward},
   title =	{Control-Flow Integrity for Real-Time Embedded Systems},
-  booktitle =	{31st Euromicro Conference on Real-Time Systems (ECRTS 2019)},
-  pages =	{2:1--2:24},
-  series = {Leibniz International Proceedings in Informatics (LIPIcs)},
-  year = {2019},
-  volume = {133},
-  publisher =	{Schloss Dagstuhl -- Leibniz-Zentrum f{\"u}r Informatik},
-  URL = {https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ECRTS.2019.2},
+  booktitle =	{\cnum{31st} Euromicro} # conf # on # {Real-Time Systems \nym{ECRTS}},
+  date = {2019},
+  IGNOREURL = {https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ECRTS.2019.2},
 }
 
 @article{armv8semantics2,
 author = {Armstrong, Alasdair and Bauereiss, Thomas and Campbell, Brian and Reid, Alastair and Gray, Kathryn E. and Norton, Robert M. and Mundkur, Prashanth and Wassell, Mark and French, Jon and Pulte, Christopher and Flur, Shaked and Stark, Ian and Krishnaswami, Neel and Sewell, Peter},
 title = {ISA semantics for {ARMv8-A}, {RISC-V}, and {CHERI-MIPS}},
-year = {2019},
-url = {https://doi.org/10.1145/3290384},
+date = {2019},
+IGNOREurl = {https://doi.org/10.1145/3290384},
 journal = proc # ofthe # "ACM" # on # "Principles" # of # "Programming Languages \nym{POPL}",
 }
 
 @InProceedings{armv8semantics3,
 author="Simner, Ben and Flur, Shaked and Pulte, Christopher and Armstrong, Alasdair and Pichon-Pharabod, Jean and Maranget, Luc and Sewell, Peter",
 title="{ARMv8-A} System Semantics: Instruction Fetch in Relaxed Architectures",
-IGNOREbooktitle="Programming Languages and Systems",
 booktitle= "European" # sym # on # "Programming \nym{ESOP}",
-year="2020",
-pages="626--655",
+date="2020",
+IGNOREpages="626--655",
 }
 
 @inproceedings{armv8semantics4,
   title={Trustworthy specifications of ARM{\textregistered} v8-A and v8-M system level architecture},
   author={Reid, Alastair},
   booktitle={Formal Methods in Computer-Aided Design \nym{FMCAD}},
-  pages={161--168},
-  year={2016},
+  IGNOREpages={161--168},
+  date={2016},
 }
 
 %%%%%%%%%%%%%%%%
 
 @inproceedings{becker2024woot,
-year = {2024},
-rating = {3},
-author = {Becker, Lucas and Hollick, Matthias and Classen, Jiska},
-title = {{SoK: on the effectiveness of control-flow integrity in practice}},
-booktitle = {USENIX WOOT Conference on Offensive Technologies (WOOT)},
-isbn = {978-1-939133-43-4},
-doi = {10.5555/3696933.3696947},
-series = {USENIX WOOT Conference on Offensive Technologies (WOOT)},
-publisher = {USENIX Association},
-address = {USA},
-keywords = {},
-month = {08},
+    AUTHOR = {Becker, Lucas and Hollick, Matthias and Classen, Jiska},
+    TITLE = {{{SoK}: on the effectiveness of control-flow integrity in practice}},
+    BOOKTITLE = {{USENIX} {WOOT}} # conf # on # {Offensive Technologies},
+    DATE = {2024},
 }
 
-
 @article{burow2017survey,
-year = {2017},
-rating = {0},
-keywords = {CFI,survey},
-title = {{Control-Flow Integrity - Precision, Security, and Performance.}},
+DATE = {2017},
+title = {{Control-Flow Integrity: Precision, Security, and Performance.}},
 author = {Burow, Nathan and Carr, Scott A and Nash, Joseph and Larsen, Per and Franz, Michael and Brunthaler, Stefan and Payer, Mathias},
-journal = {ACM Computing Survey},
-doi = {10.1145/0000000.0000000},
+journal = {ACM Computing Surveys \nym{CSUR}},
 }
 
 @inproceedings{isacfi2019hasp,
 author = {Shanbhogue, Vedvyas and Gupta, Deepak and Sahita, Ravi},
 title = {Security Analysis of Processor Instruction Set Architecture for Enforcing Control-Flow Integrity},
-year = {2019},
-isbn = {9781450372268},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-url = {https://doi.org/10.1145/3337167.3337175},
-doi = {10.1145/3337167.3337175},
-booktitle = {Proceedings of the 8th International Workshop on Hardware and Architectural Support for Security and Privacy},
-articleno = {8},
-numpages = {11},
-keywords = {COP, Control-flow integrity, JOP, ROP, control flow subversion attacks, shadow stack},
-location = {Phoenix, AZ, USA},
-series = {HASP '19}
+DATE = {2019},
+IGNOREurl = {https://doi.org/10.1145/3337167.3337175},
+booktitle = proc # ofthe # {\cnum{8th}} # work # on # {Hardware and Architectural Support} # for # {Security and Privacy \nym{HASP}},
 }
 
 @inproceedings{liljestrand2019pac,
   ids = {arm_pac},
-  title={$\{$PAC$\}$ it up: Towards pointer integrity using $\{$ARM$\}$ pointer authentication},
-  author={Liljestrand, Hans and Nyman, Thomas and Wang, Kui and Perez, Carlos Chinea and Ekberg, Jan-Erik and Asokan, N},
-  booktitle={28th USENIX Security Symposium (USENIX Security 19)},
-  pages={177--194},
-  year={2019}
+  TITLE={{PAC} it up: Towards pointer integrity using {ARM} pointer authentication},
+  AUTHOR={Liljestrand, Hans and Nyman, Thomas and Wang, Kui and Perez, Carlos Chinea and Ekberg, Jan-Erik and Asokan, N},
+  BOOKTITLE=proc # ofthe # {\cnum{28th}} # {{USENIX}} # conf # on # {Security} # sym,
+  IGNOREPAGES={177--194},
+  DATE={2019}
 }
