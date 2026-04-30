@@ -7,7 +7,7 @@
 \begin{figure}[t]
     \centering
     % \includegraphics[width=0.9\linewidth]{implementation.pdf}
-    \includegraphics[width=0.9\linewidth]{figs/ARMCFI Overview ixb_transitions_sans_extraction.drawio.pdf}
+    \includegraphics[width=1\linewidth]{figs/ARMCFI Overview ixb_transitions_sans_extraction.drawio.pdf}
     % maybe a bit too long
     \caption{\pname architecture and dataflow showing instrumented instructions (highlighted red and green) and policy table construction (labels colored red and green).\kjee{In overall, edges tell the story. Think more about out ``edges`` can be presented.}
     \comment{%
@@ -19,7 +19,7 @@
         Indirect jump instructions become blocks that perform a lookup into a table that constrains the target to permitted destinations and converts between old and new addresses.
         Instructions with identical destination sets can share a policy table (e.g.\ tbl2 for $i_1, i_4$).\kjee{caption is too lengthy.}
     }
-    }~\label{fig:cfi_arch}
+    }\label{fig:cfi_arch}
 \end{figure}
 
 \subsection{Rewriter Design}\label{sec:cfi_design}
@@ -29,10 +29,10 @@ Figure~\ref{fig:cfi_arch} depicts the design of \pname, consisting of two main c
 and (2) the \ELFPackager, which packages the new instruction list into an ELF file.
 The former is implemented in Rocq and its soundness is verified in \S\ref{sec:verification}.
 The verified Rocq code is extracted to OCaml, linked with minimal wrapper code for file IO, and compiled into the executable that performs the binary rewriting.
-The \ELFPackager is a python script that packages the rewritten code into an ELF file.
+The \ELFPackager is a Python script that packages the rewritten code into an ELF file.
 
 The CFI rewriter is a Rocq function with the following inputs:
-\begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
+\begin{itemize}[topsep=1ex,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
 \item \heading{Text Segment ($\ell$):}
 The rewriter receives the contents of the text segment of the original program as a list $\ell$ of 4-byte integers.
 \item \heading{Addresses ($\bi, \bip, \tbi, \mai$):}
@@ -45,7 +45,7 @@ Each location is the index $i$ of a 4-byte virtual memory address~$4i$.
 \item \heading{Policy (\pol):}
 The CFI policy specifies the set of permitted destinations of each instruction in the text segment.
 It is expressed as a function from source indices to lists of permitted destination indices.
-Policies may specify arbitrary destination sets; the rewriter supports non-disjoint, non-identical destination sets.
+Policies may specify arbitrary destination sets, including non-disjoint, non-identical sets for different instructions.
 \end{itemize}
 
 % block structure
@@ -142,11 +142,11 @@ Parameters $\mathit{lsb},w\in[0,32)$ are chosen to minimize table size $|T_D|$.
 % The rewritten block and policy table for this instruction is as follows: \kjee{the following presentation can be improved.}
 
 \autoref{fig:block_rewriter_demo} illustrates rewriting \texttt{BX\:r0} (a branch to \texttt{r0}),
-with policy-permitted destination set $D = \{0\mathrm{x}110, 0\mathrm{x}120, 0\mathrm{x}130\}$,
-whose corresponding new addresses are $\{0\mathrm{x}200, 0\mathrm{x}220, 0\mathrm{x}240\}$, respectively.
-The parameters for $h$ that minimize table size in this example are $\mathit{lsb}=4$ and $w=3$, which extract bits 4--6 from each index.
+with policy-permitted destination set $D = \{4(0\mathrm{x}110), 4(0\mathrm{x}120), 4(0\mathrm{x}130)\}$,
+whose corresponding new addresses are $\{4(0\mathrm{x}200), 4(0\mathrm{x}220), 4(0\mathrm{x}240)\}$, respectively.
+The parameters for $h$ that minimize table size in this example are $\mathit{lsb}=6$ and $w=3$, which extract bits 6--8 from each address.
 \ixb{I think these two sentences may save readers some confusion; unsure if they're worth the space though:}
-New destination $0\mathrm{x}220$ has only one entry in the table, whereas the others have two.
+New destination $4(0\mathrm{x}220)$ has only one entry in the table, whereas the others have two.
 This is because it shares the same hash as its original destination, which is safe because jumps to the new and old destinations should both be routed to the new \Block.
 
 \begin{figure}[t]
@@ -174,7 +174,7 @@ This is because it shares the same hash as its original destination, which is sa
     \end{tabular}
     \vspace{8pt}
 \begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,label={lst:armv7},xleftmargin=.3cm]
-UBFX r0, r0, #6, #3      // r0 = h(dest) (r0 is an address, so we add 2 to lsb)
+UBFX r0, r0, #6, #3      // r0 = h(dest)
 LSL r0, r0, #2           // r0 = h(dest) * 4
 ADD r0, r0, #table_addr  // r0 = &table[h(dest)]
 LDR r0, [r0]             // r0 = table[h(dest)]
@@ -184,7 +184,7 @@ BX r0                    // branch to table[h(dest)]
 so there are actually 4 add instructions in this \Block to add each byte separately, but idk if it's necessary to say that here}
 \ixb{I bet it's not necessary.}
 
-\caption{Rewriting instruction \texttt{BX r0}. The tables map old addresses to new, and the listing shows the rewritten \Block code.
+\caption{Rewriting instruction \texttt{BX\:r0}. The tables map old addresses to new, and the listing shows the rewritten \Block code.
 \ixb{The table diagram still is not beautiful, but I think it serves us well to combine the tables and listing in the same figure.
 It makes referring to it in a leading paragraph sentence easier.}\kjee{How can we/readers associate tables and listing?}}
 \label{fig:block_rewriter_demo}
@@ -246,7 +246,7 @@ It also reduces the number of conditional instructions added to rewritten code, 
 
     \heading{Endianness.}
     ARM supports both little and big endian memory operations, determined by the value of the E bit of the \CPSR.
-    Changing the E bit at runtime could risk policy violations by loading destination addresses from policy tables in a different byte order than they were stored.
+    Changing the E bit at runtime could risk policy violations by loading addresses from policy tables in a different byte order than they were stored.
     \pname therefore replaces endianness mode-switching instructions with safe aborts.
     Future work could support mixed endianness by setting and restoring the E bit before and after table-reads.
 
@@ -351,7 +351,7 @@ This eliminates the considerable challenge of discovering invariant locations su
 %instead only focusing on the core rewriting logic that transforms the instruction bytes.
 
 Although mainstream \FM frameworks such as Rocq and Isabelle/\penalty0 HOL have built-in support for machine-proving properties of concrete codes implemented in their respective specification languages, they do not natively support verifying properties of codes expressed in other languages or produced by other tools.
-Therefore, although implementing our rewriter as a Gallina function affords Rocq the capacity to directly reason about its implementation, it does not afford it the capability of proving properties of the machine code that our rewriter outputs.
+Therefore, although implementing our rewriter as a Gallina function affords Rocq the capacity to directly reason about its implementation, it does not afford the capability of proving properties of the machine code that it outputs.
 
 This presents a difficult \FM challenge:
 The rewriter soundness property we must verify is a universally quantified property of all possible executions on all possible ISA-compliant computational environments of all possible machine code programs that the rewriter might generate.

@@ -37,13 +37,13 @@ Since rewriters relocate and add instructions, policy $\Pol\kern1pt'$ for the re
 (1) Addresses in $\Pol$ must be mapped to their rewritten locations.
 This remapping is defined by function \itoip (\autoref{eq:itoip}).
 (2) New permissible edges must be added for inserted security checks, to allow the new checks to execute.
-(3) The inserted checks may signal an alarm by jumping to a safe abort address $\mai$.
+(3) The inserted checks may signal an alarm by jumping to a safe abort address $4\mai$.
 These three reinterpretations are formalized as
 \begin{equation}
 \begin{aligned}
   \Pol\kern1pt' =\:& \{(4\itoip(a_1/4),4\itoip(a_2/4))\:|\:(a_1,a_2)\in\Pol\}\:\cup \\
                   &\{(4i'_1,4i'_2)\:|\:i_1',i_2'\in[\itoip(i),\itoip(i+1)), 0\leq i<|\ell|\}\:\cup \\
-                  &(\mathbb{N}\times\{\mai\})
+                  &(\mathbb{N}\times\{4\mai\})
 %  \iptoi(i') = \begin{cases}
 %    \mathit{\bi} + n & \text{if } i' \in [\bip, \bip + |\texttt{flatten}(\txtp)|-1] \\
 %    i'     & \text{otherwise.}
