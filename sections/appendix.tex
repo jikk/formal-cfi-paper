@@ -1,6 +1,23 @@
 %! root=../main.tex
-\appendix %% CCS: DO NOT REMOVE
+\begin{table*}[t]
+    \centering
+    \caption{Categorized ARM instructions}
+    \vspace{-10pt}
+    \begin{tabular}{|p{0.2\linewidth}|p{0.7\linewidth}|}
+       \hline \textbf{Category} & \textbf{Instructions} \\
+       \hline Direct control flow & B, BL, BX with Rm = 15 \\ 
+       \hline Indirect control flow & Data processing instructions (AND, EOR, SUB, RSB, ADD, ADC, SBC, RSC, ORR, MOV, LSL, LSR, ASR, RRX, ROR, BIC, MVN) with Rd = 15, BX with Rm $\ne$ 15, BLX (register), LDR with Rt = 15, Block data transfer (Load) instructions (LDMDA, LDM/POP, LDMDB, LDMIB) with registers[15] = 1 \\
+       \hline Non-control-flow change & Data processing instructions with Rd $\ne$ 15 and Rm/Rn = 15, Load/Store intructions with Rt $\ne$ 15 and Rn = 15 \\
+       \hline Unsupported & BXJ, BLX (immediate), SETEND, instructions from non-ARM modes, other instructions treated as \unpredictable{} due to missing decoder/lifter support (\eg SIMD instructions) \\
+       \hline \unpredictable{} & Some variants of almost all instructions \\
+       \hline Unchanged & Everything else \\
+       \hline
+    \end{tabular}
+    \label{tab:categories}
+\end{table*}
+
 \newpage
+\appendix %% CCS: DO NOT REMOVE
 \section{Open Science}
 % We release our artifacts at \url{https://anonymous.4open.science/r/armcfi2026ccs}, including the full source code needed to understand, reproduce, and evaluate our system.
 
@@ -9,7 +26,7 @@ We release our artifacts via anonymous repository,\footnoteref{note0} including 
 The repository provides detailed documentation for rebuilding the formal proofs of compliance with both the CFI specification and the ARMv7 architecture, as well as instructions for building and compiling the \pname rewriter to generate CFI-instrumented binaries.
 We also include PoC attack cases (\autoref{tab:poc-attacks}) together with automatically profiled control-flow policies. To facilitate deployment and experimentation, we provide a containerized environment (\eg Docker) that enables users to run \pname on compatible ARMv7 platforms and evaluate it on custom binaries.
 
-\section{ARMv7 Instruction Categories}
+\section{ARMv7 Instruction Categories}\label{sec:armv7_categories}
 \ixb{The story here can be ``look at all these instructions whose \emph{operands} change how they need to be treated. Imagine how complex the implementation is. Imagine \emph{not} having a proof for its soundness!}
 
 In Figure \ref{tab:categories} we categorize ARMv7 user-mode instructions based on their control-flow effects as described in \autoref{sec:cfi_design}.
@@ -37,33 +54,17 @@ or shuffling values from the stack if it determines that the scratch register ne
 A similar \Block template that also stores the stack pointer in a scratch register is used for instructions that modify the SP,
 such as load instructions that write back to the SP.
 
-\begin{figure*}[b]
-    \centering
-    \begin{tabular}{|p{0.2\linewidth}|p{0.8\linewidth}|}
-       \hline Category & Instructions \\
-       \hline Direct control flow & B, BL, BX with Rm = 15 \\ 
-       \hline Indirect control flow & Data processing instructions (AND, EOR, SUB, RSB, ADD, ADC, SBC, RSC, ORR, MOV, LSL, LSR, ASR, RRX, ROR, BIC, MVN) with Rd = 15, BX with Rm != 15, BLX (register), LDR with Rt = 15, Block data transfer (Load) instructions (LDMDA, LDM/POP, LDMDB, LDMIB) with bit15 = 1 \\
-       \hline Non-control-flow change & Data processing instructions with Rd != 15 and Rm/Rn = 15, Load/Store intructions with Rt != 15 and Rn = 15 \\
-       \hline Unsupported & BXJ, BLX (immediate), SETEND, instructions from non-ARM modes, other instructions treated as \unpredictable{} due to missing decoder/lifter support (\eg SIMD instructions) \\
-       \hline \unpredictable{} & Some variants of almost all instructions \\
-       \hline Unchanged & Everything else \\
-       \hline
-    \end{tabular}
-    \caption{Categorized ARM instructions}
-    \label{tab:categories}
-\end{figure*}
-
-\section{Hash Function Replacement}
+\section{Hash Function Replacement}\label{sec:hash_function}
 
 This appendix outlines a methodology for replacing the hash function with one that reduces the space overhead in \autoref{fig:spec2017_size} without compromising rewriter soundness.
 Section~\ref{sec:fm_friendly} lists \FM friendly design principles, including reducing complexity of conditional expressions, and localizing soundness invariants away from global code properties.
 Our current rewriter obeys these principles by avoiding dependence on the cryptographic security or collision avoidance of the hash function.
 
-To update the implementation to use a different hash function, one would need to update the function that produces table lookup code
-and the function that generates the policy table for a given destination set.
-To update the proof to accommodate these changes, it suffices to prove that after executing the instructions for computing the new hash function,
-the hashed register contains a value less than the length of the table, and that the policy tables still only contains permitted destinations,
-with no other changes necessary.
+Updating the implementation with a more space-efficient hash function entails
+updating the soundness proof for the rewriter function that produces table lookup code,
+and updating the soundness proof for the rewriter function that generates the policy table $T_D$ for a given destination set $D$.
+It suffices to prove that after executing the instructions for computing the new hash function,
+the hashed register contains a value less than the length of the table, and that the policy tables only contain permitted destinations.
 
 \comment{
 \section{Key Lemmas}
@@ -74,7 +75,7 @@ We showcase here some of our important lemmas.
 The lemma proves that the table fits in memory without wrapping around the end of it.
 Here \tbi and \tables are section variables corresponding to the base index of the policy table and its contents respectively.
 
-\begin{figure}
+\begin{figure*}
     \centering
     \begin{minted}[fontsize=\small,escapeinside=@@]{coq}
 Lemma no_table_overflow: @\tbi@ + N_len_cat @\tables@ < @$2^{30}$@.
@@ -85,5 +86,5 @@ Qed.
     \end{minted}
     \caption{Proof the policy table does not wrap around memory.}
     \label{fig:rewrite_no_table_overflow}
-\end{figure}
+\end{figure*}
 }

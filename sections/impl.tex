@@ -34,7 +34,7 @@ The implementation is organized into three primary artifacts.
 \heading{ARMv7 Semantics (\texttt{decoder.v}, \texttt{lifter.v}).}
 The first artifact provides a formal semantics of the ARMv7 instruction set expressed in Picinae's \IL.
 % Each instruction is specified as a Gallina function that maps a machine state (register file and memory) to an updated state, encoding all architectural effects including register writes, memory operations, and control-flow transfers.
-The behavior of each instruction is specified as a Gallina function that produces \IL based on the the instruction operands, encoding all architectural effects including register writes, memory operations, and control-flow transfers.
+The behavior of each instruction is specified as a Gallina function that produces \IL based on the instruction operands, encoding all architectural effects including register writes, memory operations, and control-flow transfers.
 % This semantics is shared across the verification of both the decoder and the rewriter, forming the trusted base for all subsequent proofs. ???
 
 \heading{CFI Rewriter (\texttt{cfi.v}).}
