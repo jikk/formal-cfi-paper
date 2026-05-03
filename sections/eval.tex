@@ -9,7 +9,7 @@ We then present case studies demonstrating how formal verification uncovers subt
 
 \subsection{Runtime Overheads}
 
-\autoref{tab:spec2017}  evaluates \pname's runtime performance on rewritten SPEC CPU 2017 benchmarks. To measure overhead, we adopt a permissive policy that allows any instruction to transfer control to other instruction within the code section. \pname incurs an average overhead of 19\%, which is comparable to prior ARM-based CFI rewriters~\cite{walls_et_al}, although some benchmarks exhibit higher slowdowns.
+\autoref{tab:spec2017}  evaluates \pname's runtime performance on rewritten SPEC CPU 2017 benchmarks. To measure overhead, we adopt a permissive policy that allows each instruction to transfer control to any other instruction in the code section. \pname incurs an average overhead of 19\%, which is comparable to prior ARM-based CFI rewriters~\cite{walls_et_al}, although some benchmarks exhibit higher slowdowns.
 
 In particular, \cd{500.perlbench\_r} runs an interpreter-style workload with a high density of indirect control transfers, such as switch-based dispatch and function pointer invocations. Benchmark \cd{541.leela\_r} is a Go engine based on Monte Carlo Tree Search (MCTS). It exhibits highly irregular, data-dependent control flow and frequent function calls due to its recursive search structure. In both cases, the dynamic frequency of control-flow events is high, which amplifies the cost of CFI instrumentation.
 %
@@ -31,7 +31,7 @@ Some benchmarks exhibit higher code size overhead due to a larger number of unfi
 This effect stems from our design choice of using a simple hash function (\eg one without control or branch operations), which favors verification simplicity over space efficiency. On average, the policy table accounts for 71.7\% of the total size increase.
 
 Overall, the rewritten binaries grow substantially in size; however, the increase remains on the order of a few megabytes and incurs negligible runtime memory overhead.
-Modifying the rewriter to use a better hash function to reduce space overhead can be achieved with minimal changes to the proof, further discussed in Appendix \ref{sec:hash_function}.
+Modifying the rewriter to use a better hash function to reduce space overhead can be achieved with minimal changes to the proof (see Appendix \ref{sec:hash_function}).
 
 \comment{%
     \autoref{fig:spec2017_size} measures the static size overhead of rewritten SPEC binaries.

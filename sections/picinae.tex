@@ -50,7 +50,7 @@ This keeps the lifter small and amenable to abstract formal reasoning.
 %This approach also supports binary bytecode languages; for example, \Picinae{} already supports eBPF bytecode binaries.
 
 \begin{figure}[t]
-\footnotesize
+\small
 \begin{align*}
   &\text{Expressions} & e &\Coloneqq v~|~n\ofwidth{w}~|~e_1[e_2]\ofwidth{w}~|~e_1[e_2\coloneqq e_3]\ofwidth{w}~|~e_1\circledcirc e_2 \\
   & & & \hphantom{\Coloneqq}|~(e:w)~|~\mathsf{let}~v\coloneqq e_1~\mathsf{in}~e_2~|~{*}\ofwidth{w} \\
@@ -60,7 +60,7 @@ This keeps the lifter small and amenable to abstract formal reasoning.
   &\text{Programs} & p &: \Sigma\rightarrow\mathbb{N}\rightharpoonup s \\
   &\text{Traces} & \tau &\Coloneqq \langle\chi,\sigma\rangle~|~\langle\chi,\sigma\rangle::\tau
   \end{align*}
-\vspace{-10pt}
+\vspace{-15pt}
 % \caption{An IL for expressing individual machine instruction operational semantics}
 \caption{\Picinae{} IL grammar.\kjee{@ixb please confirm it.}\ixb{Spec. looks complete; added typecast entry in the explanatory paragraph. Any specific question you had about it?}}\label{fig:picinae_il}
 \end{figure}

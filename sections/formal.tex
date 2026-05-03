@@ -24,8 +24,8 @@ A trace $\tau$ is safe if all its computational steps are confined to edges in $
 where a trace's computational $\mathit{steps}$ are defined by
 \begin{equation}
 \begin{aligned}
-\mathit{steps}(\langle a,\sigma\rangle) &= [\,] \\
-\mathit{steps}\big(\langle a_1,\sigma_1\rangle :: \langle a_2,\sigma_2\rangle :: \tau\big) &= (a_1,a_2)::\mathit{steps}\big(\langle a_2,\sigma_2\rangle :: \tau\big)
+\mathit{steps}(\langle a,\sigma\rangle) &= \emptyset \\
+\mathit{steps}\big(\langle a_1,\sigma_1\rangle :: \langle a_2,\sigma_2\rangle :: \tau\big) &= \{(a_1,a_2)\}\cup\mathit{steps}\big(\langle a_2,\sigma_2\rangle :: \tau\big)
 \end{aligned}
 \end{equation}
 %\optional{We do not care if the trace ends by throwing a hardware exception, so this definition only considers steps between two addresses.}
@@ -41,8 +41,8 @@ This remapping is defined by function \itoip (\autoref{eq:itoip}).
 These three reinterpretations are formalized as
 \begin{equation}
 \begin{aligned}
-  \Pol\kern1pt' =\:& \{(4\itoip(a_1/4),4\itoip(a_2/4))\:|\:(a_1,a_2)\in\Pol\}\:\cup \\
-                  &\{(4i'_1,4i'_2)\:|\:i_1',i_2'\in[\itoip(i),\itoip(i+1)), 0\leq i<|\ell|\}\:\cup \\
+  \Pol\kern1pt' =\:& \big\{\kern1.5pt(4\itoip(a_1/4),4\itoip(a_2/4))\:\big|\:(a_1,a_2)\in\Pol\kern2pt\big\}\:\cup \\
+                  &\big\{\kern1.5pt(4i'_1,4i'_2)\:\big|\:i_1',i_2'\in\big[\kern-.2pt\itoip(i),\itoip(i{+}1)\kern.2pt\big)\kern2pt\big\}\:\cup \\
                   &(\mathbb{N}\times\{4\mai\})
 %  \iptoi(i') = \begin{cases}
 %    \mathit{\bi} + n & \text{if } i' \in [\bip, \bip + |\texttt{flatten}(\txtp)|-1] \\
@@ -50,7 +50,6 @@ These three reinterpretations are formalized as
 %  \end{cases}
 \end{aligned}
 \end{equation}
-where $|\ell|$ is the length of the original code segment.
 
 % Note that this permitted step definition allows a block to step to the corresponding index in the old text segment,
 %Note, \Polp{} permits a rewritten \Block to step to its corresponding instruction in the old text segment
@@ -67,7 +66,7 @@ where $|\ell|$ is the length of the original code segment.
 %\]
 Programs $p$ started in machine states $\sigma_0$ exhibit a trace $\tau$ when executed, denoted $\langle p,\sigma_0\rangle\leadsto\tau$.
 Relation $\leadsto$ is defined by the ISA semantic specification, and is nondeterministic;
-\unpredictable{} operations in $p$ can cause $\langle p,\sigma_0\rangle\leadsto\tau_1$ and $\langle p,\sigma_0\rangle\leadsto\tau_2$ for multiple different traces $\tau_1\ne\tau_2$.
+\unpredictable{} operations in $p$ can exhibit $\langle p,\sigma_0\rangle\leadsto\tau_1$ and $\langle p,\sigma_0\rangle\leadsto\tau_2$ for multiple different traces $\tau_1\ne\tau_2$.
 
 We prove safety of rewritten code in program $p$ under the following assumptions:
 (1) initial state $\sigma_0$ starts in the ARM instruction mode,
@@ -95,7 +94,7 @@ These initial assumptions are properties of the \ELFPackager and OS process load
 \heading{Soundness of a CFI implementation.}
 For a CFI rewriter implementation $r$ to be sound, all executions of all rewritten programs it produces must be safe.
 \begin{equation}
-  \safe{CFI}(r) \equiv \forall \txt, \Pol, \langle r(\txt,\Pol),\sigma_0\rangle\leadsto\tau \Rightarrow \safe{trace}(\Pol\kern1pt',\tau)
+  \safe{CFI}(r) \equiv \forall \txt, \Pol,\ \langle r(\txt,\Pol),\sigma_0\rangle\,{\leadsto}\,\tau\ \Rightarrow\ \safe{trace}(\Pol\kern1pt',\tau)
 \end{equation}
 
 \subsection{Safety Proof}

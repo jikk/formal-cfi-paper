@@ -9,6 +9,7 @@
     % \includegraphics[width=0.9\linewidth]{implementation.pdf}
     \includegraphics[width=1\linewidth]{figs/ARMCFI Overview ixb_transitions_sans_extraction.drawio.pdf}
     % maybe a bit too long
+    \vspace{-20pt}
     \caption{\pname architecture and dataflow showing instrumented instructions (highlighted red and green) and policy table construction (labels colored red and green).\kjee{In overall, edges tell the story. Think more about out ``edges`` can be presented.}
     \comment{%
         Highlighted instructions are potentially dangerous (red) or their instrumented output (green).
@@ -20,6 +21,7 @@
         Instructions with identical destination sets can share a policy table (e.g.\ tbl2 for $i_1, i_4$).\kjee{caption is too lengthy.}
     }
     }\label{fig:cfi_arch}
+    \vspace{-10pt}
 \end{figure}
 
 \subsection{Rewriter Design}\label{sec:cfi_design}
@@ -151,7 +153,7 @@ This is because it shares the same hash as its original destination, which is sa
 
 \begin{figure}[t]
     \definecolor{green}{rgb}{0.0, 0.6, 0.0}
-    \centering
+    \centering\small
     \begin{tabular}{|c|c|c|c|}
         \hline
         $i$ & $\itoip(i)$ & $h(i)$ & $h(\itoip(i))$ \\ \hline
@@ -172,7 +174,7 @@ This is because it shares the same hash as its original destination, which is sa
         6 & $4\mai$ \\ \hline
         7 & $4\mai$ \\ \hline
     \end{tabular}
-    \vspace{8pt}
+    \vspace{4pt}
 \begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,label={lst:armv7},xleftmargin=.3cm]
 UBFX r0, r0, #6, #3      // r0 = h(dest)
 LSL r0, r0, #2           // r0 = h(dest) * 4
@@ -184,11 +186,12 @@ BX r0                    // branch to table[h(dest)]
 so there are actually 4 add instructions in this \Block to add each byte separately, but idk if it's necessary to say that here}
 \ixb{I bet it's not necessary.}
 
-\vspace{-10pt}
+\vspace{-12pt}
 \caption{Rewriting instruction \texttt{BX\:r0}. The tables map old addresses to new, and the listing shows the rewritten \Block code.
 \ixb{The table diagram still is not beautiful, but I think it serves us well to combine the tables and listing in the same figure.
 It makes referring to it in a leading paragraph sentence easier.}\kjee{How can we/readers associate tables and listing?}}
 \label{fig:block_rewriter_demo}
+\vspace{-10pt}
 \end{figure}
 
 Unlike prior enforcement strategies that require destination sets to form equivalence classes, such as those that in-line unique labels at destination addresses~\cite{abadi_cfi},

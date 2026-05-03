@@ -11,7 +11,7 @@
 At the front end, we do not verify the decoder and lifter. The lifter implements ARMv7 ISA semantics in Gallina and translates binary instructions into \Picinae \IL statements. We treat it as trusted, but two factors reduce the risk: ARMv7 has an existing formal specification, and prior work has extensively explored verified and semi-verified decoding and lifting pipelines, indicating a path toward full verification (see \autoref{sec:fm_related}).
 
 We also do not verify the Gallina to OCaml extraction process, or the OCaml to native code compilation process, both of which are the subject of extensive bodies of work outside our scope.
-Since extraction verification is not our focus, our we implement a simple extraction strategy that reifies Rocq unbounded integers $\mathsf{Z}$ as OCaml machine integers $\mathtt{int}$ rather than OCaml unbounded integers.
+Since extraction verification is not our focus, we implement a simple extraction strategy that reifies Rocq unbounded integers $\mathsf{Z}$ as OCaml machine integers $\mathtt{int}$ rather than OCaml unbounded integers.
 \mxz{i also extracted the code that creates i2i' to use an array instead of a list, and part of the table creation code to use a hashtbl instead of creating a new function on every table insertion}
 A more rigorous extraction could use isomorphic data types and prove extraction soundness.
 
