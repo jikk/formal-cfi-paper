@@ -1,0 +1,52 @@
+%! root=../main.tex
+\section{Conclusion}
+
+We present \pname{}, the first formally verified binary CFI rewriter implementation for a mainstream ISA\@.
+Verifying binary rewriters is challenging as the verifier must reason about non-concrete code.
+\pname{} addresses this challenge through a dependently-typed, coinductive proof strategy based on Rocq and \Picinae.
+We present formal verification-friendly design principles to guide future binary rewriter designs, and present case studies of test-evading bugs that were caught in thanks to program-proof co-development.
+
+\comment{
+    Spot checked 4 works from CCS'25 Formal Methods+PL track
+    
+    * https://dl.acm.org/doi/epdf/10.1145/3719027.3765213
+        Discussion only, no separate conclusion
+        Starts off with the typical conclusion: In this paper we did X written in Y. The key features are X and Y rather than Z. In this way, were were able to prove P. Our impl. and proofs submitted as artifact.
+        The results are summarized in Table. We used three tools, X for A, Y for B, Z for C. Using a single tool would be better because X, but we decide against it for pragmatic reasons.
+    
+        And then it has two bolded sections: Comparison with Other Approaches (in lieu of related works) and Future Directions.
+    
+    * https://dl.acm.org/doi/epdf/10.1145/3719027.3765104
+        Conclusion is 1.2 paragraphs: We did X. A key success factor was Y, which allowed A, B, C. ``We discovered both design and implementation errors, critically affecting the router’s security, that evaded all prior reviews and testing and have all been subsequently fixed''.
+    
+        Second par: Future work includes P, Q, R.
+    
+        Has Related Work; no discussion section.
+    
+    * https://dl.acm.org/doi/epdf/10.1145/3719027.3765148
+        Discussion, Related Work, and Conclusion.
+        Conclusion is one paragraph: There's a gap. To address it we present X. We implemented it in/as Y. Our results show benefit Z.
+    
+    * https://dl.acm.org/doi/epdf/10.1145/3719027.3765116
+        Has Limitations and Future Work section instead of Discussion. Has Related Works. Single paragraph conclusion.
+        Conclusion: This paper proposed X, a new variant of Y that does Z. We provide A to do B and C. The verbed nouns P to achieve Q.
+}
+
+\comment{
+    \pname{} offers the first binary CFI rewriter whose implementation is formally verified to produce policy-adhering binaries.
+    Its proof of correctness relied on \Picinae{}, a bottom-up binary analysis platform in Rocq capable of reasoning about non-concrete binary code.
+    The rewriter design was guided by several design policies for making it easier to formally verify, such policies include immutable security state, global state independence, and minimizing conditionals.
+    The program-proof co-development cycle yielded several critical logic bugs that were revealed only because they halted the proof effort.
+    That is, we claim no reasonable dynamic testing suite would have caught the bugs prior to deployment.
+    
+    This work also highlights the trusted components left to secure.
+    % Among these is the internal lifter, used to translate code bytes to their computational semantics in PIL.
+    This includes the internal lifter and the \ELFPackager.
+    The internal lifter is ISA specific, and so far we only support ARMv7 and RISC-V.
+    Creating a lifter for another ISA requires formalizing its instruction decoders and instruction semantics in Gallina, an especially daunting task for CISC architectures.
+    The \ELFPackager combines the secured text section with the original ELF executable.
+    At present, its correctness specification is impossible to formulate as it requires a formal correct implementation of a system loader, which has not been achieved.
+    
+    Future directions can also expand on the binary features supported by CFI (\eg system calls, dynamic linking) and apply this technique to other binary rewriting applications (\eg instrumentation, dynamic patching).
+}
+

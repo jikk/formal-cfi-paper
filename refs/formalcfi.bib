@@ -1,1338 +1,648 @@
-@article{acke2023effective,
-  author = {Acke, Robin},
-  date = {2023},
-  ids = {pyarmor1,pyobfuscate},
-  publisher = {tUL},
-  title = {Effective Code Obfuscation for Python}
+@STRING{proc = " Proceedings "}
+@STRING{conf = " Conference "}
+@STRING{sym = " Symposium "}
+@STRING{trans = " Transactions "}
+@STRING{j = " Journal "}
+@STRING{work = " Workshop "}
+@STRING{int = " International "}
+@STRING{of = " of "}
+@STRING{the = " the "}
+@STRING{on = " on "}
+@STRING{for = " for "}
+@STRING{at = " at "}
+@STRING{ofthe = of # the}
+
+#PREAMBLE{ "\newcommand\cnum[1]{\ignorespaces}" }
+@PREAMBLE{ "\newcommand\cnum[1]{#1}" }
+#PREAMBLE{ "\newcommand\nym[1]{\unskip}" }
+@PREAMBLE{ "\newcommand\nym[1]{(#1)}" }
+
+
+@INPROCEEDINGS{bincfi,
+  AUTHOR = {Zhang, Mingwei and Sekar, R.},
+  BOOKTITLE = proc # of # the # {\cnum{31st} Annual Computer Security Applications Conference \nym{ACSAC}},
+  DATE = {2015},
+  TITLE = {Control Flow and Code Integrity for COTS binaries: An Effective Defense Against Real-World ROP Attacks},
 }
 
-@inproceedings{bap,
-  author       = {David Brumley and
-                  Ivan Jager and
-                  Thanassis Avgerinos and
-                  Edward J. Schwartz},
-  editor       = {Ganesh Gopalakrishnan and
-                  Shaz Qadeer},
-  title        = {{BAP:} {A} Binary Analysis Platform},
-  booktitle    = {Computer Aided Verification - 23rd International Conference, {CAV}
-                  2011, Snowbird, UT, USA, July 14-20, 2011. Proceedings},
-  series       = {Lecture Notes in Computer Science},
-  volume       = {6806},
-  pages        = {463--469},
-  publisher    = {Springer},
-  year         = {2011},
-  url          = {https://doi.org/10.1007/978-3-642-22110-1\_37},
-  doi          = {10.1007/978-3-642-22110-1\_37},
-  timestamp    = {Mon, 03 Mar 2025 20:59:14 +0100},
-  biburl       = {https://dblp.org/rec/conf/cav/BrumleyJAS11.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
+@INPROCEEDINGS{ccfir,
+  AUTHOR = {Zhang, Chao and Wei, Tao and Chen, Zhaofeng and Duan, Lei and Szekeres, László and McCamant, Stephen and Song, Dawn and Zou, Wei},
+  BOOKTITLE = {IEEE} #sym# on #"Security and Privacy \nym{SP}",
+  DATE = {2013},
+  TITLE = {Practical Control Flow Integrity and Randomization for Binary Executables},
 }
 
-@article{behnel2010cython,
-  author = {Behnel, Stefan and Bradshaw, Robert and Citro, Craig and Dalcin, Lisandro and Seljebotn, Dag Sverre and Smith, Kurt},
-  date = {2010},
-  ids = {cython},
-  journaltitle = {Computing in Science \& Engineering},
-  number = {2},
-  pages = {31--39},
-  publisher = {IEEE},
-  title = {Cython: The best of both worlds},
-  volume = {13}
+@INPROCEEDINGS{kbouncer,
+  AUTHOR = {Pappas, Vasilis and Polychronakis, Michalis and Kero\-mytis, Angelos D.},
+  BOOKTITLE = {\cnum{22nd} USENIX Security Symposium},
+  DATE = {2013},
+  TITLE = {Transparent {ROP} Exploit Mitigation Using Indirect Branch Tracing},
 }
 
-@article{DBLP:journals/corr/abs-2004-05150,
-  author = {Beltagy, Iz and Peters, Matthew E. and Cohan, Arman},
-  date = {2020},
-  eprint = {2004.05150},
-  eprinttype = {arXiv},
-  ids = {beltagy2020longformer},
-  journaltitle = {CoRR},
-  title = {Longformer: The Long-Document Transformer},
-  url = {https://arxiv.org/abs/2004.05150},
-  volume = {abs/2004.05150}
+@INPROCEEDINGS{ropecker,
+  AUTHOR = {Xuhua;, Cheng Yueqiang; Zhou Zongwei; Miao Yu; Ding and Deng, Robert},
+  BOOKTITLE =  proc # of # the # { \cnum{21st} Network and Distributed System Security Symposium \nym{NDSS}},
+  DATE = {2014},
+  TITLE = {ROPecker: A Generic and Practical Approach For Defending Against ROP Attack},
 }
 
-@article{Bilge:2011vf,
-  author = {Bilge, L and Kirda, E and Kruegel, C. and Balduzzi, M},
-  date = {2011},
-  ids = {exposure,pdns},
-  journaltitle = {NDSS},
-  title = {{EXPOSURE: Finding Malicious Domains Using Passive DNS Analysis.}}
+@INPROCEEDINGS{cfi2005ccs,
+  AUTHOR = {Abadi, Martin and Budiu, Mihai and Erlingsson, U lfar and Ligatti, Jay},
+  BOOKTITLE =  proc # of # the # {\cnum{12th} ACM Conference} # on # {Computer and Communications Security \nym{CCS}},
+  DATE = {2005},
+  IGNOREPAGES = {340--353},
+  TITLE = {{Control-flow integrity}},
 }
 
-@article{FerranteJeanne1987Tpdg,
-  author = {Ferrante, Jeanne and Ottenstein, Karl and Warren, Joe},
-  date = {1987},
-  issn = {0164-0925},
-  journaltitle = {ACM transactions on programming languages and systems},
-  keywords = {Applied sciences ; branch deletion ; code motion ; Computer science; control theory; systems ; Data flow ; debugging ; dependence analysis ; Exact sciences and technology ; incremental data flow analysis ; intermediate program representation ; internal program form ; loop fusion ; loop unrolling ; node splitting ; parallelism ; slicing ; Software ; Software engineering ; vectorization},
-  language = {eng},
-  location = {New York, NY},
-  number = {3},
-  pages = {319--349},
-  publisher = {ACM},
-  title = {The program dependence graph and its use in optimization},
-  volume = {9}
+@INPROCEEDINGS{li2020ccs,
+  AUTHOR = {Li, Yuan and Wang, Mingzhe and Zhang, Chao and Chen, Xingman and Yang, Songtao and Liu, Ying},
+  BOOKTITLE = proc # ofthe # {ACM} # conf # on # {Computer and Communications Security \nym{CCS}},
+  DATE = {2020},
+  IGNOREPAGES = {1821--1835},
+  RMSERIES = {ACM conference on Computer and Communications Security (CCS)},
+  TITLE = {{Finding Cracks in Shields: On the Security of Control Flow Integrity Mechanisms}},
 }
 
-@article{ferrante1987program,
-  author = {Ferrante, Jeanne and Ottenstein, Karl J and Warren, Joe D},
-  ids = {cdg},
-  journal = {ACM Transactions on Programming Languages and Systems (TOPLAS)},
-  number = {3},
-  pages = {319--349},
-  publisher = {ACM New York, NY, USA},
-  title = {The program dependence graph and its use in optimization},
-  volume = {9},
-  year = {1987}
+@inproceedings{heartbleed,
+author = {Durumeric, Zakir and Li, Frank and Kasten, James and Amann, Johanna and Beekman, Jethro and Payer, Mathias and Weaver, Nicolas and Adrian, David and Paxson, Vern and Bailey, Michael and Halderman, J. Alex},
+title = {The Matter of Heartbleed},
+IGNOREdate = {2014},
+booktitle = proc # of # the # {\cnum{2014}} # conf # on # {Internet Measurement} # conf,
+IGNOREpages = {475–488},
 }
 
-@article{codesearchnet:github2019,
-  author = {Husain, Hamel and Wu, Ho-Hsiang and Gazit, Tiferet and Allamanis, Miltiadis and Brockschmidt, Marc},
-  date = {2019-09},
-  eprint = {1909.09436},
-  ids = {cdn2019github},
-  journaltitle = {arXiv},
-  title = {{CodeSearchNet Challenge: Evaluating the State of Semantic Code Search}},
-  url = {arXiv.org},
-  volume = {cs.LG}
+@MISC{shellshock,
+  URL = {http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-6271},
+  DATE = {2014},
+  HOWPUBLISHED = {Available from MITRE, {CVE-ID} {CVE}-2014-6271.},
+  TITLE = {{CVE}-2014-6271},
 }
 
-@article{neutron2021,
-  author = {Liang, Ruigang and Cao, Ying and Hu, Peiwei and Chen, Kai},
-  date = {2021-05},
-  doi = {10.1186/s42400-021-00070-0},
-  journaltitle = {Cybersecurity},
-  title = {{Neutron: an attention-based neural decompiler}},
-  url = {https://cybersecurity.springeropen.com/articles/10.1186/s42400-021-00070-0}
+@MISC{SolarWin17:online,
+  DATE = {2026},
+  IDS = {solarwinds},
+  NOTE = {[Online; accessed 2026-04-16]},
+  TITLE = {SolarWinds Cyberattack Demands Significant Federal and Private-Sector Response (infographic) | U.S. GAO},
 }
 
-@article{mckeeman1998differential,
-  author = {McKeeman, William M},
-  date = {1998},
-  ids = {different_testing0},
-  journaltitle = {Digital Technical Journal},
-  number = {1},
-  pages = {100--107},
-  title = {Differential testing for software},
-  volume = {10}
+@ARTICLE{fuzzing,
+  AUTHOR = {Man\`es, Valentin JM and Han, HyungSeok and Han, Choongwoo and Cha, Sang Kil and Egele, Manuel and Schwartz, Edward J and Woo, Maverick},
+  DATE = {2019},
+  JOURNALTITLE = {IEEE} # trans # on # {Software Engineering},
+  IGNOREpages = {2312--2331},
+  TITLE = {The art, science, and engineering of fuzzing: A survey},
 }
 
-@article{muller1985theory,
-  author = {Muller, David E and Schupp, Paul E},
-  date = {1985},
-  ids = {pushdown},
-  journaltitle = {Theoretical Computer Science},
-  pages = {51--75},
-  publisher = {Elsevier},
-  title = {The theory of ends, pushdown automata, and second-order logic},
-  volume = {37}
+@ARTICLE{symbolic_execution,
+  AUTHOR = {Baldoni, Roberto and Coppa, Emilio and D’elia, Daniele Cono and Demetrescu, Camil and Finocchi, Irene},
+  DATE = {2018},
+  JOURNALTITLE = {ACM Computing Surveys \nym{CSUR}},
+  IGNOREpages = {1--39},
+  TITLE = {A survey of symbolic execution techniques},
 }
 
-@article{poese2011ip,
-  author = {Poese, Ingmar and Uhlig, Steve and Kaafar, Mohamed Ali and Donnet, Benoit and Gueye, Bamba},
-  date = {2011},
-  ids = {ipgeo},
-  journaltitle = {ACM SIGCOMM Computer Communication Review},
-  number = {2},
-  pages = {53--56},
-  publisher = {ACM New York, NY, USA},
-  title = {IP geolocation databases: Unreliable?},
-  volume = {41}
+@ARTICLE{model_checking,
+  AUTHOR = {Jhala, Ranjit and Majumdar, Rupak},
+  DATE = {2009},
+  JOURNALTITLE = {ACM Computing Surveys \nym{CSUR}},
+  IGNOREpages = {1--54},
+  TITLE = {Software model checking},
 }
 
-@article{DBLP:journals/corr/abs-1910-10683,
-  author = {Raffel, Colin and Shazeer, Noam and Roberts, Adam and Lee, Katherine and Narang, Sharan and Matena, Michael and Zhou, Yanqi and Li, Wei and Liu, Peter J.},
+@ARTICLE{rewriter0,
+  AUTHOR = {Wenzl, Matthias and Merzdovnik, Georg and Ullrich, Johanna and Weippl, Edgar},
+  DATE = {2019-06},
+  JOURNALTITLE = {ACM Computing Surveys \nym{CSUR}},
+  TITLE = {From Hack to Elaborate Technique---A Survey on Binary Rewriting},
+}
+
+@INPROCEEDINGS{e9patch2020pldi,
+  AUTHOR = {Duck, Gregory J. and Gao, Xiang and Roychoudhury, Abhik},
+  DATE = {2020},
+  IDS = {e9patch,rewriter1},
+  IGNOREpages = {151--163},
+  RMSERIES = {ACM SIGPLAN Conference on Programming Language Design and Implementation},
+  booktitle = proc # ofthe # {\cnum{41st} ACM SIGPLAN} # conf # on # {Programming Language Design and Implementation \nym{PLDI}},
+  TITLE = {{Binary rewriting without control flow recovery}},
+}
+
+@INPROCEEDINGS{rewriter2,
+  AUTHOR = {Wang, Shuai and Wang, Pei and Wu, Dinghao},
+  BOOKTITLE = {IEEE \cnum{23rd}} # int # conf # on #{ Software Analysis, Evolution, and Reengineering \nym{SANER}},
+  DATE = {2016},
+  TITLE = {UROBOROS: Instrumenting Stripped Binaries with Static Reassembling},
+}
+
+@INPROCEEDINGS{reassessor2023sec,
+  AUTHOR = {Kim, Hyungseok and Kim, Soomin and Lee, Junoh and Jee, Kangkook and Cha, Sang Kil},
+  BOOKTITLE = {USENIX Security Symposium},
+  DATE = {2023},
+  KEYWORDS = {kjee,kjee:paper},
+  TITLE = {{Reassembly is Hard: A Reflection on Challenges and Strategies}},
+}
+
+@MISC{rocq,
+  AUTHOR = {{Rocq}},
+  DATE = {2025},
+  HOWPUBLISHED = {\url{https://rocq-prover.org}},
+  TITLE = {{Rocq}: A Trustworthy, Industrial-strength Interactive Theorem Prover and Dependently-typed Programming Language for Mechanised Reasoning in Mathematics, Computer Science and More},
+}
+
+@BOOK{hol,
+  AUTHOR = {Nipkow, Tobias and Wenzel, Markus and Paulson, Lawrence C.},
+  PUBLISHER = {Springer Berlin, Heidelberg},
+  DATE = {2002},
+  TITLE = {{Isabelle/HOL}: a proof assistant for higher-order logic},
+  IGNOREdoi={https://doi.org/10.1007/3-540-45949-9},
+}
+
+@INPROCEEDINGS{rocksalt2012pldi,
+  AUTHOR = {Morrisett, Greg and Tan, Gang and Tassarotti, Joseph and Tristan, Jean-Baptiste and Gan, Edward},
+  BOOKTITLE = proc # ofthe # {\cnum{33rd} ACM SIGPLAN} # conf # on # {Programming Language Design and Implementation \nym{PLDI}},
+  DATE = {2012},
+  IDS = {rocksalt},
+  IGNOREpages = {395--404},
+  TITLE = {RockSalt: better, faster, stronger SFI for the x86},
+}
+
+@INPROCEEDINGS{hamlen19feast,
+  AUTHOR = {Hamlen, Kevin W. and Fisher, Dakota and Lundquist, Gilmore R.},
+  BOOKTITLE = proc # ofthe # {\cnum{3} ACM Workshop} # on # {Forming an Ecosystem Around Software Transformation \nym{FEAST}},
+  DATE = {2019},
+  IDS = {picinae},
+  TITLE = {Source-free Machine-checked Validation of Native Code in {Coq}},
+}
+
+@INPROCEEDINGS{averill26bar,
+  AUTHOR = {Averill, Charles and Buzzetti, Ilan and Bellon, Alex and Hamlen, Kevin W.},
+  DATE = {2026},
+  BOOKTITLE = proc # of # the # {Binary Analysis Research Workshop \nym{BAR}},
+  TITLE = {LAPSE: Automatic, Formal Fault-Tolerant Correctness Proofs for Native Code},
+}
+
+@MISC{lief,
+  HOWPUBLISHED = {\url{https://lief.re/}},
+  NOTE = {Accessed: 2026-04-28},
+  TITLE = {{LIEF:} Library to Instrument Executable Formats},
+}
+
+@INPROCEEDINGS{unpredictable_behaviors,
+  AUTHOR = {Qin, Shisong and Zhang, Chao and Chen, Kaixiang and Li, Zheming},
+  BOOKTITLE = proc # of # the #{ \cnum{30th} ACM SIGSOFT International Symposium} # on # {Software Testing and Analysis},
+  DATE = {2021},
+  TITLE = {iDEV: exploring and exploiting semantic deviations in ARM instruction processing},
+}
+
+@INPROCEEDINGS{examiner2024asplos,
+  AUTHOR = {Jiang, Muhui and Xu, Tianyi and Zhou, Yajin and Hu, Yufeng and Zhong, Ming and Wu, Lei and Luo, Xiapu and Ren, Kui},
+  BOOKTITLE = {ACM International} # conf #on #{Architectural Support for Programming Languages and Operating Systems \nym{ASPLOS}},
+  DATE = {2022},
+  TITLE = {{EXAMINER: automatically locating inconsistent instructions between real devices and CPU emulators for ARM}},
+}
+
+@ARTICLE{compcert,
+  AUTHOR = {Leroy, Xavier},
+  DATE = {2009},
+  JOURNALTITLE = {Communications of the ACM \nym{CACM}},
+  TITLE = {Formal Verification of a Realistic Compiler},
+}
+
+@ARTICLE{arm_field_growth,
+  AUTHOR = {Rahman, Tahmid Noor and Khan, Nusaiba and Zaman, Zarif Ishmam},
+  DATE = {2024},
+  JOURNALTITLE = {World Journal} # of # {Advanced Research and Reviews},
+  TITLE = {Redefining Computing: Rise of ARM from consumer to Cloud for energy efficiency},
+}
+
+@BOOK{patterson2016computer,
+  AUTHOR = {Patterson, David A and Hennessy, John L},
+  PUBLISHER = {Morgan Kaufmann},
+  DATE = {2016},
+  TITLE = {Computer organization and design ARM edition: the hardware software interface},
+}
+
+@INPROCEEDINGS{tau_cfi,
+  AUTHOR = {Muntean, Paul and Fischer, Matthias and Tan, Gang and Lin, Zhiqiang and Grossklags, Jens and Eckert, Claudia},
+  BOOKTITLE = proc # ofthe # int # sym # on # {Research in Attacks, Intrusions, and Defenses \nym{RAID}},
+  DATE = {2018},
+  IGNOREpages = {423--444},
+  TITLE = {{$\tau$CFI:} Type-assisted Control Flow Integrity for {x86-64} Binaries},
+}
+
+@ARTICLE{abadi_cfi,
+  AUTHOR = {Abadi, Martín and Budiu, Mihai and Erlingsson, Ulfar and Ligatti, Jay},
+  DATE = {2009},
+  JOURNALTITLE = {ACM Transactions on Information and System Security \nym{TISSEC}},
+  JOURNALTITLE = {ACM} # trans # on # {Information and System Security \nym{TISSEC}},
+  TITLE = {Control-flow integrity principles, implementations, and applications},
+}
+
+@ARTICLE{fv_ocaml_extraction,
+  AUTHOR = {Forster, Yannick and Sozeau, Matthieu and Tabareau, Nicolas},
+  DATE = {2024},
+  JOURNALTITLE = {Proceedings of the ACM on Programming Language Design and Implementation},
+  JOURNALTITLE = proc # ofthe # {ACM} # on # {Programming Language Design and Implementation \nym{PLDI}},
+  TITLE = {Verified Extraction from {Coq} to {OCaml}},
+}
+
+@MISC{Ghidra60:online,
+  AUTHOR = {Pro, Ghidra},
+  URL = {http://ghidra.net/},
+  IDS = {ghidra},
+  NOTE = {[Online; accessed 2026-04-06]},
+  TITLE = {Ghidra},
+}
+
+@INPROCEEDINGS{brumley11cav,
+  AUTHOR = {Brumley, David and Jager, Ivan and Avgerinos, Thanassis and Schwartz, Edward J.},
+  BOOKTITLE = proc # of # the # {\cnum{23rd}} # int # conf # on # {Computer Aided Verification \nym{CAV}},
+  DATE = {2011},
+  IDS = {bap2011cav,bap},
+  IGNOREpages = {463--469},
+  TITLE = {{BAP}: A Binary Analysis Platform},
+}
+
+@MANUAL{ARMv7manual,
+  AUTHOR = {{ARM Ltd.}},
+  DATE = {2018},
+  NOTE = {Available at \url{https://developer.arm.com/documentation/ddi0406/latest}},
+  NUMBER = {DDI 0406C.d},
+  TITLE = {ARM Architecture Reference Manual ARMv7-A and ARMv7-R edition},
+}
+
+@INPROCEEDINGS{unpredictable_pc,
+  AUTHOR = {{Sahin, Onur and Coskun, Ayse K. and Egele, Manuel}},
+  BOOKTITLE = proc # ofthe # int # sym # on # {Research in Attacks, Intrusions, and Defenses \nym{RAID}},
+  DATE = {{2018}},
+  TITLE = {{Proteus: Detecting Android Emulators from Instruction-Level Profiles}},
+}
+
+@MISC{UsingasT39:online,
+  AUTHOR = {Dean Elsner and Jay Fenlason and friends},
+  DATE = {1994},
+  IDS = {gas_manual},
+  NOTE = {[Online; accessed 2026-04-17]},
+  TITLE = {Using as},
+  SUBTITLE = {The {GNU} Assembler},
+  url = {https://ftp.gnu.org/old-gnu/Manuals/gas-2.9.1/html_chapter/as_toc.html},
+}
+
+@INPROCEEDINGS{ptcfi,
+  AUTHOR = {Gu, Yufei and Zhao, Qingchuan and Zhang, Yinqian and Lin, Zhiqiang},
+  BOOKTITLE = proc # of # the # {\cnum{7th} ACM } # conf # on #{Data and Application Security and Privacy \nym{CODASPY}},
+  DATE = {2017},
+  TITLE = {PT-CFI: Transparent Backward-Edge Control Flow Violation Detection Using Intel Processor Trace},
+}
+
+@INPROCEEDINGS{ptcfi2,
+  AUTHOR = {Liu, Yutao and Shi, Peitao and Wang, Xinran and Chen, Haibo and Zang, Binyu and Guan, Haibing},
+  BOOKTITLE = {IEEE} # int # sym # on # {High Performance Computer Architecture \nym{HPCA}},
+  DATE = {2017},
+  TITLE = {Transparent and Efficient CFI Enforcement with Intel Processor Trace},
+}
+
+@REPORT{ropguard,
+  AUTHOR = {Fratri\c{c}, Ivan},
+  INSTITUTION = {University of Zagreb},
+  DATE = {2012},
+  TITLE = {ROPGuard: Runtime Prevention of Return-Oriented Programming Attacks},
+  TYPE = {techreport},
+}
+
+@INPROCEEDINGS{coarse_cfi,
+  AUTHOR = {Davi, Lucas and Sadeghi, Ahmad-Reza and Lehmann, Daniel and Monrose, Fabian},
+  BOOKTITLE = proc # ofthe # {\cnum{23rd} USENIX Security Symposium},
+  DATE = {2014},
+  TITLE = {Stitching the Gadgets: On the Ineffectiveness of {Coarse-Grained} {Control-Flow} Integrity Protection},
+}
+
+@INPROCEEDINGS{outofcontrol,
+  AUTHOR = {G\"{o}ktas, Enes and Athanasopoulos, Elias and Bos, Herbert and Portokalidis, Georgios},
+  BOOKTITLE = {IEEE} # sym # on # {Security and Privacy \nym{SP}},
+  DATE = {2014},
+  TITLE = {Out of Control: Overcoming Control-Flow Integrity},
+}
+
+@ARTICLE{bbb_cfi,
+  AUTHOR = {He, Wenjian and Das, Sanjeev and Zhang, Wei and Liu, Yang},
+  DATE = {2020},
+  JOURNALTITLE = {ACM Transactions} # on #{Embedded Computing Systems \nym{TECS}},
+  TITLE = {BBB-CFI: Lightweight CFI Approach Against Code-Reuse Attacks Using Basic Block Information},
+}
+
+@inproceedings{isabil,
+  author       = {Matt Griffin and Brijesh Dongol and Azalea Raad},
+  title        = {IsaBIL: {A} Framework for Verifying (In)correctness of Binaries in Isabelle/HOL},
+  booktitle    = "\cnum{39th} European " # conf # on # "{Object-Oriented}" # prog # " \nym{ECOOP}",
+  IGNOREseries       = {LIPIcs},
+  IGNOREvolume       = {333},
+  IGNOREpages        = {14:1--14:30},
+  IGNOREpages        = {1--30},
+  IGNOREpublisher    = {Schloss Dagstuhl - Leibniz-Zentrum f{\"{u}}r Informatik},
+  date         = {2025},
+  IGNOREurl          = {https://doi.org/10.4230/LIPIcs.ECOOP.2025.14},
+}
+
+@inproceedings{forward_symb_reasoning_vmcai26,
+  author       = {Andreas Lindner and Karl Palmskog and Scott Constable and Mads Dam and Roberto Guanciale and Hamed Nemati},
+  title        = {Forward Symbolic Execution for Trustworthy Automation of Binary Code Verification},
+  IGNOREbooktitle    = {Verification, Model Checking, and Abstract Interpretation - 27th International Conference, {VMCAI} 2026, Rennes, France, January 12-13, 2026, Proceedings},
+  booktitle    = {Verification, Model Checking, and Abstract Interpretation \nym{VMCAI}},
+  IGNOREpages        = {147--172},
+  date         = {2026},
+  IGNOREurl          = {https://doi.org/10.1007/978-3-032-15700-3\_8},
+}
+
+@inproceedings{relational_hoare_logic_rmmc,
+  author       = {Denis Mazzucato and Abdalrhman Mohamed and Juneyoung Lee and Clark W. Barrett and Jim Grundy and John Harrison and Corina S. Pasareanu},
+  title        = {Relational Hoare Logic for Realistically Modelled Machine Code},
+  BOOKTITLE = proc # of # the # {\cnum{37th}} # int # conf # on # {Computer Aided Verification \nym{CAV}},
+  IGNOREseries       = {Lecture Notes in Computer Science},
+  IGNOREvolume       = {15931},
+  IGNOREpages        = {389--413},
+  IGNOREpublisher    = {Springer},
+  date         = {2025},
+  IGNOREurl          = {https://doi.org/10.1007/978-3-031-98668-0\_19},
+}
+
+@article{trabin,
+  title = {TrABin: Trustworthy analyses of binaries},
+  journal = "Science" # of # "Computer Programming",
+  IGNOREvolume = {174},
+  IGNOREpages = {72-89},
   date = {2019},
-  eprint = {1910.10683},
-  eprinttype = {arXiv},
-  ids = {raffel2020exploring},
-  journaltitle = {CoRR},
-  title = {Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer},
-  url = {http://arxiv.org/abs/1910.10683},
-  volume = {abs/1910.10683}
+  IGNOREissn = {0167-6423},
+  IGNOREurl = {https://www.sciencedirect.com/science/article/pii/S0167642318301667},
+  author = {Andreas Lindner and Roberto Guanciale and Roberto Metere},
 }
 
-@article{shi2008virtual,
-  author = {Shi, Yunhe and Casey, Kevin and Ertl, M Anton and Gregg, David},
-  date = {2008},
-  ids = {stackbased},
-  journaltitle = {ACM Transactions on Architecture and Code Optimization (TACO)},
-  number = {4},
-  pages = {1--36},
-  publisher = {ACM New York, NY, USA},
-  title = {Virtual machine showdown: Stack versus registers},
-  volume = {4}
+@inproceedings{myreen_hoare_rmmc,
+  author       = {Magnus O. Myreen and Michael J. C. Gordon},
+  title        = {Hoare Logic for Realistically Modelled Machine Code},
+  booktitle = "Tools and Algorithms " # for # the # "Construction and Analysis" # of # "Systems \nym{TACAS}",
+  IGNOREseries       = {Lecture Notes in Computer Science},
+  IGNOREvolume       = {4424},
+  IGNOREpages        = {568--582},
+  IGNOREpublisher    = {Springer},
+  date         = {2007},
+  IGNOREurl          = {https://doi.org/10.1007/978-3-540-71209-1\_44},
 }
 
-@article{tsichritzis1970equivalence,
-  author = {Tsichritzis, D.},
-  date = {1970-10},
-  doi = {10.1145/321607.321621},
-  issn = {0004-5411},
-  journaltitle = {J. ACM},
-  location = {New York, NY, USA},
-  number = {4},
-  numpages = {10},
-  pages = {729--738},
-  publisher = {Association for Computing Machinery},
-  title = {The Equivalence Problem of Simple Programs},
-  url = {https://doi.org/10.1145/321607.321621},
-  volume = {17}
+@INPROCEEDINGS{zhang2024binary,
+  author={Zhang, Xuankai and Li, Jianhua and Wu, Jun and Chen, Guoxing and Meng, Yan and Zhu, Haojin and Zhang, Xiaosong},
+  booktitle={IEEE} # trans # on # {Dependable and Secure Computing},
+  title={Binary-Level Formal Verification Based Automatic Security Ensurement for PLC in Industrial IoT},
+  date={2025},
+  IGNOREpages={2211--2226},
 }
 
-@article{verbeek2020SEFM,
-  address = {Amsterdam, Netherlands},
-  author = {Verbeek, Freek and Olivier, Pierre and Ravindran, Binoy},
-  booktitle = {Software Engineering and Formal Methods (SEFM)},
-  doi = {10.1007/978-3-030-58768-0\_14},
-  isbn = {9783030587673},
-  keywords = {},
-  month = {14},
-  pages = {247--264},
-  publisher = {Springer-Verlag},
-  series = {Lecture Notes in Computer Science},
-  title = {{Sound C Code Decompilation for a subset of x86-64 Binaries}},
-  url = {https://doi.org/10.1007/978-3-030-58768-0\_14},
-  year = {2020}
+@INPROCEEDINGS{ceesay2024mucfi,
+  AUTHOR = {Ceesay-Seitz, Katharina and Solt, Flavien and Razavi, Kaveh},
+  BOOKTITLE = proc # of #the #{ACM SIGSAC} # conf # on# {Computer and Communications Security},
+  DATE = {2024},
+  TITLE = {$\mu$CFI: Formal verification of microarchitectural control-flow integrity},
 }
 
-@article{10.1145/3485513,
-  author = {Xu, Haoran and Kjolstad, Fredrik},
-  date = {2021-10},
-  doi = {10.1145/3485513},
-  ids = {jit0},
-  journaltitle = {Proc. ACM Program. Lang.},
-  keywords = {Binary Code Patching,Binary Code Variant Library,Fast Compilation},
-  location = {New York, NY, USA},
-  number = {OOPSLA},
-  publisher = {Association for Computing Machinery},
-  title = {Copy-and-patch compilation: a fast compilation algorithm for high-level languages and bytecode},
-  url = {https://doi.org/10.1145/3485513},
-  volume = {5}
+@INPROCEEDINGS{scalable_binary_lifter_validation,
+  AUTHOR = {Dasgupta, Sandeep and Dinesh, Sushant and Venkatesh, Deepan and Adve, Vikram S. and Fletcher, Christopher W.},
+  BOOKTITLE = proc # of # the # {\cnum{41st} ACM SIGPLAN} # conf # on # {Programming Language Design and Implementation \nym{PLDI}},
+  DATE = {2020},
+  TITLE = {Scalable validation of binary lifters},
 }
 
-@article{dream+2016oakland,
-  author = {Yakdan, Khaled and Dechand, Sergej and Gerhards-Padilla, Elmar and Smith, Matthew},
-  booktitle = {2016 IEEE Symposium on Security and Privacy (SP)},
-  date = {2016-05},
-  keywords = {decompilation,decompiler,user study},
-  pages = {158--177},
-  title = {{Helping Johnny to Analyze Malware: A Usability-Optimized Decompiler and Malware Analysis User Study}}
+@INPROCEEDINGS{formally_verified_lifting,
+  AUTHOR = {Verbeek, Freek and Bockenek, Joshua A. and Fu, Zhoulai and Ravindran, Binoy},
+  BOOKTITLE = proc # of # the # {\cnum{43rd} ACM SIGPLAN} # conf # on # {Programming Language Design and Implementation \nym{PLDI}},
+  DATE = {2022},
+  TITLE = {Formally Verified Lifting of {C}-compiled {x86-64} Binaries},
 }
 
-@article{yang2020arxiv,
-  author = {Yang, Shuoheng and Wang, Yuxin and Chu, Xiaowen},
-  date = {2020},
-  eprint = {2002.07526},
-  eprinttype = {arXiv},
-  ids = {machinetranslationsurvey},
-  journaltitle = {CoRR},
-  title = {A Survey of Deep Learning Techniques for Neural Machine Translation},
-  url = {https://arxiv.org/abs/2002.07526},
-  volume = {abs/2002.07526}
+@INPROCEEDINGS{holba_sound_transpilation,
+  AUTHOR = {Metere, Roberto and Lindner, Andreas and Guanciale, Roberto},
+  BOOKTITLE = {Formal Methods: Foundations and Applications},
+  DATE = {2017},
+  TITLE = {Sound Transpilation from Binary to Machine-Independent Code},
 }
 
-@article{bigbirdgoogle2021,
-  author = {Zaheer, Manzil and Guruganesh, Guru and Dubey, Avinava and Ainslie, Joshua and Alberti, Chris and Ontanon, Santiago and Pham, Philip and Ravula, Anirudh and Wang, Qifan and Yang, Li and Ahmed, Amr},
-  date = {2021-01},
-  eprint = {2007.14062},
-  eprinttype = {arXiv},
-  journaltitle = {arXiv},
-  title = {{Big Bird: Transformers for Longer Sequences}},
-  url = {https://arxiv.org/abs/2007.14062}
+@ARTICLE{isla,
+  AUTHOR = {Armstrong, Alasdair and Campbell, Brian and Simner, Ben and Pulte, Christopher and Sewell, Peter},
+  DATE = {2024},
+  JOURNALTITLE = {Formal Methods in System Design},
+  TITLE = {{Isla}: Integrating Full-scale {ISA} Semantics and Axiomatic Concurrency Models (extended version)},
 }
 
-@book{10.5555/2049962,
-  author = {Eagle, Chris},
-  date = {2011},
-  ids = {ida},
-  isbn = {1593272898},
-  location = {USA},
-  publisher = {No Starch Press},
-  title = {The IDA Pro Book: The Unofficial Guide to the World's Most Popular Disassembler}
+@INPROCEEDINGS{islaris,
+  AUTHOR = {Sammler, Michael and Hammond, Angus and Lepigre, Rodolphe and Campbell, Brian and Pichon{-}Pharabod, Jean and Dreyer, Derek and Garg, Deepak and Sewell, Peter},
+  BOOKTITLE = proc # of # the # {\cnum{43rd} ACM SIGPLAN} # int # conf # on # {Programming Language Design and Implementation \nym{PLDI}},
+  DATE = {2022},
+  TITLE = {Islaris: verification of machine code against authoritative {ISA} semantics},
 }
 
-@book{hennessy2017computer,
-  author = {Hennessy, John L and Patterson, David A},
-  date = {2017},
-  ids = {x86,arm},
-  publisher = {Morgan kaufmann},
-  title = {Computer architecture: a quantitative approach}
+@ARTICLE{archsem,
+  AUTHOR = {P{\'e}rami, Thibaut and Bauereiss, Thomas and Campbell, Brian and Liu, Zongyuan and Lauermann, Nils and Armstrong, Alasdair and Sewell, Peter},
+  DATE = {2026},
+  JOURNALTITLE = proc # of # the # {ACM} # on #{Programming Languages},
+  TITLE = {ArchSem: Reusable Rigorous Semantics of Relaxed Architectures},
 }
 
-@inproceedings{pyfet2023sp,
-  author = {Ahad, Ali and Jung, Chijung and Askar, Ammar and Kim, Doowon and Kim, Taesoo and Kwon, Yonghwi},
-  date = {2023-05},
-  series = {IEEE Symposium on Security and Privacy (SP)},
-  title = {{PYFET: Forensically Equivalent Transformation for Python Binary Decompilation}}
+@ARTICLE{armstrong19isasem,
+  AUTHOR = {Armstrong, Alasdair and Bauereiss, Thomas and Campbell, Brian and Reid, Alastair and Gray, Kathryn E. and Norton, Robert M. and Mundkur, Prashanth and Wassell, Mark and French, Jon and Pulte, Christopher and Flur, Shaked and Stark, Ian and Krishnaswami, Neel and Sewell, Peter},
+  DATE = {2019},
+  JOURNALTITLE = proc # of # the # {ACM } # on #{Programming Languages},
+  TITLE = {{ISA} Semantics for {ARMv8-a}, {RISC-V}, and {CHERI-MIPS}},
 }
 
-@inproceedings{pheonix2013sec,
-  author = {Brumley, David and Lee, JongHyup and Schwartz, Edward J. and Woo, Maverick},
-  booktitle = {USENIX Security Symposium (USENIX Security)},
-  date = {2013-07},
-  location = {Washington, D.C.},
-  title = {{Native x86 Decompilation Using Semantics- Preserving Structural Analysis and Iterative Control-Flow Structuring}}
+@INPROCEEDINGS{liblisa,
+  AUTHOR = {Craaijo, Jos and Verbeek, Freek and Ravindran, Binoy},
+  DATE = {2024},
+  BOOKTITLE = proc # of # the # {ACM } # on #{Programming Languages},
+  TITLE = {{libLISA}: Instruction Discovery and Analysis on {x86-64}},
 }
 
-@inproceedings{decomperson22sec,
-  author = {Burk, Kevin and Pagani, Fabio and Kruegel, Christopher and Vigna, Giovanni},
-  ids = {burk22decomperson},
-  booktitle = {USENIX Security Symposium (USENIX Security)},
-  date = {2022-08},
-  ids = {burk22sec},
-  publisher = {USENIX Association},
-  title = {Decomperson: How Humans Decompile and What We Can Learn From It}
+@INPROCEEDINGS{goel17x86isa,
+  AUTHOR = {Goel, Shilpi and Jr., Warren A. Hunt and Kaufmann, Matt},
+  BOOKTITLE = {Provably Correct Systems},
+  DATE = {2017},
+  RMSERIES = {{NASA} Monographs in Systems and Software Engineering},
+  TITLE = {Engineering a Formal, Executable x86 {ISA} Simulator for Software Verification}
 }
 
-@inproceedings{devlin-etal-2019-bert,
-  author = {Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina},
-  booktitle = {Proceedings of the 2019 Conference of the North {A}merican Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers)},
-  date = {2019-06},
-  doi = {10.18653/v1/N19-1423},
-  ids = {bert},
-  location = {Minneapolis, Minnesota},
-  pages = {4171--4186},
-  publisher = {Association for Computational Linguistics},
-  title = {{BERT}: Pre-training of Deep Bidirectional Transformers for Language Understanding},
-  url = {https://aclanthology.org/N19-1423}
+
+
+@inproceedings {static_cfi_perf,
+    author = {Caroline Tice and Tom Roeder and Peter Collingbourne and Stephen Checkoway and {\'U}lfar Erlingsson and Luis Lozano and Geoff Pike},
+    title = {Enforcing {Forward-Edge} {Control-Flow} Integrity in {GCC} \& {LLVM}},
+    booktitle = proc # ofthe # {\cnum{23rd} USENIX Security Symposium},
+    date = {2014},
+    IGNOREpages = {941--955},
 }
 
-@inproceedings{dingledine2004tor,
-  author = {Dingledine, Roger and Mathewson, Nick and Syverson, Paul F and others},
-  booktitle = {USENIX security symposium},
-  date = {2004},
-  ids = {tor},
-  pages = {303--320},
-  title = {Tor: The second-generation onion router.},
-  volume = {4}
+@inproceedings{verbeek2024verifiably,
+  title={Verifiably correct lifting of position-independent x86-64 binaries to symbolized assembly},
+  author={Verbeek, Freek and Naus, Nico and Ravindran, Binoy},
+  booktitle=proc # of #the #{ACM SIGSAC} # conf # on # {Computer and Communications Security \nym{CCS}},
+  IGNOREpages={2786--2798},
+  date={2024}
 }
 
-@inproceedings{draper2016characterization,
-  author = {Draper-Gil, Gerard and Lashkari, Arash Habibi and Mamun, Mohammad Saiful Islam and Ghorbani, Ali A},
-  booktitle = {Proceedings of the 2nd international conference on information systems security and privacy (ICISSP)},
-  date = {2016},
-  ids = {ipvpn},
-  pages = {407--414},
-  title = {Characterization of encrypted and vpn traffic using time-related}
+@MISC{verified_pointers,
+  author = "Freek Verbeek and Ali Shokri and Daniel Engel and Binoy Ravindran",
+  title = "Formally Verified Binary-level Pointer Analysis",
+  howpublished = "\url{https://arxiv.org/abs/2501.17766}",
+  date = 2025,
+}
+@inproceedings{russo2010dynamic,
+  title={Dynamic vs. static flow-sensitive security analysis},
+  author={Russo, Alejandro and Sabelfeld, Andrei},
+  booktitle= {\cnum{23rd} IEEE Computer Security Foundations} # sym,
+  IGNOREpages={186--199},
+  date={2010},
 }
 
-@inproceedings{coda2019nips,
-  author = {Fu, Cheng and Chen, Huili and Liu, Haolan and Chen, Xinyun and Tian, Yuandong and Koushanfar, Farinaz and Zhao, Jishen},
-  booktitle = {Advances in Neural Information Processing Systems},
+@inproceedings{jasmin,
+  title={Jasmin: High-assurance and high-speed cryptography},
+  author={Almeida, Jos{\'e} Bacelar and Barbosa, Manuel and Barthe, Gilles and Blot, Arthur and Gr{\'e}goire, Benjamin and Laporte, Vincent and Oliveira, Tiago and Pacheco, Hugo and Schmidt, Benedikt and Strub, Pierre-Yves},
+  booktitle=proc # of #the #{ACM SIGSAC} # conf # on# {Computer and Communications Security},
+  IGNOREpages={1807--1823},
+  date={2017}
+}
+@inproceedings{sep_kernel,
+    author = {Dam, Mads and Guanciale, Roberto and Khakpour, Narges and Nemati, Hamed and Schwarz, Oliver},
+    title = {Formal verification of information flow security for a simple arm-based separation kernel},
+    date = {2013},
+    booktitle = proc # of # the #{ACM SIGSAC} # conf # on # {Computer and Communications Security \nym{CCS}},
+    IGNOREpages = {223–234},
+}
+
+@inproceedings{bardin_ft,
+  title={Adversarial reachability for program-level security analysis},
+  author={Ducousso, Soline and Bardin, S{\'e}bastien and Potet, Marie-Laure},
+  booktitle={European Symposium on Programming \nym{ESOP}},
+  IGNOREpages={59--89},
+  date={2023},
+}
+
+@article{barthe2019formal,
+  title={Formal verification of a constant-time preserving C compiler},
+  author={Barthe, Gilles and Blazy, Sandrine and Gr{\'e}goire, Benjamin and Hutin, R{\'e}mi and Laporte, Vincent and Pichardie, David and Trieu, Alix},
+  journal=proc # of # the # {ACM } # on #{Programming Languages},
+  date={2019},
+}
+
+@article{averill2025src,
+  title={Formally-Verified, Tight Timing Constraints for Machine Code},
+  author={Averill, Charles},
+  journal={Programming Languages Design and Implementation Student Research Competition \nym{PLDI SRC}},
+  date={2025}
+}
+
+@InProceedings{armv7formalization,
+author="Fox, Anthony and Myreen, Magnus O.",
+title="A Trustworthy Monadic Formalization of the ARMv7 Instruction Set Architecture",
+booktitle="Interactive Theorem Proving \nym{ITP}",
+date="2010",
+IGNOREpages="243--258",
+}
+
+@Inproceedings{bincc,
+author = {Wang, Minghua and Yin, Heng and Bhaskar, Abhishek Vasisht and Su, Purui and Feng, Dengguo},
+title = {Binary Code Continent: Finer-Grained Control Flow Integrity for Stripped Binaries},
+date = {2015},
+booktitle = proc # of # the # {\cnum{31st} Annual Computer Security Applications} # conf # {\nym{ACSAC}},
+IGNOREpages = {331–340},
+}
+
+@inproceedings{armv8semantics1,
+author = {Flur, Shaked and Gray, Kathryn E. and Pulte, Christopher and Sarkar, Susmit and Sezgin, Ali and Maranget, Luc and Deacon, Will and Sewell, Peter},
+title = {Modelling the {ARMv8} architecture, operationally: concurrency and ISA},
+date = {2016},
+IGNOREurl = {\url{https://doi.org/10.1145/2837614.2837615}},
+booktitle = proc # ofthe # "\cnum{43rd} ACM SIGPLAN-SIGACT" # sym # on # "Principles" # of # "Programming Languages \nym{POPL}",
+IGNOREpages = {608--621},
+}
+
+@InProceedings{walls_et_al,
+  author       = {Robert J. Walls and Nicholas F. Brown and Thomas Le Baron and Craig A. Shue and Hamed Okhravi and Bryan C. Ward},
+  title =	{Control-Flow Integrity for Real-Time Embedded Systems},
+  booktitle =	{\cnum{31st} Euromicro} # conf # on # {Real-Time Systems \nym{ECRTS}},
   date = {2019},
-  editor = {Wallach, H. and Larochelle, H. and Beygelzimer, A. and d'Alché-Buc, F. and Fox, E. and Garnett, R.},
-  publisher = {Curran Associates, Inc.},
-  title = {Coda: An End-to-End Neural Program Decompiler},
-  url = {https://proceedings.neurips.cc/paper_files/paper/2019/file/093b60fd0557804c8ba0cbf1453da22f-Paper.pdf},
-  volume = {32}
+  IGNOREURL = {https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ECRTS.2019.2},
 }
 
-@inproceedings{harrand19scam,
-  author = {Harrand, Nicolas and Soto-Valero, César and Monperrus, Martin and Baudry, Benoit},
-  booktitle = {2019 19th International Working Conference on Source Code Analysis and Manipulation (SCAM)},
-  date = {2019},
-  doi = {10.1109/SCAM.2019.00019},
-  keywords = {Java;Syntactics;Semantics;Distortion;Uniform resource locators;Measurement;Program processors;Java bytecode;decompilation;reverse engineering;source code analysis},
-  pages = {92--102},
-  title = {The Strengths and Behavioral Quirks of Java Bytecode Decompilers}
+@inproceedings{armv8semantics2,
+author = {Armstrong, Alasdair and Bauereiss, Thomas and Campbell, Brian and Reid, Alastair and Gray, Kathryn E. and Norton, Robert M. and Mundkur, Prashanth and Wassell, Mark and French, Jon and Pulte, Christopher and Flur, Shaked and Stark, Ian and Krishnaswami, Neel and Sewell, Peter},
+title = {ISA semantics for {ARMv8-A}, {RISC-V}, and {CHERI-MIPS}},
+date = {2019},
+IGNOREurl = {https://doi.org/10.1145/3290384},
+booktitle = proc # ofthe # "ACM" # on # "Principles" # of # "Programming Languages \nym{POPL}",
 }
 
-@inproceedings{kholia2013woot,
-  author = {Kholia, Dhiru and Wegrzyn, Przemyslaw},
-  booktitle = {USENIX Workshop on Offensive Technologies (WOOT)},
-  date = {2013-08},
-  title = {{Looking inside the (Drop) box}}
+@InProceedings{armv8semantics3,
+author="Simner, Ben and Flur, Shaked and Pulte, Christopher and Armstrong, Alasdair and Pichon-Pharabod, Jean and Maranget, Luc and Sewell, Peter",
+title="{ARMv8-A} System Semantics: Instruction Fetch in Relaxed Architectures",
+booktitle= "European" # sym # on # "Programming \nym{ESOP}",
+date="2020",
+IGNOREpages="626--655",
 }
 
-@inproceedings{liu20issta,
-  author = {Liu, Zhibo and Wang, Shuai},
-  booktitle = {Proceedings of the 29th ACM SIGSOFT International Symposium on Software Testing and Analysis},
-  date = {2020},
-  doi = {10.1145/3395363.3397370},
-  isbn = {9781450380089},
-  keywords = {Decompiler,Reverse Engineering,Software Testing},
-  location = {Virtual Event, USA},
-  numpages = {13},
-  pages = {475--487},
-  publisher = {Association for Computing Machinery},
-  series = {ISSTA 2020},
-  title = {How far we have come: testing decompilation correctness of C decompilers},
-  url = {https://doi.org/10.1145/3395363.3397370}
+@inproceedings{armv8semantics4,
+  title={Trustworthy specifications of ARM{\textregistered} v8-A and v8-M system level architecture},
+  author={Reid, Alastair},
+  booktitle={Formal Methods in Computer-Aided Design \nym{FMCAD}},
+  IGNOREpages={161--168},
+  date={2016},
 }
 
-@inproceedings{remind2022sec,
-  address = {Boston, MA},
-  author = {Mantovani, Alessandro and Aonzo, Simone and Fratantonio, Yanick and Balzarotti, Davide},
-  booktitle = {USENIX Security Symposium (SEC)},
-  isbn = {978-1-939133-31-1},
-  keywords = {},
-  month = {01},
-  pages = {2727--2745},
-  publisher = {USENIX Association},
-  series = {USENIX Security Symposium (SEC)},
-  title = {{RE-Mind: a First Look Inside the Mind of a Reverse Engineer}},
-  url = {https://www.usenix.org/conference/usenixsecurity22/presentation/mantovani},
-  year = {2022}
-}
-
-@inproceedings{pyrtfuzz2023ccs,
-  author = {Meng, Weizhi and Jensen, Christian D and Cremers, Cas and Kirda, Engin and Li, Wen and Yang, Haoran and Luo, Xiapu and Cheng, Long and Cai, Haipeng},
-  booktitle = {ACM SIGSAC Conference on Computer and Communications Security (CCS)},
-  doi = {10.1145/3576915.3623166},
-  isbn = {9798400700507},
-  keywords = {},
-  pages = {1645--1659},
-  series = {ACM SIGSAC Conference on Computer and Communications Security (CCS)},
-  title = {{PyRTFuzz: Detecting Bugs in Python Runtimes via Two-Level Collaborative Fuzzing}},
-  year = {2023}
-}
-
-@inproceedings{pinto:2018bhat,
-  author = {Pinto, Alessandro Di and Dragoni, Younes and Carcano, Andrea},
-  date = {2018-08},
-  ids = {triton,pymal13},
-  series = {Black Hat USA},
-  title = {{TRITON: The First ICS Cyber Attack on Safety Instrument Systems}}
-}
-
-@inproceedings{bed2018bar,
-  author = {Schulte, Eric and Ruchti, Jason and Noonan, Matt and Ciarletta, David and Loginov, Alexey},
-  booktitle = {Workshop on Binary Analysis Research (BAR)},
-  doi = {10.14722/bar.2018.23008},
-  isbn = {1891562509},
-  keywords = {},
-  month = {18},
-  series = {Workshop on Binary Analysis Research (BAR)},
-  title = {{Evolving Exact Decompilation}},
-  year = {2018}
-}
-
-@inproceedings{shin2015sec,
-  author = {Shin, Eui Chul Richard and Song, Dawn and Moazzezi, Reza},
-  booktitle = {24th USENIX Security Symposium (USENIX Security 15)},
-  date = {2015-08},
-  isbn = {978-1-939133-11-3},
-  location = {Washington, D.C.},
-  pages = {611--626},
-  publisher = {USENIX Association},
-  title = {Recognizing Functions in Binaries with Neural Networks},
-  url = {https://www.usenix.org/conference/usenixsecurity15/technical-sessions/presentation/shin}
-}
-
-@inproceedings{287268,
-  author = {Staicu, Cristian-Alexandru and Rahaman, Sazzadur and Kiss, Ágnes and Backes, Michael},
-  booktitle = {32nd USENIX Security Symposium (USENIX Security 23)},
-  date = {2023-08},
-  ids = {nativecode},
-  isbn = {978-1-939133-37-3},
-  location = {Anaheim, CA},
-  pages = {6133--6150},
-  publisher = {USENIX Association},
-  title = {Bilingual Problems: Studying the Security Risks Incurred by Native Extensions in Scripting Languages},
-  url = {https://www.usenix.org/conference/usenixsecurity23/presentation/staicu}
-}
-
-@inproceedings{taylor2019getting,
-  author = {Taylor, Claire and Collberg, Christian},
-  booktitle = {International Conference on Malicious and Unwanted Software (MALCON)},
-  keywords = {},
-  series = {International Conference on Malicious and Unwanted Software (MALCON)},
-  title = {{Getting RevEngE: a system for analyzing reverse engineering behavior}},
-  year = {2019}
-}
-
-@inproceedings{10.5555/781995.782008,
-  author = {Vallée-Rai, Raja and Co, Phong and Gagnon, Etienne and Hendren, Laurie and Lam, Patrick and Sundaresan, Vijay},
-  booktitle = {Proceedings of the 1999 Conference of the Centre for Advanced Studies on Collaborative Research},
-  date = {1999},
-  howpublished = {\url{https://dl.acm.org/doi/pdf/10.5555/781995.782008}},
-  ids = {soot},
-  location = {Mississauga, Ontario, Canada},
-  pages = {13},
-  publisher = {IBM Press},
-  series = {CASCON '99},
-  title = {Soot - a Java Bytecode Optimization Framework}
-}
-
-@inproceedings{268619,
-  author = {van Rossum, Guido},
-  date = {2007-06},
-  ids = {cpython1,python,cpython},
-  location = {Santa Clara, CA},
-  publisher = {USENIX Association},
-  title = {Python Programming Language}
-}
-
-@inproceedings{10.1007/978-3-030-58768-0_14,
-  author = {Verbeek, Freek and Olivier, Pierre and Ravindran, Binoy},
-  booktitle = {Software Engineering and Formal Methods: 18th International Conference, SEFM 2020, Amsterdam, The Netherlands, September 14–18, 2020, Proceedings},
-  date = {2020},
-  doi = {10.1007/978-3-030-58768-0_14},
-  ids = {perfect2},
-  isbn = {978-3-030-58767-3},
-  location = {Amsterdam, The Netherlands},
-  pages = {247--264},
-  publisher = {Springer-Verlag},
-  title = {Sound C Code Decompilation for a Subset of x86-64 Binaries},
-  url = {https://doi.org/10.1007/978-3-030-58768-0_14}
-}
-
-@inproceedings{votipka2020sec,
-  author = {Votipka, Daniel and Rabin, Seth and Micinski, Kristopher and Foster, Jeffrey S. and Mazurek, Michelle L.},
-  booktitle = {USENIX Security Symposium (SEC)},
-  isbn = {978-1-939133-17-5},
-  keywords = {},
-  month = {10},
-  pages = {1875--1892},
-  publisher = {USENIX Association},
-  series = {USENIX Security Symposium (SEC)},
-  title = {{An Observational Investigation of Reverse Engineers’ Processes}},
-  url = {https://www.usenix.org/conference/usenixsecurity20/presentation/votipka-observational},
-  year = {2020}
-}
-
-@inproceedings{hamlen2011,
-  author = {Wartell, Richard and Zhou, Yan and Hamlen, Kevin W. and Kantarcioglu, Murat and Thuraisingham, Bhavani},
-  booktitle = {Machine Learning and Knowledge Discovery in Databases},
-  date = {2011},
-  editor = {Gunopulos, Dimitrios and Hofmann, Thomas and Malerba, Donato and Vazirgiannis, Michalis},
-  isbn = {978-3-642-23808-6},
-  location = {Berlin, Heidelberg},
-  pages = {522--536},
-  publisher = {Springer Berlin Heidelberg},
-  title = {Differentiating Code from Data in x86 Binaries}
-}
-
-@inproceedings{pylingual2025snp,
-  ids = {pylingual24sp},
-  author = {Wiedemeier, Joshua and Tarbet, Elliot and Zheng, Max and Ko, Sangsoo and Ouyang, Jessica and Cha, Sang Kil and Jee, Kangkook},
-  booktitle = {IEEE Symposium on Security and Privacy (SP)},
-  date = {2025-05},
-  keywords = {kjee,kjee:paper},
-  series = {IEEE Symposium on Security and Privacy (SP)},
-  title = {{PyLingual: Toward Perfect Decompilation of Evolving High-Level Languages}}
-}
-
-@inproceedings{pylingual2024blackhat,
-  author = {Wiedemeier, Joshua and Tarbet, Elliot and Zheng, Max and Teng, Jerry and Liu, Ximeng and Kim, Muhyun and Ouyang, Jessica and Cha, Sang Kil and Jee, Kangkook},
-  booktitle = {BlackHat USA},
-  date = {2024},
-  keywords = {kjee,kjee:paper,kjee:presentation},
-  series = {BlackHat USA},
-  title = {{PyLingual: A Python Decompilation Framework for Evolving Python Versions}}
-}
-
-@inproceedings{dream2015ndss,
-  author = {Yakdan, Khaled and Eschweiler, Sebastian and Gerhards-Padilla, Elmar and Smith, Matthew},
-  booktitle = {Network Distributed Security Symposium (NDSS)},
-  date = {2015-02},
-  title = {{No More Gotos: Decompilation Using Pattern-Independent Control-Flow Structuring and Semantics-Preserving Transformations}}
-}
-
-@inproceedings{cpg2014snp,
-  author = {Yamaguchi, Fabian and Golde, Nico and Arp, Daniel and Rieck, Konrad},
-  booktitle = {IEEE Symposium on Security and Privacy (SP)},
-  date = {2014-05},
-  doi = {10.1109/sp.2014.44},
-  ids = {cpg},
-  pages = {590--604},
-  series = {IEEE Symposium on Security and Privacy (SP)},
-  title = {{Modeling and Discovering Vulnerabilities with Code Property Graphs}},
-  url = {https://ieeexplore.ieee.org/document/6956589}
-}
-
-@misc{pyinstaller,
-  howpublished = {\url{https://www.pyinstaller.org/}},
-  title = {PyInstaller Quickstart — PyInstaller bundles Python applications}
-}
-
-@misc{py2exe:online,
-  howpublished = {\url{https://www.py2exe.org/}},
-  ids = {py2exe},
-  title = {py2exe}
-}
-
-@misc{unpackager,
-  howpublished = {\url{https://github.com/extremecoders-re/pyinstxtractor}},
-  ids = {pyinstxtractor},
-  title = {PyInstaller Extractor}
-}
-
-@misc{uncompyle6,
-  howpublished = {\url{https://pypi.org/project/uncompyle6/}},
-  title = {uncompyle6 · PyPI}
-}
-
-@misc{decompyle3,
-  howpublished = {\url{https://pypi.org/project/decompyle3/}},
-  title = {decompyle3 · PyPI}
-}
-
-@misc{fastercp30:online,
-  howpublished = {\url{https://github.com/faster-cpython/ideas}},
-  ids = {python_opt0},
-  title = {faster-cpython}
-}
-
-@misc{pypi,
-  howpublished = {\url{https://pypi.org/}},
-  title = {PyPI - The Python Package Index}
-}
-
-@misc{zraxpycd38:online,
-  howpublished = {\url{https://github.com/zrax/pycdc}},
-  ids = {pycdc},
-  title = {zrax/pycdc: C++ python bytecode disassembler and decompiler}
-}
-
-@misc{anoncomm0,
-  title = {Personal communication with PyLingual authors}
-}
-
-@misc{pythonreleases,
-  howpublished = {\url{https://www.python.org/doc/versions/}},
-  title = {Python Documentation by Version}
-}
-
-@misc{fastercp80:online,
-  howpublished = {\url{https://github.com/markshannon/faster-cpython/blob/master/plan.md}},
-  ids = {faster-cpython},
-  title = {faster-cpython/plan.md at master · markshannon/faster-cpython}
-}
-
-@misc{zerocost,
-  howpublished = {\url{https://github.com/python/cpython/issues/84403}},
-  title = {"Zero cost" exception handling · Issue \#84403 · python/cpython}
-}
-
-@misc{OldUncompyle:online,
-  howpublished = {\url{https://github.com/gstarnberger/uncompyle}},
-  title = {uncompyle}
-}
-
-@misc{xdispull1,
-  date = {2023},
-  howpublished = {\url{https://github.com/rocky/python-xdis/pull/122}},
-  title = {Partial 3.12 Support}
-}
-
-@misc{xdispull2,
-  date = {2023},
-  howpublished = {\url{https://github.com/rocky/python-xdis/pull/124}},
-  title = {3.12 Opcodes}
-}
-
-@misc{xdispull3,
-  date = {2023},
-  howpublished = {\url{https://github.com/rocky/python-xdis/pull/126}},
-  title = {3.12 and 3.11 cross-version improvements}
-}
-
-@misc{xdispull4,
-  date = {2023},
-  howpublished = {\url{https://github.com/rocky/python-xdis/pull/108}},
-  title = {3.11 exception table}
-}
-
-@misc{xdispull5,
-  date = {2023},
-  howpublished = {\url{https://github.com/rocky/python-xdis/pull/109}},
-  title = {3.11 Fix calculation of JUMP\_BACKWARD jump target.}
-}
-
-@misc{xdispull6,
-  date = {2023},
-  howpublished = {\url{https://github.com/rocky/python-xdis/pull/112}},
-  title = {3.11 correct definition of CALL instruction}
-}
-
-@misc{pyc-dis:online,
-  howpublished = {\url{https://docs.python.org/3/library/dis.htmll}},
-  ids = {pyc-dis},
-  title = {dis — Disassembler for Python bytecode}
-}
-
-@misc{python-grammar:online,
-  howpublished = {\url{https://docs.python.org/3/reference/grammar.html}},
-  ids = {python-grammar},
-  title = {Full Python Grammar Specification}
-}
-
-@misc{pylingual1,
-  howpublished = {\url{https://medium.com/readers-digests/how-to-turn-your-exe-files-back-to-precious-code-01eb2863cac7}},
-  title = {How to Turn your .EXE files back to precious Python code! | Arcane Codex | Readers Hope}
-}
-
-@misc{pylingual2,
-  howpublished = {\url{https://ikuyo.dev/ctf-cheatsheet/}},
-  title = {CTF-CheatSheet | Eritque arcus's blog}
-}
-
-@misc{RetDecHo48:online,
-  howpublished = {\url{https://retdec.com/}},
-  ids = {retdec},
-  title = {RetDec :: Home}
-}
-
-@misc{mal:online,
-  howpublished = {\url{https://www.zdnet.com/article/this-malware-was-written-in-an-unusual-programming-language-to-stop-it-from-being-detected/}},
-  title = {This malware was written in an unusual programming language to stop it from being detected | ZDNet}
-}
-
-@misc{icsharpc99:online,
-  howpublished = {\url{https://github.com/icsharpcode/ILSpy}},
-  ids = {ilspy},
-  title = {icsharpcode/ILSpy: .NET Decompiler with support for PDB generation, ReadyToRun, Metadata (\&more) - cross-platform!}
-}
-
-@misc{dotPeekF93:online,
-  howpublished = {\url{https://www.jetbrains.com/decompiler/}},
-  ids = {dotpeek},
-  title = {dotPeek: Free .NET Decompiler \& Assembly Browser by JetBrains}
-}
-
-@misc{coutruby30:online,
-  howpublished = {\url{https://github.com/cout/ruby-decompiler}},
-  ids = {ruby_dec},
-  title = {cout/ruby-decompiler: A decompiler for ruby code (both MRI and YARV)}
-}
-
-@misc{ToolLua562:online,
-  howpublished = {\url{https://lua-decompiler.ferib.dev/}},
-  ids = {lua_dec},
-  title = {Tool: Lua 5.1 Decompiler}
-}
-
-@misc{PyLingua13:online,
-  howpublished = {\url{https://pylingual.io/}},
-  ids = {pweb,pylingual,pylingual0},
-  title = {PyLingual}
-}
-
-@misc{45Insigh37:online,
-  howpublished = {\url{https://pyarmor.readthedocs.io/en/stable/topic/bccmode.html}},
-  ids = {bcc},
-  title = {4.5. Insight Into BCC Mode — Pyarmor 8.5.11 documentation}
-}
-
-@misc{IntelliC65:online,
-  howpublished = {\url{https://www.intellichoice.org/}},
-  ids = {intellichoice},
-  title = {IntelliChoice Math Tutoring -- Free Math Tutoring}
-}
-
-@misc{CEATECAW14:online,
-  howpublished = {\url{http://archive.ceatec.com/2016/ja/award/award01.html}},
-  ids = {ceatec},
-  title = {CEATEC AWARD 2016 | Awards| CEATEC JAPAN 2016}
-}
-
-@misc{RFC3912W43:online,
-  howpublished = {\url{https://www.rfc-editor.org/rfc/rfc3912}},
-  ids = {ipwhois},
-  title = {RFC 3912: WHOIS Protocol Specification}
-}
-
-@misc{Nuitkath56:online,
-  howpublished = {\url{https://nuitka.net/}},
-  ids = {nuitka},
-  title = {Nuitka the Python Compiler — Nuitka the Python Compiler}
-}
-
-@misc{SOURCEde58:online,
-  howpublished = {\url{https://www.sourcedefender.co.uk/}},
-  ids = {SourceDefender},
-  title = {SOURCEdefender - AES 256-bit Encryption protecting Python source code}
-}
-
-@misc{45Insigh91:online,
-  howpublished = {\url{https://pyarmor.readthedocs.io/en/stable/topic/bccmode.html}},
-  ids = {pyarmor_bcc},
-  title = {4.5. Insight Into BCC Mode — Pyarmor 8.5.11 documentation}
-}
-
-@misc{vonNeuma69:online,
-  howpublished = {\url{https://en.wikipedia.org/wiki/Von_Neumann_architecture}},
-  ids = {vonneumann},
-  title = {von Neumann architecture - Wikipedia}
-}
-
-@misc{UTD_K12,
-  howpublished = {\url{https://multicultural.utdallas.edu/programs-and-services/outreach/}},
-  title = {Outreach Programs}
-}
-
-@misc{TypesofA13:online,
-  howpublished = {\url{https://research.utdallas.edu/researchers/contracts/types-of-agreements}},
-  title = {Types of Agreements -- Office of Research and Innovation}
-}
-
-@misc{DataMana34:online,
-  howpublished = {\url{https://data.utdallas.edu/}},
-  title = {Data Management Services - UT Dallas Data Management | The University of Texas at Dallas}
-}
-
-@misc{rocky-xdis:online,
-  author = {Bernstein, Rocky},
-  howpublished = {\url{https://github.com/rocky/python-xdis}},
-  title = {python-xdis}
-}
-
-@misc{rocky:personal,
-  author = {Bernstein, Rocky},
-  date = {2021-11-28},
-  howpublished = {personal communication}
-}
-
-@misc{rocky-spark:online,
-  author = {Bernstein, Rocky},
-  howpublished = {\url{https://github.com/rocky/python-spark}},
-  ids = {spark,SPARK:online},
-  title = {python-spark}
-}
-
-@misc{PEP744JI24:online,
-  author = {Bucher, Brandt},
-  howpublished = {\url{https://discuss.python.org/t/pep-744-jit-compilation/50756}},
-  ids = {jit1},
-  title = {PEP 744: JIT Compilation - PEPs - Discussions on Python.org}
-}
-
-@misc{bulatov2023scaling,
-  author = {Bulatov, Aydar and Kuratov, Yuri and Burtsev, Mikhail S.},
-  date = {2023},
-  eprint = {2304.11062},
-  eprintclass = {cs.CL},
-  eprinttype = {arXiv},
-  title = {Scaling Transformer to 1M tokens and beyond with RMT}
-}
-
-@misc{pyarmor,
-  author = {dashingsoft},
-  howpublished = {\url{https://github.com/dashingsoft/pyarmor}},
-  title = {pyarmor}
-}
-
-@misc{seaduke,
-  author = {Grunzweig, Josh},
-  howpublished = {\url{https://unit42.paloaltonetworks.com/unit-42-technical-analysis-seaduke/}},
-  ids = {pymal5},
-  title = {Unit 42 Technical Analysis: Seaduke}
-}
-
-@misc{PWOBot,
-  author = {Grunzweig, Josh},
-  howpublished = {\url{https://unit42.paloaltonetworks.com/unit42-python-based-pwobot-targets-european-organizations/}},
-  ids = {pymal9},
-  title = {Python-Based PWOBot Targets European Organizations}
-}
-
-@misc{jetbrains2020,
-  author = {JetBrains and Foundation, Python Software},
-  date = {2021},
-  title = {Python Developers Survey 2020},
-  url = {https://www.jetbrains.com/lp/python-developers-survey-2020/}
-}
-
-@misc{jetbrains2021,
-  author = {JetBrains and Foundation, Python Software},
-  date = {2022},
-  title = {Python Developers Survey 2021},
-  url = {https://lp.jetbrains.com/python-developers-survey-2021/}
-}
-
-@misc{jetbrains2022,
-  author = {JetBrains and Foundation, Python Software},
-  date = {2023},
-  title = {Python Developers Survey 2022},
-  url = {https://lp.jetbrains.com/python-developers-survey-2022/}
-}
-
-@misc{necromorph,
-  author = {jinye},
-  howpublished = {\url{https://blog.netlab.360.com/not-really-new-pyhton-ddos-bot-n3cr0m0rph-necromorph/}},
-  ids = {pymal6},
-  title = {Necro Frequent Upgrades, New Version Begins Using PyInstaller and DGA}
-}
-
-@misc{katz2019neural,
-  author = {Katz, Omer and Olshaker, Yuval and Goldberg, Yoav and Yahav, Eran},
-  date = {2019},
-  eprint = {1905.08325},
-  eprintclass = {cs.PL},
-  eprinttype = {arXiv},
-  title = {Towards Neural Decompilation}
-}
-
-@misc{pylocky,
-  author = {Kenefick, Ian and Yambao, Mary and Nieto, Alvin and Ang, Kerr},
-  howpublished = {\url{https://www.trendmicro.com/en\_us/research/18/i/a-closer-look-at-the-locky-poser-pylocky-ransomware.html}},
-  ids = {pymal7},
-  title = {A Closer Look at the Locky Poser, PyLocky Ransomware}
-}
-
-@misc{ghidra2019blackhat,
-  author = {Knighton, Chris Delikat Brian},
-  date = {2019-08},
-  ids = {ghidra},
-  keywords = {decompiler,reverse},
-  title = {{Ghidra - Journey from Classified NSA Tool to Open Source}}
-}
-
-@misc{stealthy-python,
-  author = {Koutsokostas, Vasilios and Patsakis, Constantinos},
-  howpublished = {\url{https://arxiv.org/pdf/2105.00565.pdf}},
-  ids = {pymal2},
-  title = {Python and Malware: Developing Stealth and Evasive Malware Without Obfuscation}
-}
-
-@misc{lin2021limitations,
-  author = {Lin, Chu-Cheng and Jaech, Aaron and Li, Xin and Gormley, Matthew R. and Eisner, Jason},
-  date = {2021},
-  eprint = {2010.11939},
-  eprintclass = {cs.LG},
-  eprinttype = {arXiv},
-  title = {Limitations of Autoregressive Models and Their Alternatives}
-}
-
-@misc{poetRAT,
-  author = {Mercer, Warren},
-  howpublished = {\url{https://blog.talosintelligence.com/poetrat-covid-19-lures/}},
-  ids = {pymal8},
-  title = {PoetRAT: Python RAT uses COVID-19 lures to target Azerbaijan public and private sectors}
-}
-
-@misc{PEP709I94:online,
-  author = {Meyer, Carl},
-  howpublished = {\url{https://peps.python.org/pep-0709/}},
-  ids = {python_opt2},
-  title = {PEP 709 – Inlined comprehensions | peps.python.org}
-}
-
-@misc{Montanaro98apeephole,
-  author = {Montanaro, Skip},
-  date = {1998},
-  ids = {peephole},
-  title = {A Peephole Optimizer for Python}
-}
-
-@misc{pythoninfostealer,
-  author = {Ogino, Kotaro},
-  howpublished = {\url{https://www.cybereason.com/blog/unboxing-snake-python-infostealer-lurking-through-messaging-service}},
-  ids = {pymal4},
-  title = {Unboxing Snake - Python Infostealer Lurking Through Messaging Services}
-}
-
-@misc{peng2023rwkv,
-  author = {Peng, Bo and Alcaide, Eric and Anthony, Quentin and Albalak, Alon and Arcadinho, Samuel and Cao, Huanqi and Cheng, Xin and Chung, Michael and Grella, Matteo and GV, Kranthi Kiran and He, Xuzheng and Hou, Haowen and Kazienko, Przemyslaw and Kocon, Jan and Kong, Jiaming and Koptyra, Bartlomiej and Lau, Hayden and Mantri, Krishna Sri Ipsit and Mom, Ferdinand and Saito, Atsushi and Tang, Xiangru and Wang, Bolun and Wind, Johan S. and Wozniak, Stansilaw and Zhang, Ruichong and Zhang, Zhenyuan and Zhao, Qihang and Zhou, Peng and Zhu, Jian and Zhu, Rui-Jie},
-  date = {2023},
-  eprint = {2305.13048},
-  eprintclass = {cs.CL},
-  eprinttype = {arXiv},
-  title = {RWKV: Reinventing RNNs for the Transformer Era}
-}
-
-@misc{cyborg,
-  author = {Security, Cyborg},
-  date = {2020-07},
-  howpublished = {\url{https://www.cyborgsecurity.com/cyborg_labs/python-malware-on-the-rise/}},
-  ids = {pymal1},
-  title = {Python Malware On The Rise}
-}
-
-@misc{PEP659S83:online,
-  author = {Shannon, Mark},
-  howpublished = {\url{https://peps.python.org/pep-0659/}},
-  ids = {python_opt1},
-  title = {PEP 659 – Specializing Adaptive Interpreter | peps.python.org}
-}
-
-@misc{radare2,
-  author = {Team, Radare2},
-  date = {2017},
-  howpublished = {\url{https://github.com/radare/radare2}},
-  journaltitle = {GitHub repository},
-  publisher = {GitHub},
-  title = {Radare2 GitHub repository}
-}
-
-@misc{virustotal,
-  author = {virustotal},
-  date = {2021},
-  howpublished = {\url{https://www.virustotal.com/gui/home/upload}},
-  title = {metasploit}
-}
-
-@misc{wang2021codet5,
-  author = {Wang, Yue and Wang, Weishi and Joty, Shafiq and Hoi, Steven C. H.},
-  date = {2021},
-  eprint = {2109.00859},
-  eprintclass = {cs.CL},
-  eprinttype = {arXiv},
-  title = {CodeT5: Identifier-aware Unified Pre-trained Encoder-Decoder Models for Code Understanding and Generation}
-}
-
-@misc{pylingual2024pyconus,
-  author = {Wiedemeier, Joshua},
-  date = {2024-05},
-  keywords = {kjee,kjee:presentation},
-  title = {{PyCon US 2024 - Talks: There and Back Again: Reverse Engineering Python Binaries}},
-  url = {https://us.pycon.org/2024/schedule/presentation/118/}
-}
-
-@misc{pylingual2025pldi,
-  author = {Wiedemeier, Joshua and Jee, Kangkook and Cha, Sang kil},
-  date = {2024-05},
-  title = {{Perfect Decompilation of Python Bytecode with PyLingual}},
-  url = {https://pldi25.sigplan.org/details/pldi-2025-tutorials/5/Perfect-Decompilation-of-Python-Bytecode-with-PyLingual}
-}
-
-@misc{XBash,
-  author = {Xiao, Claud and Zheng, Cong and Jin, Xingyu},
-  howpublished = {\url{https://unit42.paloaltonetworks.com/unit42-xbash-combines-botnet-ransomware-coinmining-worm-targets-linux-windows/}},
-  ids = {pymal10},
-  title = {Xbash Combines Botnet, Ransomware, Coinmining in Worm that Targets Linux and Windows}
-}
-
-@misc{zhao2019improving,
-  author = {Zhao, Wei and Wang, Liang and Shen, Kewei and Jia, Ruoyu and Liu, Jingming},
-  date = {2019},
-  eprint = {1903.00138},
-  eprintclass = {cs.CL},
-  eprinttype = {arXiv},
-  title = {Improving Grammatical Error Correction via Pre-Training a Copy-Augmented Architecture with Unlabeled Data}
-}
-
-@phdthesis{bryant2012understanding,
-  author = {Bryant, Adam R},
-  institution = {Air Force Institute of Technology},
-  keywords = {},
-  month = {22},
-  title = {{Understanding how reverse engineers make sense of programs from assembly language representations}},
-  year = {2012}
-}
-
-@report{exotic2021blackberry,
-  date = {2021},
-  institution = {BlackBerry Research \& Intelligence Team},
-  title = {{Old Dogs New Tricks: Attackers adopt exotic programming languages}},
-  type = {techreport},
-  url = {https://blogs.blackberry.com/en/2021/07/old-dogs-new-tricks-attackers-adopt-exotic-programming-languages}
-}
-
-@report{dragos:2017vs,
-  author = {Inc, Dragos},
-  date = {2017-12},
-  ids = {triton1,pymal3},
-  keywords = {ics,malware,plc,trisis,triton},
-  title = {{TRISIS Malware}},
-  type = {techreport},
-  url = {https://dragos.com/wp-content/uploads/TRISIS-01.pdf}
-}
-
-@thesis{cifuentes1994thesis,
-  author = {Cifuentes, Cristina},
-  date = {1994},
-  keywords = {decompilation,decompiler},
-  title = {{Reverse Compilation Techniques}},
-  type = {phdthesis}
-}
-
-@thesis{emmerik2007thesis,
-  author = {Emmerik, Mike Van},
-  keywords = {decompilation,decompiler},
-  title = {{Static Single Assignment for Decompilation}},
-  type = {phdthesis}
-}
-
-@INPROCEEDINGS {pylingual24sp,
-  author = { Wiedemeier, Josh and Tarbet, Elliot and Zheng, Max and Ko, Sangsoo and Ouyang, Jessica and Cha, Sang Kil and Jee, Kangkook },
-  booktitle = { 2025 IEEE Symposium on Security and Privacy (SP) },
-  title = {{ PYLINGUAL: Toward Perfect Decompilation of Evolving High-Level Languages }},
-  year = {2025},
-  volume = {},
-  ISSN = {2375-1207},
-  pages = {52-52},
-  keywords = {python;decompiler;nlp;reverse engineering},
-  doi = {10.1109/SP61157.2025.00052},
-  url = {https://doi.ieeecomputersociety.org/10.1109/SP61157.2025.00052},
-  publisher = {IEEE Computer Society},
-  address = {Los Alamitos, CA, USA},
-  month =May
-}
-
-@misc{ida-pro,
-    author       = {Hex-Rays},
-    howpublished = {\url{https://hex-rays.com/ida-pro/}},
-    title        = {IDA Pro}
-}
+%%%%%%%%%%%%%%%%
 
-@misc{MonacoEd39:online,
-author = {},
-  title = {Monaco Editor},
-  url = "https://microsoft.github.io/monaco-editor/",
-month = {},
-year = {},
-  note = "[Online; accessed 2025-01-19]"
+@inproceedings{becker2024woot,
+    AUTHOR = {Becker, Lucas and Hollick, Matthias and Classen, Jiska},
+    TITLE = {{{SoK}: on the effectiveness of control-flow integrity in practice}},
+    BOOKTITLE = {{USENIX} {WOOT}} # conf # on # {Offensive Technologies},
+    DATE = {2024},
 }
 
-@online{language-popularity-Index,
-title = {PYPL PopularitY of Programming Language Index},
-howpublished = {\url{https://pypl.github.io/PYPL.html}},
-year=2025,
-urldate={2025-01-22}
+@article{burow2017survey,
+DATE = {2017},
+title = {Control-Flow Integrity: Precision, Security, and Performance.},
+author = {Burow, Nathan and Carr, Scott A and Nash, Joseph and Larsen, Per and Franz, Michael and Brunthaler, Stefan and Payer, Mathias},
+journal = {ACM Computing Surveys \nym{CSUR}},
 }
 
-@online{oxyry,
-title = {Oxyry Python Obfuscator},
-howpublished = {\url{https://pyob.oxyry.com/}},
-year=2025,
-urldate={2025-01-22}
+@inproceedings{isacfi2019hasp,
+author = {Shanbhogue, Vedvyas and Gupta, Deepak and Sahita, Ravi},
+title = {Security Analysis of Processor Instruction Set Architecture for Enforcing Control-Flow Integrity},
+DATE = {2019},
+IGNOREurl = {https://doi.org/10.1145/3337167.3337175},
+booktitle = proc # ofthe # {\cnum{8th}} # work # on # {Hardware and Architectural Support} # for # {Security and Privacy \nym{HASP}},
 }
 
-@misc{jinaembeddings2024,
-      title={Jina Embeddings 2: 8192-Token General-Purpose Text Embeddings for Long Documents},
-      author={Michael Günther and Jackmin Ong and Isabelle Mohr and Alaeddine Abdessalem and Tanguy Abel and Mohammad Kalim Akram and Susana Guzman and Georgios Mastrapas and Saba Sturua and Bo Wang and Maximilian Werk and Nan Wang and Han Xiao},
-      year={2024},
-      eprint={2310.19923},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2310.19923},
+@inproceedings{liljestrand2019pac,
+  ids = {arm_pac},
+  TITLE={{PAC} it up: Towards pointer integrity using {ARM} pointer authentication},
+  AUTHOR={Liljestrand, Hans and Nyman, Thomas and Wang, Kui and Perez, Carlos Chinea and Ekberg, Jan-Erik and Asokan, N},
+  BOOKTITLE=proc # ofthe # {\cnum{28th} {USENIX}} # conf # on # {Security} # sym,
+  IGNOREPAGES={177--194},
+  DATE={2019}
 }
 
-@misc{titans,
-      title={Titans: Learning to Memorize at Test Time},
-      author={Ali Behrouz and Peilin Zhong and Vahab Mirrokni},
-      year={2024},
-      eprint={2501.00663},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2501.00663},
-}
-
-@misc{deepseekr1,
-      title={DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning},
-      author={DeepSeek-AI and Daya Guo and Dejian Yang and Haowei Zhang and Junxiao Song and Ruoyu Zhang and Runxin Xu and Qihao Zhu and Shirong Ma and Peiyi Wang and Xiao Bi and Xiaokang Zhang and Xingkai Yu and Yu Wu and Z. F. Wu and Zhibin Gou and Zhihong Shao and Zhuoshu Li and Ziyi Gao and Aixin Liu and Bing Xue and Bingxuan Wang and Bochao Wu and Bei Feng and Chengda Lu and Chenggang Zhao and Chengqi Deng and Chenyu Zhang and Chong Ruan and Damai Dai and Deli Chen and Dongjie Ji and Erhang Li and Fangyun Lin and Fucong Dai and Fuli Luo and Guangbo Hao and Guanting Chen and Guowei Li and H. Zhang and Han Bao and Hanwei Xu and Haocheng Wang and Honghui Ding and Huajian Xin and Huazuo Gao and Hui Qu and Hui Li and Jianzhong Guo and Jiashi Li and Jiawei Wang and Jingchang Chen and Jingyang Yuan and Junjie Qiu and Junlong Li and J. L. Cai and Jiaqi Ni and Jian Liang and Jin Chen and Kai Dong and Kai Hu and Kaige Gao and Kang Guan and Kexin Huang and Kuai Yu and Lean Wang and Lecong Zhang and Liang Zhao and Litong Wang and Liyue Zhang and Lei Xu and Leyi Xia and Mingchuan Zhang and Minghua Zhang and Minghui Tang and Meng Li and Miaojun Wang and Mingming Li and Ning Tian and Panpan Huang and Peng Zhang and Qiancheng Wang and Qinyu Chen and Qiushi Du and Ruiqi Ge and Ruisong Zhang and Ruizhe Pan and Runji Wang and R. J. Chen and R. L. Jin and Ruyi Chen and Shanghao Lu and Shangyan Zhou and Shanhuang Chen and Shengfeng Ye and Shiyu Wang and Shuiping Yu and Shunfeng Zhou and Shuting Pan and S. S. Li and Shuang Zhou and Shaoqing Wu and Shengfeng Ye and Tao Yun and Tian Pei and Tianyu Sun and T. Wang and Wangding Zeng and Wanjia Zhao and Wen Liu and Wenfeng Liang and Wenjun Gao and Wenqin Yu and Wentao Zhang and W. L. Xiao and Wei An and Xiaodong Liu and Xiaohan Wang and Xiaokang Chen and Xiaotao Nie and Xin Cheng and Xin Liu and Xin Xie and Xingchao Liu and Xinyu Yang and Xinyuan Li and Xuecheng Su and Xuheng Lin and X. Q. Li and Xiangyue Jin and Xiaojin Shen and Xiaosha Chen and Xiaowen Sun and Xiaoxiang Wang and Xinnan Song and Xinyi Zhou and Xianzu Wang and Xinxia Shan and Y. K. Li and Y. Q. Wang and Y. X. Wei and Yang Zhang and Yanhong Xu and Yao Li and Yao Zhao and Yaofeng Sun and Yaohui Wang and Yi Yu and Yichao Zhang and Yifan Shi and Yiliang Xiong and Ying He and Yishi Piao and Yisong Wang and Yixuan Tan and Yiyang Ma and Yiyuan Liu and Yongqiang Guo and Yuan Ou and Yuduan Wang and Yue Gong and Yuheng Zou and Yujia He and Yunfan Xiong and Yuxiang Luo and Yuxiang You and Yuxuan Liu and Yuyang Zhou and Y. X. Zhu and Yanhong Xu and Yanping Huang and Yaohui Li and Yi Zheng and Yuchen Zhu and Yunxian Ma and Ying Tang and Yukun Zha and Yuting Yan and Z. Z. Ren and Zehui Ren and Zhangli Sha and Zhe Fu and Zhean Xu and Zhenda Xie and Zhengyan Zhang and Zhewen Hao and Zhicheng Ma and Zhigang Yan and Zhiyu Wu and Zihui Gu and Zijia Zhu and Zijun Liu and Zilin Li and Ziwei Xie and Ziyang Song and Zizheng Pan and Zhen Huang and Zhipeng Xu and Zhongyu Zhang and Zhen Zhang},
-      year={2025},
-      eprint={2501.12948},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2501.12948},
-}
-@misc{openaio1,
-      title={Evaluation of OpenAI o1: Opportunities and Challenges of AGI},
-      author={Tianyang Zhong and Zhengliang Liu and Yi Pan and Yutong Zhang and Yifan Zhou and Shizhe Liang and Zihao Wu and Yanjun Lyu and Peng Shu and Xiaowei Yu and Chao Cao and Hanqi Jiang and Hanxu Chen and Yiwei Li and Junhao Chen and Huawen Hu and Yihen Liu and Huaqin Zhao and Shaochen Xu and Haixing Dai and Lin Zhao and Ruidong Zhang and Wei Zhao and Zhenyuan Yang and Jingyuan Chen and Peilong Wang and Wei Ruan and Hui Wang and Huan Zhao and Jing Zhang and Yiming Ren and Shihuan Qin and Tong Chen and Jiaxi Li and Arif Hassan Zidan and Afrar Jahin and Minheng Chen and Sichen Xia and Jason Holmes and Yan Zhuang and Jiaqi Wang and Bochen Xu and Weiran Xia and Jichao Yu and Kaibo Tang and Yaxuan Yang and Bolun Sun and Tao Yang and Guoyu Lu and Xianqiao Wang and Lilong Chai and He Li and Jin Lu and Lichao Sun and Xin Zhang and Bao Ge and Xintao Hu and Lian Zhang and Hua Zhou and Lu Zhang and Shu Zhang and Ninghao Liu and Bei Jiang and Linglong Kong and Zhen Xiang and Yudan Ren and Jun Liu and Xi Jiang and Yu Bao and Wei Zhang and Xiang Li and Gang Li and Wei Liu and Dinggang Shen and Andrea Sikora and Xiaoming Zhai and Dajiang Zhu and Tianming Liu},
-      year={2024},
-      eprint={2409.18486},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2409.18486},
-}
-
-@misc{mamba,
-      title={Mamba: Linear-Time Sequence Modeling with Selective State Spaces},
-      author={Albert Gu and Tri Dao},
-      year={2024},
-      eprint={2312.00752},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2312.00752},
-}
-
-@article{mchugh2013chi,
-  ids = {chisquare},
-  title={The chi-square test of independence},
-  author={McHugh, Mary L},
-  journal={Biochemia medica},
-  volume={23},
-  number={2},
-  pages={143--149},
-  year={2013},
-  publisher={Medicinska naklada}
-}
-
-@misc{syssecut2:online,
-  ids = {pylingualgithub},
-author = {},
-  title = {syssec-utd/pylingual: Python decompiler for modern Python versions.},
-  url = "https://github.com/syssec-utd/pylingual",
-month = {},
-year = {},
-  note = "[Online; accessed 2025-04-12]"
-}
-
-@misc{Statusof69:online,
-  ids = {pythonroadmap},
-author = {},
-  title = {Status of Python versions},
-  url = "https://devguide.python.org/versions/",
-month = {},
-year = {},
-  note = "[Online; accessed 2025-04-14]"
-}
-
-@inproceedings{cracks_in_shields,
-  author       = {Yuan Li and
-                  Mingzhe Wang and
-                  Chao Zhang and
-                  Xingman Chen and
-                  Songtao Yang and
-                  Ying Liu},
-  editor       = {Jay Ligatti and
-                  Xinming Ou and
-                  Jonathan Katz and
-                  Giovanni Vigna},
-  title        = {Finding Cracks in Shields: On the Security of Control Flow Integrity
-                  Mechanisms},
-  booktitle    = {{CCS} '20: 2020 {ACM} {SIGSAC} Conference on Computer and Communications
-                  Security, Virtual Event, USA, November 9-13, 2020},
-  pages        = {1821--1835},
-  publisher    = {{ACM}},
-  year         = {2020},
-  doi          = {10.1145/3372297.3417867},
-  timestamp    = {Sat, 23 Aug 2025 18:48:54 +0200},
-}
-
-@inproceedings{safedispatch,
-  author       = {Dongseok Jang and
-                  Zachary Tatlock and
-                  Sorin Lerner},
-  title        = {SafeDispatch: Securing {C++} Virtual Calls from Memory Corruption
-                  Attacks},
-  booktitle    = {21st Annual Network and Distributed System Security Symposium, {NDSS}
-                  2014, San Diego, California, USA, February 23-26, 2014},
-  publisher    = {The Internet Society},
-  year         = {2014},
-  url          = {https://www.ndss-symposium.org/ndss2014/safedispatch-securing-c-virtual-calls-memory-corruption-attacks},
-  timestamp    = {Mon, 01 Feb 2021 08:42:18 +0100},
-}
-
-@inproceedings{suite_recipe,
-  author       = {Yuancheng Jiang and
-                  Roland H. C. Yap and
-                  Zhenkai Liang and
-                  Hubert Rosier},
-  editor       = {Yuji Suga and
-                  Kouichi Sakurai and
-                  Xuhua Ding and
-                  Kazue Sako},
-  title        = {RecIPE: Revisiting the Evaluation of Memory Error Defenses},
-  booktitle    = {{ASIA} {CCS} '22: {ACM} Asia Conference on Computer and Communications
-                  Security, Nagasaki, Japan, 30 May 2022 - 3 June 2022},
-  pages        = {574--588},
-  publisher    = {{ACM}},
-  year         = {2022},
-  url          = {https://doi.org/10.1145/3488932.3524127},
-  doi          = {10.1145/3488932.3524127},
-  timestamp    = {Sun, 19 Jan 2025 13:28:26 +0100},
-}
-
-
-@inproceedings{suite_ripe,
-  author       = {John Wilander and
-                  Nick Nikiforakis and
-                  Yves Younan and
-                  Mariam Kamkar and
-                  Wouter Joosen},
-  editor       = {Robert H'obbes' Zakon and
-                  John P. McDermott and
-                  Michael E. Locasto},
-  title        = {{RIPE:} runtime intrusion prevention evaluator},
-  booktitle    = {Twenty-Seventh Annual Computer Security Applications Conference, {ACSAC}
-                  2011, Orlando, FL, USA, 5-9 December 2011},
-  pages        = {41--50},
-  publisher    = {{ACM}},
-  year         = {2011},
-  url          = {https://doi.org/10.1145/2076732.2076739},
-  doi          = {10.1145/2076732.2076739},
-  timestamp    = {Sun, 19 Jan 2025 13:36:18 +0100},
-}
-
-@inproceedings{bincfi,
-  author       = {Mingwei Zhang and
-                  R. Sekar},
-  editor       = {Samuel T. King},
-  title        = {Control Flow Integrity for {COTS} Binaries},
-  booktitle    = {Proceedings of the 22th {USENIX} Security Symposium, Washington, DC,
-                  USA, August 14-16, 2013},
-  pages        = {337--352},
-  publisher    = {{USENIX} Association},
-  year         = {2013},
-  url          = {https://www.usenix.org/conference/usenixsecurity13/technical-sessions/presentation/Zhang},
-  timestamp    = {Tue, 18 Jan 2022 14:17:09 +0100},
-  biburl       = {https://dblp.org/rec/conf/uss/ZhangS13.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-
-@article{enforceable_security_policies,
-  author       = {Fred B. Schneider},
-  title        = {Enforceable security policies},
-  journal      = {{ACM} Trans. Inf. Syst. Secur.},
-  volume       = {3},
-  number       = {1},
-  pages        = {30--50},
-  year         = {2000},
-  url          = {https://doi.org/10.1145/353323.353382},
-  doi          = {10.1145/353323.353382},
-  timestamp    = {Tue, 06 Nov 2018 12:50:47 +0100},
-  biburl       = {https://dblp.org/rec/journals/tissec/Schneider00.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
-}
-
-@misc{rocq, title={{The Rocq Prover}}, url={https://rocq-prover.org}, journal={Rocq}, author={{The Rocq Development Team}}, year={2025}, month={Mar} }
-
-@article{compcert,
-author = {Leroy, Xavier},
-title = {Formal verification of a realistic compiler},
-year = {2009},
-issue_date = {July 2009},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-volume = {52},
-number = {7},
-issn = {0001-0782},
-url = {https://doi.org/10.1145/1538788.1538814},
-doi = {10.1145/1538788.1538814},
-journal = {Commun. ACM},
-month = jul,
-pages = {107–115},
-numpages = {9}
-}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% undefined behaviors.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-@inproceedings{sel4,
-author = {Klein, Gerwin and Elphinstone, Kevin and Heiser, Gernot and Andronick, June and Cock, David and Derrin, Philip and Elkaduwe, Dhammika and Engelhardt, Kai and Kolanski, Rafal and Norrish, Michael and Sewell, Thomas and Tuch, Harvey and Winwood, Simon},
-title = {seL4: formal verification of an OS kernel},
-year = {2009},
-isbn = {9781605587523},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-url = {https://doi.org/10.1145/1629575.1629596},
-doi = {10.1145/1629575.1629596},
-booktitle = {Proceedings of the ACM SIGOPS 22nd Symposium on Operating Systems Principles},
-pages = {207–220},
-numpages = {14},
-keywords = {sel4, microkernel, l4, isabelle/hol},
-location = {Big Sky, Montana, USA},
-series = {SOSP '09}
+@inproceedings{wang2012apsys,
+ids = {undefined0},
+author = {Wang, Xi and Chen, Haogang and Cheung, Alvin and Jia, Zhihao and Zeldovich, Nickolai and Kaashoek, M. Frans},
+title = {Undefined behavior: what happened to my code?},
+date = {2012},
+IGNOREurl = {https://doi.org/10.1145/2349896.2349905},
+booktitle = proc # ofthe # {Asia-Pacific} # work # on # {Systems \nym{APSYS}},
 }
 
-@article{cakeml,
-author = {Kumar, Ramana and Myreen, Magnus O. and Norrish, Michael and Owens, Scott},
-title = {CakeML: a verified implementation of ML},
-year = {2014},
-issue_date = {January 2014},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-volume = {49},
-number = {1},
-issn = {0362-1340},
-url = {https://doi.org/10.1145/2578855.2535841},
-doi = {10.1145/2578855.2535841},
-journal = {SIGPLAN Not.},
-month = jan,
-pages = {179–191},
-numpages = {13},
-keywords = {verified type checking, verified parsing, verified garbage collection., read-eval-print loop, machine code verification, compiler verification, compiler bootstrapping, ML}
+@inproceedings{dietz2012icse,
+date = {2012},
+ids = {undefined1},
+title = {{Understanding Integer Overflow in C/C++}},
+author = {Dietz, Will and Li, Peng and Regehr, John and Adve, Vikram},
+booktitle = proc # ofthe # int # conf # on # {Software Engineering \nym{ICSE}},
 }

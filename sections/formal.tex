@@ -1,0 +1,179 @@
+%! root=../main.tex
+
+\section{Verification of Implementation Soundness}\label{sec:verification}
+
+\ixb{I wondered whether how the \itoip, i'2i and policy definitions interact to allow program intended jumps out of the code region (e.g., to OS code). I know it's somewhere here, having trouble finding it by skimming.}
+\subsection{Soundness Formalization}\label{sec:formalization}
+% Compact list spacing for this section
+\setlist[itemize]{topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex,leftmargin=*}
+\setlist[enumerate]{label=(\arabic*),topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex,leftmargin=*}
+
+A CFI rewriter is sound if all execution traces of all programs it outputs obey the control-flow policy.
+We formalize this below.
+% We begin by formalizing what it means for a binary CFI rewriter \emph{implementation} to be sound.
+
+\ixb{Did we ever discuss the validity of this approach w.r.t. the enforced policy is actually a trusted mapping of the original?}
+% To prove that our CFI implementation is sound, we must formalize what it means to be sound.
+
+\heading{Safety of a single trace.}
+Static CFI policies $\Pol$ are sets of virtual address edges $(a,a')\in\mathbb{N}^2$.
+A trace $\tau$ is safe if all its computational steps are confined to edges in $\Pol$:
+\begin{equation}
+\safe{trace}(\Pol,\tau) \equiv (\mathit{steps}(\tau)\subseteq\Pol)
+\end{equation}
+where a trace's computational $\mathit{steps}$ are defined by
+\begin{equation}
+\begin{aligned}
+\mathit{steps}(\langle a,\sigma\rangle) &= \emptyset \\
+\mathit{steps}\big(\langle a_1,\sigma_1\rangle :: \langle a_2,\sigma_2\rangle :: \tau\big) &= \{(a_1,a_2)\}\cup\mathit{steps}\big(\langle a_2,\sigma_2\rangle :: \tau\big)
+\end{aligned}
+\end{equation}
+%\optional{We do not care if the trace ends by throwing a hardware exception, so this definition only considers steps between two addresses.}
+
+\heading{Safety of a rewritten trace.}
+% \ixb{@MAX: in equations, you need to wrap multi-letter variable and function names in mathit, mathtt, mathrm. If you do not they will be set as a product of the individual letters.
+% Note the difference between $txt'$ and $\mathit{txt'}$.}
+Since rewriters relocate and add instructions, policy $\Pol\kern1pt'$ for the rewritten code \emph{reinterprets} policy $\Pol$ in three ways:
+(1) Addresses in $\Pol$ must be mapped to their rewritten locations.
+This remapping is defined by function \itoip (\autoref{eq:itoip}).
+(2) New permissible edges must be added for inserted security checks, to allow the new checks to execute.
+(3) The inserted checks may signal an alarm by jumping to a safe abort address $4\mai$.
+These three reinterpretations are formalized as
+\begin{equation}
+\begin{aligned}
+  \Pol\kern1pt' =\:& \big\{\kern1.5pt(4\itoip(a_1/4),4\itoip(a_2/4))\:\big|\:(a_1,a_2)\in\Pol\kern2pt\big\}\:\cup \\
+                  &\big\{\kern1.5pt(4i'_1,4i'_2)\:\big|\:i_1',i_2'\in\big[\kern-.2pt\itoip(i),\itoip(i{+}1)\kern.2pt\big)\kern2pt\big\}\:\cup \\
+                  &(\mathbb{N}\times\{4\mai\})
+%  \iptoi(i') = \begin{cases}
+%    \mathit{\bi} + n & \text{if } i' \in [\bip, \bip + |\texttt{flatten}(\txtp)|-1] \\
+%    i'     & \text{otherwise.}
+%  \end{cases}
+\end{aligned}
+\end{equation}
+
+% Note that this permitted step definition allows a block to step to the corresponding index in the old text segment,
+%Note, \Polp{} permits a rewritten \Block to step to its corresponding instruction in the old text segment
+%as \iptoi will return the same value for the old index, making the ``step within a \Block'' case true.
+%While mechanizing a proof that this does not happen is possible, we instead set the old text segment as nonexecutable.
+% However, this will never happen in the rewritten code (we just do not explicitly prove this), % probably?
+% and even if this did happen, we mark the old text segment as nonexecutable.
+
+\heading{Assumptions.}
+\ixb{@Max, what do you mean by ``the addresses provided as input by the user'' here? Policy? \bi, \bip, \tbi, \mai?}
+%A rewritten program can be described by the new text and table segments returned by the rewriter and the addresses provided as input by the user.
+%\[
+%   p' = (\txtp, \mathit{tbls}, \mathit{addrs})
+%\]
+Programs $p$ started in machine states $\sigma_0$ exhibit a trace $\tau$ when executed, denoted $\langle p,\sigma_0\rangle\leadsto\tau$.
+Relation $\leadsto$ is defined by the ISA semantic specification, and is nondeterministic;
+\unpredictable{} operations in $p$ can exhibit $\langle p,\sigma_0\rangle\leadsto\tau_1$ and $\langle p,\sigma_0\rangle\leadsto\tau_2$ for multiple different traces $\tau_1\ne\tau_2$.
+
+We prove safety of rewritten code in program $p$ under the following assumptions:
+(1) initial state $\sigma_0$ starts in the ARM instruction mode,
+(2) the new text segment in $p$ is located at \bip,
+(3) the policy table data segment is located at \tbi and has endianness matching $\sigma_0$,
+(4) the text and table segments have non-writable permissions,
+and
+(5) the starting \PC in $\sigma_0$ is the start of a \Block.
+These initial assumptions are properties of the \ELFPackager and OS process loader (whose verification is out-of-scope).
+
+%% KWH: I understand what you're saying below, but it's a complex corner case and sounds very alarming to a casual reader ("safe" traces can leave the code segment?!), so I'm omitting it for now.
+
+%The rewriter only gets to determine the instructions placed in the new text segment;
+%we make no assumptions on what other executable code is placed in memory
+%(such as code provided by the kernel).
+%Therefore, we can no longer guarantee anything if the trace leaves the new text segment.
+%However, this can only happen if it was permitted by the original policy,
+%or if the destination is the abort handler.
+%Thus, we only consider the longest prefix of a trace that contains at most one address
+%outside of the new text segment (at the head of the trace).
+%\[
+%  \safe{prog}(p') \equiv \forall t, \mathit{Precond}_{p'}(t) \implies \safe{trace}(\mathit{prefix}(t))
+%\]
+
+\heading{Soundness of a CFI implementation.}
+For a CFI rewriter implementation $r$ to be sound, all executions of all rewritten programs it produces must be safe.
+\begin{equation}
+  \safe{CFI}(r) \equiv \forall \txt, \Pol,\ \langle r(\txt,\Pol),\sigma_0\rangle\,{\leadsto}\,\tau\ \Rightarrow\ \safe{trace}(\Pol\kern1pt',\tau)
+\end{equation}
+
+\subsection{Safety Proof}
+%We prove that our CFI rewriter is sound in Rocq using \Picinae.
+%Because we reason about the safety of unspecified\wc{symbolic, undetermined, quantified} programs we need an internal lifter to translate the program bytes to symbolically executable PIL statements.
+%To this end, we created the internal ARMv7 lifter, encoding the fetch-decode logic in the official documentation~\cite{ARMv7manual} as a Gallina function.
+%For this, we create an ARMv7 decoder and lifter in Rocq that translates ARM instruction encodings
+%into \Picinae{} IL, based on the specification in the official documentation\ixb{add citation},
+%and define a \Picinae{} program, \texttt{arm\_prog}, that reads memory of the
+%given store at the given address and returns the IL produced by the decoder and lifter.
+
+%Some instructions and cpu modes result in undefined or unsupported behavior.
+%For example, the behavior of most instructions is undefined when they have \texttt{pc} as a register operand,
+%unaligned \texttt{pc} instruct-fetch is undefined,
+%and we only support ARM mode.
+%The lifter models unsupported and undefined instructions as \unpredictable{}, assigning unknown values to all registers, including \texttt{pc}.
+% While the lifter does not support these instructions and modes, the rewriter does, and the proof guarantees soundness even in their presence.
+
+\comment{
+For \unpredictable{} instructions, the corresponding IL sets all registers to an unknown value and
+jumps to an unknown address.
+When the given store is not in ARM mode or the given address is not aligned,
+we treat the instruction as \unpredictable{}.
+The decoder and lifter are specific to the User processor mode for ARM, so we do not consider
+instructions that require a higher privilege level.
+}
+
+The soundness proof follows a coinductive structure that proves that any execution trace of any binary produced by the rewriter can be partitioned into \emph{trace slices}, each confined to a single \Block of the rewritten code.
+The proof is coinductive because the trace and/or each slice within it could be infinitely long.
+This proves that non-terminating programs continue to obey the policy, including those that loop infinitely within a \Block.
+
+To perform the coinduction, the proof asserts an invariant at every \Block entry point, and proves that any trace slice that starts in an invariant-satisfying machine state either eventually reaches another invariant-satisfying state or never leaves the \Block.
+The invariant consists of the five assumptions listed in \autoref{sec:verification}.
+In particular, it posits that the instruction mode, code and policy data, endianness mode, and access permissions of security-critical sections have not already been corrupted, and that the \PC is at a \Block boundary.
+
+\Picinae transforms this invariant set into a case distinction that asks for a proof of invariant-preservation for every \Block that Rocq infers that the rewriter implementation could generate.
+Each of these cases therefore proves that if the trace begins at the start of a \Block in an invariant-satisfying state, then execution eventually
+(a) reaches the start of another \Block in a state that also satisfies the invariant,
+(b) exits to a policy-permitted, non-\Block location (\eg the abort handler),
+(c) raises a hardware exception, or
+(d) never exits the \Block.
+Moreover, the trace slice exhibited during this process is policy-satisfying (no prohibited steps).
+
+Each of these cases entails proving properties of abstract code, since most generated \Blocks are functions of the input instruction that they replace, not a fixed, concrete list of instructions.
+For example, \Block code may copy operands from an original instruction into encodings of new instructions that it generates.
+This leads to five main proof cases:
+
+\heading{Unchanged \Block.}
+The rewritten \Block for most instructions consists solely of the original (abstract) instruction.
+This case is verified by proving that the semantics of all instructions preserved by the rewriter
+(1) fall through to the next instruction or raise a hardware exception, and
+(2) do not corrupt any elements of the invariant (\eg endianness changes).
+We achieve this with tactic automation that symbolically executes every instruction in the ISA with abstract arguments, establishing symbolic equality of security-relevant machine state elements before and after execution.
+
+\heading{Non-control change.}
+Some instructions are changed for non-control reasons, such as those that reference the \PC without modifying it.
+Most of these are verified with tactic automation similar to that for unchanged blocks.
+However, a special case arises for conditional instructions, which our rewriter converts to multi-instruction \Blocks with an opposite-condition branch at the start.
+The lemma for this case therefore proves that if a \Block is provably safe according to the other cases, then prepending a branch to the next \Block preserves its safety.
+The branch is verified by proving that the rewriter correctly computes an encoding of a branch instruction that transfers control to the correct destination when executed.
+
+\heading{Direct control flow.}
+The rewriter statically retargets direct control-flow transfer instructions to their new destinations in the rewritten binary.
+Our proof therefore verifies that this retargeting computation is correct, or that it returns the address of the abort handler.
+
+\heading{Unsupported instructions.}
+Prohibited instructions, such as those that change the instruction mode or exhibit \unpredictable{} behavior,
+are replaced with a branch to the abort handler, for which the proof of safety is trivial.
+
+\heading{Indirect control flow.}
+Verifying the code to lookup a destination from an instruction's policy table is the most difficult case of the proof,
+but is shared across all indirect control-flow instructions, reducing overall proof complexity.
+The code of each indirect control-flow transfer \Block is a function of the original instruction's destination operand, the parameters of the hash function chosen for its policy table during rewriting, and the address of its table.
+We first symbolically execute soundness-irrelevant code in the \Block that is not responsible for enforcing safety, proving that it satisfies the policy and yields an invariant-satisfying abstract state.
+We next symbolically execute the table-lookup code, proving that the result register receives some value from the table.
+A separate lemma proves that all tables produced by the rewriter consist entirely of destination addresses permitted by the policy for their respective instructions.
+Finally, we symbolically execute the remainder of the \Block, proving that its final exit targets the destination from the table, and is therefore policy-satisfying.
+
+\vspace{.5ex}
+
+These cases cover every \Block generated by the rewriter implementation, completing the coinductive proof.
+Exhaustiveness of the case distinction is verified by the Rocq core at Qed\@.

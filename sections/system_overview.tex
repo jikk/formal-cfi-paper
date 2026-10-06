@@ -1,410 +1,321 @@
-\section{System Overview}
+%! root=../main.tex
+\section{Static Rewriter for CFI in ARMv7 Binaries}
+\label{sec:overview}
+\kjee{We need a better section title here.}
+\kjee{Can we say something here?}
 
-\textcolor{red}{[KWH Comment)] I don't like this figure. First, it looks aesthetically clunky. We should create something more professional-looking here (e.g., shadowed boxes, a theme-driven color palette, consistent font sizes, etc.). Second, the flow is confusing because it looks like the external lifter goes to the internal lifter goes directly to the proof. I understand why you're depicting it that way, but it's unexpected and jarring to a newcomer. We don't want anything jarring at this point in the paper. The external and internal lifters should have separate arrows that both lead into the Picinae IL. That should flow into the Symbolic Interpreter (not ``executor''), not into Theory.  Splitting between the two makes it look like they're alternatives to each other (which obviously isn't what we want to say).  Symbolic interpretation should flow into ISA Model, but that should then flow into some kind of central box perhaps labeled ``Proof Generation''.  That central box should have satellite boxes feeding into it with a variety of labels like: Binary Arithmetic Theory, (Co-)Inductive Theory of Traces, Memory Safety Theory, etc.  We don't need to list everything Picinae has; we just need the ones to which we'd like to refer in this paper when explaining how things work.  The final output from Proof Generation should be Proof.v, probably outside the Rocq system box entirely.}
-
-\begin{figure}
+\begin{figure}[t]
     \centering
-    \includegraphics[width=1.0\textwidth]{figs/picinae_diagram.png}  
+    % \includegraphics[width=0.9\linewidth]{implementation.pdf}
+    \includegraphics[width=1\linewidth]{figs/ARMCFI Overview ixb_transitions_sans_extraction.drawio.pdf}
+    % maybe a bit too long
     \vspace{-20pt}
-    \caption{\Picinae{} system}
-    \label{fig:system_overview}
-\end{figure}
-
-Figure~\ref{fig:system_overview} shows an overview of Picin\ae{}'s workflow.
-Verifying a concrete binary entails first automatically \emph{lifting} it to a low-level, ISA-agnostic IL that explicitly encodes each instruction's machine-level effects.
-Lifting can be accomplished with external tools or as Rocq code that produces IL from machine code bytes.
-To support external lifters, we implement plugins for Ghidra~\cite{ghidra} and BAP~\cite{bap} that yield \Picinae{} IL from P-code and BIL code, respectively.
-To support internal lifting, we implement instruction decoders for RISC-V and ARM7 in Gallina.
-
-Internal lifting is critical for verifying a binary rewriter, since it allows proofs to reason about instruction encodings.
-For example, a secure CFI implementation must not miss any control-flow transfer instructions in the target binary.
-This can be proved by verifying that its instruction decoding logic correctly identifies and guards all opcodes whose ISA semantics perform control-flow transfers.
-
-Lifting does not attempt perfect disassembly since it does not attempt to recover any control-flows from the binary.
-It merely decodes the bytes at every virtual address, yielding a mapping from each address to each instruction's IL representation.
-Recovering and verifying control-flows from this raw information is the province of proofs.
-Formally verifying the lifting process is the subject of prior works~\cite{formally_verified_lifting,formally_verified_lifting_pic};
-our focus in this work is on verifying properties of lifted codes, and properties of binary rewriters that produce code as bytes.
-
-\Picinae{} IL's semantics formally define machine states $\sigma$ and \emph{traces} $\tau$ of machine states, facilitating theorems that express code safety, security, and functional correctness as properties of states and traces.
-For example, theorems can assert that if $\tau=\sigma\ldots\sigma'$ is any reachable trace of the target program, and if $\sigma$ satisfies a specified pre-condition, then $\sigma'$ satisfies a specified post-condition.
-Theorem specifications can span all operators in Rocq's calculus of inductive constructors (CiC), and proofs can leverage any of Rocq's proof-construction languages, such as Ltac\@.
-
-To support the task of constructing proofs, \Picinae{} provides a rich theory of supporting theorems and proof tactic automation libraries.
-This includes a fully machine-verified IL symbolic interpreter, binary arithmetic auto-simplification engine (for reducing expressions commonly arising from symbolic interpretation of binary code), inductive and co-inductive tactic libraries (for reasoning about loops and functions), temporal logic over traces, memory safety and pointer arithmetic theory, and architectural specializations of these for a variety of ISAs, including Intel x86/64, ARM7/8, and RISC-V.
-All support libraries remain strictly untrusted; they are machine-verified by the Rocq core.
-
-Inductive and co-inductive tactics facilitate a standard proof strategy that organizes unstructured control-flow paths through target binaries as inductive propositions.
-Proofs declare \emph{invariants} (machine state properties) at function entry points, loop entry points, and join-points, from which \Picinae{} auto-generates proof goals that verify each invariant-bounded control-flow path (and prove that no other control-flow paths are reachable).
-Solving all such goals creates a machine-checked proof that all realizable traces satisfy the theorem.
-Co-induction affords partial correctness verification, and induction affords total correctness.
-
-% Picin\ae{} supports many features of binary level code that are abstracted and hidden by higher level languages but are nevertheless critical to the behavior of both benign and malicious software.
-% The lifters and unstructured control flow semantics discussed in Section~\ref{sec:system_details} support reasoning about instruction aliasing, i.e., instructions that overlap other instructions, a phenomenon used by attackers to find dangerous unintended instruction sequences and by developers to compress the size of their binaries.
-% It also supports binary level function call-return pairs, providing the capability to compose proofs over different subroutines.
-% Additionally it supports multiple architectures, interactions between different architectures, nondeterministic effects, memory access permissions, self-modifying code, dynamically modified endianness and instruction decoding (e.g., ARM), and both Harvard and von~Neumann architectures.
-
-%Program properties are specified in Rocq's dependently typed functional programming language, \emph{Gallina}.
-%The properties are structured as \emph{invariant sets}, partial functions mapping \emph{traces}, lists of address-cpu state pairs, to a proposition the prover must show they satisfy.
-% These propositions may express any temporal property of the trace. Temporal properties of program traces are supported by the invariant set partial function mapping traces to properties they satisfy.
-% While this is typically used to map the head of the trace to a property depending only on its cpu state and current address, it is able to reason about arbitrary linear temporal properties of the trace.
-
-\Picinae{}'s IL models single-threaded, uninterrupted execution without superscalar or speculative execution;
-however, it includes non-deterministic expressions to model unpredictable or implementation-defined cpu side-effects.
-Non-deterministic expressions become universally quantified proof variables in proofs, requiring proofs to show that theorems hold irrespective of any non-deterministic decisions made by the microarchitecture, such as scheduling.
-
-\subsection{Verification Example}
-
-\textcolor{red}{[KWH comment: This subsection feels too far afield of our stated focus of verifying rewriters. I think we need to replace this with an example that verifies a very simple rewriter. Idea: What if we instead verify some very simple concrete ARM7 code (maybe strcmp for ARM7?), and then verify a Gallina algorithm that hotpatches it (i.e., overwrites the leading bytes with a jump instruction to a new instruction that replicates the overwritten instruction and jumps back)? This would be a very small but realistic (real ISA, real rewriting idiom) example that's more pursuant to our claimed novelty of verifying underconstrained-code properties.]}
-
-Figures~\ref{fig:strcmp_asm_invs} and~\ref{fig:strcmp_proof} illustrate the workflow by verifying functional correctness of a binary implementation of strcmp from the gnu C standard libraries for Intel x86.
-%Strcmp lexicographically compares two strings passed in as null-terminated string pointers $s_1$ and $s_2$.
-Figure~\ref{fig:strcmp_asm_invs} shows the addressed assembly code on the left, and a suitable invariant set on the right.
-The invariant at \texttt{0x80} is a precondition that identifies the function entry point but makes no other assumptions.
-The loop invariant at \texttt{0x88} asserts that registers $\mathtt{ecx}$ and $\mathtt{edx}$ point to corresponding bytes of input strings $s_1$ and $s_2$, and that the string prefixes before those pointers are equal.
-The invariant at \texttt{0x96} and \texttt{0xa4} is the postcondition, asserting that the return value's sign equals the sign of a byte comparison between the first differing bytes in the two strings, or zero if there are no differing bytes.
-
-%Astute readers will notice that memory $\mathit{mem}$ is used in the loop and postcondition invariants because we lose all information when we reason about the traces continuing from the entry with invariant $\top$.
-%Thus $\mathit{mem}$ may be any arbitrary memory---there's no guarantee that the memory and the strings passed into the memory are the same.
-%But the contract of \texttt{strcmp} requires it to compare the original strings, so how does this proof reconcile this requirement with the information loss in $\top$?
-% In the proof case from the entry invariant to the loop invariant we are not guaranteed that the memory is the same as it was in the entry, because the invariant $\top$ does not preserve that information.
-% All that is known is that \emph{somehow} the trace reached address $0x80$.
-
-%This proof is actually an example of proof composition.
-%A smaller, automated theorem, not shown, proves that the memory when the cpu enters \texttt{strcmp} is the same throughout each step until it exits.
-%The partial correctness proof then uses this fact to reintroduce into the proof that the memory starting at each invariant is the same as the memory at entry,
-%allowing the user to omit this detail, otherwise necessary for a reasonable postcondition, from all invariants.
-
-The proof script in Figure~\ref{fig:strcmp_proof} verifies that the machine state satisfies all declared invariants (including the postcondition) whenever they are reached, and no flows from the function entry point escape without first reaching the postcondition.
-Line~\ref{l:proveinvs} begins by applying \Picinae's main co-induction theorem, splitting the partial correctness proof into a base case and an inductive case.
-The base case is trivialized by locating the first invariant at the entry point (auto-solved by line~\ref{l:basecase}), so the remainder of the proof consists of verifying the flow from each non-postcondition invariant to the next.
-Lines~\ref{l:inductivecase}--\ref{l:destructinv} set up these proof cases automatically.
-The flow from entry point to loop invariant is verified by line~\ref{l:strcmp_entry_loop},
-the flow for a loop iteration is verified by line~\ref{l:loopiteration},
-and the two flows that exit the loop are verified by lines~\ref{l:exit1} and~\ref{l:exit2}.
-
-Throughout the proof, \Picinae's \texttt{step} tactic performs verified symbolic interpretation of each machine instruction, inferring its effect upon the machine state, and its \texttt{psimpl} tactic performs verified auto-simplification of binary arithmetic expressions in the resulting symbolic state.
-Both tactics auto-generate machine-checked proofs of their results, and Rocq's native linear integer arithmetic solver \texttt{lia} auto-solves generated goals.
-
-\begin{figure}
-\scriptsize
-\begin{subfigure}{0.45\textwidth}
-    \begin{minted}{gas}
- 0x80: movl 0x4(%esp), %ecx
- 0x84: movl 0x8(%esp), %edx
- 0x88: movb (%ecx), %al
- 0x8a: cmpb (%edx), %al
- 0x8c: jne 0x9
- 0x8e: incl %ecx
- 0x8f: incl %edx
- 0x90: testb %al, %al
- 0x92: jne -0xc
- 0x94: xorl %eax, %eax
- 0x96: retl
- 0x97: movl $0x1, %eax
- 0x9c: movl $0xffffffff, %ecx
- 0xa1: cmovbl %ecx, %eax
- 0xa4: retl
-    \end{minted}
-    \end{subfigure}
-\hfil
-    \begin{subfigure}{0.54\textwidth}
-    \centering
-    \newcommand{\mycircplus}{\circ\kern{-7.5pt}{\scriptsize+}}
-    \newcommand{\qeq}{\mathrel{?\mkern-7mu=}}
-\begin{align*}
-\text{Addr}& \qquad& &\text{Invariant} \\
-\\
-0x80& \qquad& \top &\\
-\\
-0x88& \qquad& \exists k, &\mathtt{ecx} = s_1+ k\land \mathtt{edx}=s_2+ k \\
-   & & & \land \mathtt{mem}_{s_1}[0..k] = \mathtt{mem}_{s_2}[0..k] \\
-    \\
-0x96&, \qquad& \exists k,& \mathtt{mem}_{s_1}[0..k] = \mathtt{mem}_{s_2}[0..k]\\
-0xa4& \qquad& & \land (\mathit{eax}=0\rightarrow \mathtt{mem}[s_1+k] = 0) \\
- & & & \land ((\mathtt{eax} \qeq 0) = (\mathtt{mem}[s_1+k] \qeq \mathtt{mem}[s_2+k])) \\
- % & & \land ((\mathtt{mem}_{s_1}[k] \qeq \mathtt{mem}_{s_2}[k]) = (\mathtt{eax} \qeq 0)) \\
-\end{align*}
-    \end{subfigure}
-    \caption{Assembly (left) and invariant set (right) for i386 strcmp.\\\todo{format the assembly code.}}
-    \label{fig:strcmp_asm_invs}
-\end{figure}
-
-\begin{figure}
-\begin{minted}[fontsize=\footnotesize,linenos,numbersep=4pt,escapeinside=@@]{Coq}
-Proof.
-  apply prove_invs. (* begin co-induction *)@\label{l:proveinvs}@
-  + easy. (* base case: @$\top$@ *)@\label{l:basecase}@
-  + apply strcmp_preserves_memory. @\label{l:inductivecase}@
-    destruct_inv 32 PRE. (* inductive case *)@\label{l:destructinv}@
-    - step. step. exists 0. psimpl. repeat (lia || split). (* entry -> loop *)@\label{l:strcmp_entry_loop}@
-    - destruct PRE as (k & ECX & EDX & SEQ).@\label{l:strcmp_loop}@
-      repeat step.
-      * exists (k+1). ... (* loop -> loop *)@\label{l:loopiteration}@
-      * ... (* loop -> exit 0x96 *)@\label{l:exit1}@
-      * ... (* loop -> exit 0xa4 *)@\label{l:exit2}@
-Qed.
-\end{minted}
-\vspace{-16pt}
-    \caption{Proof of partial correctness for i386 strcmp.}
-    \label{fig:strcmp_proof}
-\end{figure}
-
-\section{System Implementation}
-\label{sec:system_details}
-
-\newcommand{\eexp}{\text{eexp}}
-\newcommand{\Load}{\text{Load}}
-\newcommand{\getmem}{\text{getmem}}
-\newcommand{\setmem}{\text{setmem}}
-\newcommand{\Store}{\text{Store}}
-\newcommand{\estmt}{\text{estmt}}
-\newcommand{\Nop}{\text{Nop}}
-\newcommand{\None}{\text{None}}
-\newcommand{\Some}{\text{Some}}
-\newcommand{\Word}{\text{Word}}
-\newcommand{\Var}{\text{Var}}
-
-\begin{figure}[t]
-\footnotesize
-\begin{align*}
-&\text{Expressions} & e &\Coloneqq v~|~n\ofwidth{w}~|~e_1[e_2]\ofwidth{w}~|~e_1[e_2\coloneqq e_3]\ofwidth{w}~|~e_1\circledcirc e_2~|~(e:w)~|~\mathsf{let}~v\coloneqq e_1~\mathsf{in}~e_2~|~*\ofwidth{w} \\
-&\text{Statements} & s &\Coloneqq \cdot~|~v\coloneqq e~|~\mathtt{jmp}~e~|~\mathtt{exn}~n~|~s_1;s_2~|~e~?~s_1:s_2~|~s^e \\
-&\text{Contexts \& Stores} & c,\sigma &: \Sigma\coloneqq v\rightharpoonup\mathbb{N} \\
-&\text{Exits} & \chi &\Coloneqq~{\fallthru}~\text{(fallthru)}~|~a~\text{(destination address)}~|~{\uparrow}i~\text{(hardware exception)} \\
-&\text{Programs} & p &: \Sigma\rightarrow\mathbb{N}\rightharpoonup s \\
-&\text{Traces} & \tau &\Coloneqq \langle\chi,\sigma\rangle~|~\langle\chi,\sigma\rangle::\tau
-\end{align*}
-\vspace{-20pt}
-% \caption{An IL for expressing individual machine instruction operational semantics}
-\caption{Picin\ae{} IL syntax}
-\label{fig:IL}
-\end{figure}
-
-\begin{figure}[t]
-\footnotesize
-\begin{gather*}
-\frac{}{c,\sigma\vdash v\Downarrow\sigma(v)\ofwidth{c(v)}}\text{(EVar)} \qquad
-\frac{}{c,\sigma\vdash n\ofwidth{w}\Downarrow n\ofwidth{w}}\text{(EWord)} \qquad
-\frac{c,\sigma\vdash e_1\Downarrow n\ofwidth{w} \quad c,\sigma\vdash e_2\Downarrow n'\ofwidth{w}}
-     {c,\sigma\vdash e_1\circledcirc e_2\Downarrow (n\circledcirc_w n')\ofwidth{w}}\text{(EBinOp)} \\
-\frac{c,\sigma\vdash e_1\Downarrow m\memwidth{w_0} \quad
-      c,\sigma\vdash e_2\Downarrow a\ofwidth{8w_0\vphantom)}}
-     {c,\sigma\vdash e_1[e_2]_w\Downarrow m\mathsf{[}8a\kern1pt..\kern1pt 8(a{+}w)\mathsf{]}\ofwidth{8w}}\text{(ELoad)} \qquad
-\frac{c,\sigma\vdash e_1\Downarrow m\memwidth{w_0} \quad
-      c,\sigma\vdash e_2\Downarrow a\ofwidth{8w_0\vphantom)} \quad
-      c,\sigma\vdash e_3\Downarrow n\ofwidth{8w\vphantom)}}
-     {c,\sigma\vdash e_1[e_2\coloneqq_w e_3]\Downarrow m\mathsf{[}8a\coloneqq_w n\mathsf{]}\memwidth{w_0}}\text{(EStore)} \\
-\frac{c,\sigma\vdash e\Downarrow n\ofwidth{w_1}}{c,\sigma\vdash (e:w)\Downarrow(n\bmod 2^w)\ofwidth{w}}\text{(ECast)} \quad
-\frac{c,\sigma\vdash e_1{\Downarrow}n\ofwidth{w_1} \quad c[v{\coloneqq}w_1],\sigma[v{\coloneqq}n]\vdash e_2{\Downarrow}n\ofwidth{w_2}}
-     {c,\sigma\vdash\mathsf{let}~v\coloneqq e_1~\mathsf{in}~e_2\Downarrow n\ofwidth{w_2}}\text{(ELet)} \quad
-\frac{0\leq n < 2^w}{c,\sigma\vdash *_w\Downarrow n\ofwidth{w}}\text{(EUnk)} \\
-%
-\\
-\frac{}{c,\sigma\vdash\cdot\Downarrow_\fallthru c,\sigma}\text{(XNop)} \qquad
-\frac{c,\sigma\vdash e\Downarrow n\ofwidth{w}}{c,\sigma\vdash v\coloneqq e\Downarrow_\fallthru c[v\coloneqq w],\sigma[v\coloneqq n]}\text{(XMove)} \qquad
-\frac{c,\sigma\vdash{}e\Downarrow{}a\ofwidth{w}}{c,\sigma\vdash\mathtt{jmp}\ e\Downarrow_a c,\sigma}\text{(XJmp)} \\
-\frac{}{c,\sigma\vdash\mathtt{exn}\ i\Downarrow_{\uparrow i} c,\sigma}\text{(XExn)} \qquad
-\frac{c,\sigma\vdash s_1\Downarrow_\chi c',\sigma' \quad \chi\ne\lower1pt\hbox{$\fallthru$}}{c,\sigma\vdash{}s_1;s_2\Downarrow_\chi c',\sigma'}\text{(XSeq1)} \qquad
-\frac{c,\sigma\vdash{}s_1\Downarrow_\fallthru c_2,\sigma_2\quad{}c_2,\sigma_2\vdash{}q_2\Downarrow_\chi c',\sigma'}{c,\sigma\vdash{}s_1;s_2\Downarrow_\chi c',\sigma'}\text{(XSeq2)} \\
-\frac{c,\sigma\vdash{}e\Downarrow{}n_w\quad{}c,\sigma\vdash{}s_{n\ne 0}\Downarrow_\chi{}c',\sigma'}{c,\sigma\vdash e\:?\:s_\mathsf{T}:s_\mathsf{F}\Downarrow_\chi c',\sigma'}\text{(XIf)} \qquad
-\frac{c,\sigma\vdash{}e\Downarrow{}n_w\quad{}c,\sigma\vdash{}s\,;\stackrel{n}{\cdots}\,;s\Downarrow_\chi c',\sigma'}{c,\sigma\vdash{}s^e\Downarrow_\chi c',\sigma'}\text{(XRep)} \\
-\\[3pt]
-\frac{}{c\vdash p\leadsto\langle\chi,\sigma\rangle}\text{(PStart)} \qquad
-\frac{c,\sigma\vdash p{\kern.5pt}\sigma{\kern.2pt}a\Downarrow_\chi c',\sigma' \quad
-      c\vdash p\leadsto\langle a,\sigma\rangle::\tau}
-     {c\vdash p\leadsto\langle\mathsf{exitof}(\chi,a,p\sigma),\sigma'\rangle::\langle a,\sigma\rangle::\tau}\text{(PStep)}
-\end{gather*}
-    \caption{Picin\ae{} semantics: expression evaluation (E\textasteriskcentered), statement execution (X\textasteriskcentered), program-trace modeling (P\textasteriskcentered).
-    % \review{Kevin, is the output bitwidth of binop expressions intentionally simplified? Technically it should be an expression using the binop and w to allow for expressions such as LT which output 1 bit.\\
-    % Also, the figure omits ite expressions. Just wanted to double check this is intentional.}
-    % \textcolor{red}{[KWH response: Yes, I intentionally simplified it because those missing features could be easily simulated with things we already show (e.g., ECast to get 1-bit ops).]}
+    \caption{\pname architecture and dataflow showing instrumented instructions (highlighted red and green) and policy table construction (labels colored red and green).\kjee{In overall, edges tell the story. Think more about out ``edges`` can be presented.}
+    \comment{%
+        Highlighted instructions are potentially dangerous (red) or their instrumented output (green).
+        The original text segment contains potentially dangerous instructions, in red.
+        The rewriter converts each instruction into a block of one or more instructions in the new text segment.
+        The policy maps source indices to a set of allowed destinations
+        (that is not required to be disjoint with other sets, e.g. $i_1$ and $i_n$).
+        Indirect jump instructions become blocks that perform a lookup into a table that constrains the target to permitted destinations and converts between old and new addresses.
+        Instructions with identical destination sets can share a policy table (e.g.\ tbl2 for $i_1, i_4$).\kjee{caption is too lengthy.}
     }
-    \label{fig:pil_semantics}
+    }\label{fig:cfi_arch}
+    \vspace{-10pt}
 \end{figure}
 
-% \begin{figure}
-% \footnotesize
-% \begin{gather*}
-% \frac{c\ v =w}{c\vdash\sigma(v):w}\text{(TVar)}\qquad
-% \frac{n<2^w}{c\vdash n \ofwidth{w}:w}\text{(TWord)}\qquad
-% \frac{\mathit{l}\le2^w\quad c\vdash e_1:\memwidthexp{w}\quad c\vdash e_2:w}
-%     {c\vdash  e_1[e_2]_l:8l}\text{(TLoad)}\\
-% \frac{l\le2^w\quad c\vdash e_1:\memwidthexp{w}\quad c\vdash e_2:w\quad c\vdash e_3:8l}
-%     {c\vdash e_1[e_2\coloneqq_w e_3] : \memwidthexp{w}}\text{(TStore)}\quad
-% \frac{c\vdash e_1:w\quad c\vdash e_2:w}
-%     {c\vdash e_1\circledcirc e_2:\mathit{widthof}\ \circledcirc\ w}\text{(TBinOp)}\quad
-% % \frac{c\vdash e:w}{c\vdash \circledcirc e:w}\text{TUnOp} \quad
-% \frac{c\vdash e:w\quad w'\le w}{c\vdash (e:w') : w'}\text{TCast}\\
-% \frac{c\vdash e_1:w_1\quad c[v{\coloneqq}w_1]\vdash e_2:w_2}{c\vdash\mathsf{let}~v\coloneqq e_1~\mathsf{in}~e_2 : w_2}\text{(TLet)}\qquad
-% \frac{}{c\vdash *_w:w}\text{(TUnk)}\qquad
-% \frac{c\vdash e_1:w \quad c\vdash e_2:w' \quad c\vdash e_3:w'}{c\vdash (e_1\ ?\ e_2:e_3):w'}\text{(TIte)}\\
-% \frac{c\vdash e_1:w\quad n_1<w}{c\vdash e[n_1..n_2] :1+n_1-n_2}\text{(TExtract)}\qquad
-% \frac{c\vdash e_1:w_1\quad c\vdash e_2:w_2}{c\vdash e_1\circ e_2:w_1+w_2}\text{(TConcat)}\\
-% \end{gather*}
-% \begin{gather*}
-% \frac{c' \subseteq c}{c_0,c\vdash \cdot : c'}\text{(TNop)}\qquad
-% \frac{c_0\ v\uparrow \lor c_0\ v = w\quad c\vdash e:w \quad c' \subseteq c[v\coloneq w]}
-%     {c_0,c\vdash v\coloneq e : c'}\text{(TMov)}\qquad
-% \frac{c\vdash e:w \quad c' \subseteq c}{c_0,c\vdash \mathtt{jmp}\ e:c'}\text{(TJmp)}\\
-% \frac{c'\subseteq c}{c_0,c\vdash \mathtt{exn}\ i:c'}\text{(TExn)}\qquad
-% \frac{c_0,c\vdash:q_1:c_1\quad c_0,c_1\vdash q_2:c_2 \quad c'\subseteq c}{c_0,c\vdash q_1;q_2:c'}\text{(TSeq)}\\
-% \frac{c\vdash e:1 \quad c_0,c\vdash q_1:c_2 \quad c_0,c\vdash q_2:c_2 \quad c'\subseteq c}
-%     {c_0,c\vdash e\:?q_1:q_2:c'}\text{(TIf)}\qquad
-% \frac{c\vdash e:w \quad c'\subseteq c \quad c_0,c'\vdash q:c' \quad c''\subseteq c'}
-%     {c_0,c\vdash q^e : c''}\text{(TRep)}
-% \end{gather*}
-%     \caption{Picin\ae{} static semantics.\\
-%     \review{Kevin: (1) I drafted these static semantics in case we want it, but I anticipate saving it for the journal paper. (2) When I merge the two gather* environments I get ``LaTeX Error: Too many math alphabets used in version normal.'' What?}}
-%     \label{fig:placeholder}
-% \end{figure}
+\subsection{Rewriter Design}\label{sec:cfi_design}
 
-\subsection{Verification Infrastructure}
+Figure~\ref{fig:cfi_arch} depicts the design of \pname, consisting of two main components:
+(1) the CFI rewriter, which transforms a list of instructions into a rewritten, CFI-instrumented list of instructions;
+and (2) the \ELFPackager, which packages the new instruction list into an ELF file.
+The former is implemented in Rocq and its soundness is verified in \S\ref{sec:verification}.
+The verified Rocq code is extracted to OCaml, linked with minimal wrapper code for file IO, and compiled into the executable that performs the binary rewriting.
+The \ELFPackager is a Python script that packages the rewritten code into an ELF file.
 
-Figures~\ref{fig:IL} and~\ref{fig:pil_semantics} show \Picinae{} IL's syntax and semantics, respectively.
-Programs are functions that map a cpu state $\sigma$ and virtual address $a$ to an IL \emph{statement} $s$ that models the semantics of the machine instruction located at $a$ and its size $\mathit{sz}$ in bytes.
-In von Neumann architectures, $p$ derives its output from the memory state in $\sigma$ by decoding the bytes at $a$ into an assembly instruction whose semantics are lifted to $s$.
-This feature is critical for verifying a binary rewriter, since it makes the ISA's instruction decoding logic available to proofs.
-Proofs may thereby verify that a rewriter's bit-manipulation logic correctly detects and/or generates ISA instructions with particular semantic properties.
+The CFI rewriter is a Rocq function with the following inputs:
+\begin{itemize}[topsep=1ex,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=*]
+\item \heading{Text Segment ($\ell$):}
+The rewriter receives the contents of the text segment of the original program as a list $\ell$ of 4-byte integers.
+\item \heading{Addresses ($\bi, \bip, \tbi, \mai$):}
+The rewriter also receives the locations of the original and new code sections (\bi{} and \bip, resp.), the address-translation table (\tbi), and the safe abort code (\mai).
+Each location is the index $i$ of a 4-byte virtual memory address~$4i$.
+% \kjee{@Max what are various things here?} that we describe in more detail as they become relevant.
+% These addresses are passed to the rewriter as their value divided by four, for reasons also explained later.
+% \mxz{I',m not sure if I like deferring the explanation of these, but i don't know how else to structure this section}
+% When referring to values that represent addresses divided by four, we will use the term "index", as if memory was an array of four-byte values.
+\item \heading{Policy (\pol):}
+The CFI policy specifies the set of permitted destinations of each instruction in the text segment.
+It is expressed as a function from source indices to lists of permitted destination indices.
+Policies may specify arbitrary destination sets, including non-disjoint, non-identical sets for different instructions.
+\end{itemize}
 
-Statements $s$ affect the cpu state $\sigma$ via no-operation ($\cdot$), destructive updates ($\coloneqq$) of machine state elements $v$ (e.g., registers and memory), jumps ($\mathtt{jmp}$), hardware exceptions ($\mathtt{exn}$), sequences ($;$), conditionals (${?}$), and finite repetitions ($s^e$).
-Finite repetitions model individual instructions whose internal semantics contain a bounded micro-loop (e.g., the \texttt{rep} instruction prefix on Intel ISAs).
-Expressions include state element reads ($v$), unsigned binary numbers $n$ of bit width $w$ ($n\ofwidth{w}$), $w$-byte reads of memory $e_1$ from address $e_2$ ($e_1[e_2]\ofwidth{w})$, $w$-byte memory-writes ($e_1[e_2\coloneqq e_3]\ofwidth{w}$), binary modular arithmetic operations ($\circledcirc$), bit width casts ($e:w$), let-bindings, and non-determinism ($*\ofwidth{w}$).
-Non-determinism models side-effects that the ISA specifies are unpredictable or undefined.
-For example, the Intel x86-64 ISA specifies that \texttt{xor} instructions have undefined effects upon the cpu's 1-bit arithmetic flag, which the lifter models as $\mathtt{AF}\:{\coloneqq}\:{*}\ofwidth{1}$.
+% block structure
+The rewriter translates each instruction of the original text segment into a \emph{\Block} of one or more new instructions.
+Thus, a \Block is a list of instruction encodings (list of ints) and the rewriter returns a list $\ell'$ of \Blocks (\ie a list of lists).
+Flattening list $\ell'$ yields the rewritten text segment of the output binary.
 
-% This code creates a 2^ math-exponent that can be adjusted downward to avoid over-high lines.
-\newlength\exheight
-\newcommand\twoto[2]{2^{\settoheight\exheight{x}\raise-#1\exheight\hbox{\(#2\)}}}
+% index translation
+We preserve the old text segment as a non-executable data section at its original location in the new binary to preserve static data.
+All executable code is therefore relocated during rewriting.
+The rewriter implements a function \itoip that maps each original instruction location to its rewritten \Block location, defined by
+\begin{equation}\label{eq:itoip}
+\itoip(\bi+j) = \begin{cases} \bip+\sum_{k=0}^{j-1} \left|\ell'[k]\right| & \text{if $j\in[0,|\ell|)$} \\
+                              \bi+j & \text{otherwise} \end{cases}
+\end{equation}
+where $\ell'[k]$ is the $k$th \Block in output list $\ell'$
 
-Statements and expressions evaluate within an ISA \emph{context} $c$ that specifies the bit width of each cpu state element.
-States may also include additional \emph{abstract} elements that are not part of a real cpu's state (e.g., for temporary values). %, a common practice in binary analyzers and disassemblers.
-% Abstract elements have no bit width until they are assigned a value in a move statement.
-Virtual memory of address width $w$ is modeled as a single state element of bit width $\twoto{.5}{\scriptstyle\twoto{.3}{\scriptscriptstyle w+3}}$.
-A static semantics (not shown) ensures that each non-abstract assignment $v\coloneqq e$ preserves the ISA-defined bit width of $v$.
-IL from external lifters is type-checked by a machine-verified type-checker, and internal lifters are machine-verified to be universally well-typed.
-This relieves code verification proofs from re-proving fundamental properties of the ISA\@.
-%This arrangement is designed to model the operational semantics of modern ISA lifter languages, such as Ghidra P-Code and BAP BIL, in a form expressible in Rocq.
+Rewritten code must sometimes jump to regions outside its new text segment.
+For example, the ARM Linux kernel provides helper functions that cannot be relocated to fixed addresses.
+Therefore, \itoip returns the input index when it does not fall within the original text segment range.
+Otherwise, $4\itoip(\bi+j)$ is the address of the first instruction of the $j$th rewritten \Block.
 
-Programs $p$ exhibit \emph{traces} $\tau$, which list cpu states paired with \emph{exits} $\chi$ (\textit{viz.}, the current virtual address $a$ or hardware exception number ${\uparrow}i$).
-ISA function $\mathsf{exitof}$ defines the next virtual address reached by machine instructions that fall through (i.e., when $\chi={\fallthru}$).
-The program-trace relation $p\leadsto\tau$ is non-deterministic:
-For any given $p$, relation $p\leadsto\tau$ is satisfied by all traces $\tau$ that constitute valid execution sequences admitted by the ISA specification.
-Partial correctness theorems therefore typically have the form $\forall\tau,(c\vdash p\leadsto\tau)\rightarrow P(\tau)$, which asserts that every trace $\tau$ realizable by program $p$ in ISA context $c$ satisfies proposition $P$.
+% abort handler
+%When a rewritten program detects an impending invalid control-flow transfer, it redirects control to the safe abort handler located at index $\mai$.
 
-Partial correctness proofs about concrete binary code are structured using \emph{invariant sets}---partial functions from virtual addresses to machine state properties.
-Code verification is a co-induction with two cases:
-(1) all traces through program $p$ satisfy the first invariant they reach (the base case), and
-(2) every trace beginning at a satisfied invariant satisfies any next invariant it reaches.
-% This enables reasoning about programs with non-terminating executions.
-Invariant sets automatically place fallacious invariants at all virtual addresses outside the target code fragment, guaranteeing that all such proofs provide full coverage (i.e., no reachable control-flow paths escape).
-%This enables modular reasoning about programs without the overhead of proving termination.
+% rewriting
+The rewriter sequentially examines each original instruction and determines whether it must be changed
+to comply with the policy or to preserve functionality:
 
-%%% KWH Comment: I think this is too much detail. The above already explains how nextinv works; we don't need to explain it more than that.
-%Figure~\ref{fig:nextinv'} shows the next invariant rules used to construct partial correctness proofs.
-%Along with the PIL semantics this forms the core TCB for Picin\ae{}'s guarantees of binary programs.
-%Together these rules say that all reachable executions of $p$ extending trace $\tau$ reach and satisfy an invariant from the invariant set $Invs$.
-%The boolean $b$ controls whether the proposition may consider an invariant for $\tau$ as the next invariant, i.e.,
-%when it is false the trace must take at least one step before reaching and satisfying the next invariant.
-%This prevents the invalid case where the trace starts at an invariant and trivially reaches and satisfies the ``next'' invariant without executing the program.
-%%: starting at a true invariant we execute \emph{at least} one instruction and reach and satisfy an invariant.
+\heading{Unchanged instructions.}
+Most instructions are irrelevant to enforcing the policy, and are therefore rewritten to single-instruction \Blocks that preserve the original instruction.
 
-%The first rule \texttt{NIHere} states the next invariant obligation is satisfied if the trace has effectively reached and satisfied an invariant:
-%$\tau$ is assigned an invariant, it is provable, and the proof is allowed to use it ($b$ is true or the $\tau$ has exited the program, signifying a postconditiong).
-%The second rule \texttt{NIStep} allows the user to prove trace $\tau$ reaches and satisfies a next invariant if all traces extended by symbolically executing the instruction at the head of $\tau$ reach and satisfy an invariant.
-%The validity of this proposition relies on considering all possible traces $\tau'$ which extend $\tau$.
-%Symbolically executing instructions may result in multiple states for one of two reasons: 1) underspecified cpu states allow two or more branches of an instruction to be valid and 2)~non-deterministic expressions may result in diverging states or control flow.
+\heading{Non-control-flow change.}
+Some ARM instructions accept the \PC as a register operand, causing their behavior to change when relocated.
+If the original instruction references the \PC without transferring control,
+the rewritten \Block code first loads the original address of the instruction into a scratch register,
+runs the original instruction with PC replaced with the scratch register,
+and finally restores the scratch register to its original value.
 
-%%\newcommand{\nextinv}[2]{#1\underset{#2}{\overset{p,xp}{\leadsto}}Invs}
-%% \newcommand{\nextinv}[2]{#1{\overset{p,xp}{\leadsto}}_{#2}\ Invs}
-%\newcommand{\nextinv}[2]{p,xp,{#2}\vdash{#1}\leadsto{}Invs}
-%\begin{figure}
-%\footnotesize
-%\begin{gather*}
-%\frac{(b\lor\ \tau\Uparrow_{p,xp})\quad{}Invs\,\tau\mapsto P\quad{}P}{\nextinv{\tau}{b}}\text{(NIHere)} \qquad
-%\frac{Invs\ \tau\uparrow\quad\forall{}\tau',\tau\stackrel{p}{\rightarrow}\tau'\Rightarrow{}\nextinv{\tau'}{true}}%{\nextinv{\tau}{b}}\text{(NIStep)}
-%\end{gather*}
-%%     \begin{subfigure}{0.5\textwidth}
-%%         \begin{minted}{coq}
-%% Definition effexit (p:program) (xp:trace->bool) t :=
-%%   if xp t then true else
-%%   match t with (Addr a,s)::_ => if p s a then false else true
-%%              | _ => true end.
-%%         \end{minted}
-%%     \end{subfigure}
-%%         \begin{subfigure}{0.5\textwidth}
-%%         \begin{minted}{coq}
-%% Definition effinv (b:bool) (p:program) Inv (xp:trace->bool) t :=
-%%   match Inv t with
-%%   | None => if effexit p xp t then Some False else None
-%%   | Some P => if orb b (effexit p xp t) then Some P else None
-%%   end.
-%%         \end{minted}
-%%     \end{subfigure}
-%    \caption{CoInductive next invariant rules}
-%    \label{fig:nextinv'}
-%\end{figure}
+Most ARM instruction encodings use the first four bits as a conditional execution prefix.
+A conditional instruction must be rewritten to a conditional \Block.
+Rather than propagating the condition field to each instruction of the \Block,
+we start the \Block with an opposite-condition branch to the succeeding \Block.
+This avoids difficulties where the flag bits can change within the \Block.
+\mxz{
+i imagine it's faster too,
+since the cpu doesn't need to process all of the instructions of the block when none of them would run anyways,
+but i have no source to back this up. maybe branching makes it slower if branch prediction is wrong, idk
+}
 
-Formally, a program $p$ with exit points $\mathit{xp}\subset\mathbb{N}$
-satisfies invariant set $\mathit{Invs}:a\rightharpoonup\Sigma\rightarrow\mathsf{Prop}$ if all realizable traces satisfy all reached invariants before exiting:
-\begin{align}
-&\mathit{NoExit}~\tau \coloneq \forall\langle a,\sigma\rangle\in\tau,~a\not\in\mathit{xp} \\
-&\mathit{SatAll}~\tau \coloneq \forall a,\sigma,P,~(c\vdash p\leadsto\langle a,\sigma\rangle{::}\tau)\rightarrow\mathit{NoExit}~\tau\rightarrow(\mathit{Invs}~a=P)\rightarrow P(\sigma)
-\end{align}
-These definitions promote uniform theorem statements that assert standard assumptions about the initial machine state of trace $\tau$ (e.g., that it begins at the function entry point with a well-formed stack frame) and conclude $\mathit{SatAll}~\tau$.
-Proofs make progress by leveraging antecedent $c\vdash p\leadsto\langle a,\sigma\rangle{::}\tau$ of $\mathit{SatAll}$ to infer that either (a) $a\in\mathrm{dom}(\mathit{Invs})$ is an invariant, which becomes the current proof goal; or (b) $a\not\in\mathrm{dom}(\mathit{Invs})$ must take at least one computational step before reaching any next invariant.
+\heading{Direct control flow.}
+If the instruction performs direct control flow, we replace it with an instruction that branches to $\itoip(d)$ if its destination $d$ is policy-permitted, and to $\mai$ otherwise.
 
-Picin\ae{}'s $\mathtt{step}$ tactic automates the latter case.
-It launches a machine-verified symbolic interpreter that functionally infers the next symbolic machine state according to the IL semantics in Figure~\ref{fig:pil_semantics}.
-This acts as an abstract machine code debugger that executes one machine instruction and generates a machine-checkable proof that its results are correct.
-When the instruction is finite-branching, multiple next states are generated as multiple proof goals.
-When it is non-deterministic or infinite-branching, the new states contain fresh, universally quantified proof variables that reflect all non-deterministic choices.
-Proofs must therefore confirm that theorems hold for all possible branches and non-deterministic effects.
-Invariant sets curtail state space explosion by coalescing all paths at invariant points to common invariant-defined proof goals.
+\heading{Indirect control flow.}
+If the instruction performs an indirect control-flow transfer, it becomes guarded by a runtime security check.
+To perform this check with minimal branching, we devise a novel method using hash tables
+that translate addresses in the old text segment to corresponding addresses in the rewritten text segment.
+The translation code uses the old destination as a lookup key for a hash table that consists exclusively of permitted destination addresses for that instruction.
+Soundness verification of the guard code therefore reduces to proving table integrity.
+%Care must be taken during table construction to ensure the original program behavior is preserved.
 
-\subsection{Binary Rewriter Verification}
+% hash table structure
+Given a set of permitted destination addresses $D = \{a_1, a_2, \dots\}$, a suitable table $T_D$ and hash function $h$ must satisfy the following:
+\begin{enumerate}
+\item \textbf{Completeness:} $\forall a \in D, T_D[h(a)] = 4\itoip(a/4)$
+% (the program can compute the translated address of a valid destination by indexing into the table)
+\item \textbf{Idempotency:} $\forall a \in D, T_D[h(4\itoip(a/4))] = 4\itoip(a/4)$
+% (using a valid translated address to index the table gives back the same address)
+%
+% the previous two properties imply this one
+% (3) $\forall i_j, i_k \in d, i_j \ne i_k \implies H(i_j) \ne H(i_k) \land H(i_j') \ne H(i_k') \land H(i_j') \ne H(i_k)$
+% (there are no hash collisions, but we allow corresponding old and translated indices to have the same hash)
+\item \textbf{Safety:} $\forall n\not\in h|_D, T_D[n] = 4\mai$
+% (we fill unused slots in the table with the abort address)
+\end{enumerate}
+Completeness ensures that each permitted jump target is redirected to the correct rewritten \Block target.
+Idempotency ensures that permitted, already-redirected targets (\eg addresses drawn from the \PC of the rewritten code at runtime) are preserved.
+Safety ensures that all impermissible jumps are aborted.
 
-Binary rewriters read byte sequences, interpret them as machine code, and write new byte sequences intended to be interpreted as machine code by the ISA\@.
-Our work focuses on verifying a rewriter implemented in a high-level source language (Gallina) amenable to top-down FM, but we formulate and proof a soundness property that concerns the full universe of binary codes that it may read and write once deployed, including all possible execution traces of those codes.
+To statically generate a minimal-sized table $T_D$ for an instruction with destination set $D$, our implementation iteratively populates candidate tables of increasing size, discarding those that violate completeness, idempotency, or safety, until it finds a table with no property-violating hash collisions.
+If the resulting table equals that of another rewritten instruction, the duplicate table is discarded and both instructions share a table.
+This is a common case since most policies constrain many instructions similarly (\eg by grouping method calls into equivalence classes by type signature~\cite{tau_cfi}).
 
-\todo{We need to get back to binary rewriters here, and there's a lot to say.  Some/all of the ``Correctness of Binary Rewriters'' section probably goes here.  But more than what's currently there needs to be written. Some things from ``Proof Architecture'' subsection should also go here. Basically we want to give formal definitions of the main theorems and proof strategy for binary rewriter verification in general, without going into the messy details of our specific proof for our specific rewriter. A summary of our particular proof should go later (in ``evaluation'').}
+To implement hash function $h$ efficiently, we choose bit-substring function $h(x) = ({x}\gg\mathit{lsb}) \bmod 2^w$,
+which can be performed with a single instruction on ARM (\texttt{UBFX}, unsigned bit field extract).
+Parameters $\mathit{lsb},w\in[0,32)$ are chosen to minimize table size $|T_D|$.
+\kwh{Can we say anything here about how the optimal parameters are found? Maybe it's by exhaustive search of all $32\times32$ possibilities?}
 
-\subsection{Possibly Too Much for This Paper}
+% As an example, consider the instruction \texttt{BX r0}, which branches to the address in \texttt{r0},
+% with an original destination set with indices \texttt{0x110}, \texttt{0x120}, and \texttt{0x130},
+% and a translated destination set with indices \texttt{0x200}, \texttt{0x220}, and \texttt{0x240}.
+% % The parameters for $H$ that minimize table size while mapping destinations to unique keys are $lsb=4$ and $w=3$, extracting bits 4 to 6 from each index.
+% The optimal parameters for $H$ are $lsb=4$ and $w=3$, extracting bits 4 to 6 from each index.
+% The rewritten block and policy table for this instruction is as follows: \kjee{the following presentation can be improved.}
 
-The theory library in part defines and proves properties of PIL, including well-typedness of statements and their confluence.
-It comprises number-theoretic results, abstractions and theory of binary-level data structures such as strings and linked lists, and logical properties of Picin\ae{}'s representations and abstractions that have been useful in binary-level formal verification.
-\todo{What else do we want to say about theory?}
+\autoref{fig:block_rewriter_demo} illustrates rewriting \texttt{BX\:r0} (a branch to \texttt{r0}),
+with policy-permitted destination set $D = \{4(0\mathrm{x}110), 4(0\mathrm{x}120), 4(0\mathrm{x}130)\}$,
+whose corresponding new addresses are $\{4(0\mathrm{x}200), 4(0\mathrm{x}220), 4(0\mathrm{x}240)\}$, respectively.
+The parameters for $h$ that minimize table size in this example are $\mathit{lsb}=6$ and $w=3$, which extract bits 6--8 from each address.
+\ixb{I think these two sentences may save readers some confusion; unsure if they're worth the space though:}
+New destination $4(0\mathrm{x}220)$ has only one entry in the table, whereas the others have two.
+This is because it shares the same hash as its original destination, which is safe because jumps to the new and old destinations should both be routed to the new \Block.
 
-One of the challenges faced with deductive verification of binary code is that expressions quickly grow too large to read and become cumbersome to manipulate.
-Picin\ae{}'s simplifier \emph{psimpl} addresses this issue for expressions yielded by the symbolic interpreter, including store updates and reads, modular and bitwise arithmetic, and bit extraction.
-%Psimpl is another reflexive tactic, it reduces expressions resulting from symbolic interpretation by turning the reduction into a computation with a certificate of correctness.
-Psimpl is a reflexive tactic, effecting simplifications via computation certified with a proof of correctness.
-The simplifier is a three-stage pipeline that overcomes both theoretical challenges of rewriting logics and the implementation idiosyncrasies of the Rocq proof assistant.
-The first stage overcomes the computation engine's aggressive unfolding of definitions, even ones marked as opaque.
-Psimpl first turns expressions into simplifier abstract syntax trees (SAST's), a deep embedding of Rocq's terms into a data structure whose semantics depend on a mapping from inductive symbols to the Rocq functions they signify.
-This transforms the expression into one whose computation content is abstracted into a semantics, so $\mathsf{vm\_compute}$ only evaluates the function reducing the SAST, it never sees the computation functions it would reduce, such as $\mathsf{add}$ and $\mathsf{getmem}$.
+\begin{figure}[t]
+    \definecolor{green}{rgb}{0.0, 0.6, 0.0}
+    \centering\small
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        $i$ & $\itoip(i)$ & $h(i)$ & $h(\itoip(i))$ \\ \hline
+        0x110 & \textcolor{red}{0x200} & \textcolor{red}{1} & \textcolor{red}{0} \\ \hline
+        0x120 & \textcolor{green}{0x220} & \textcolor{green}{2} & \textcolor{green}{2} \\ \hline
+        0x130 & \textcolor{blue}{0x240} & \textcolor{blue}{3} & \textcolor{blue}{4} \\ \hline
+    \end{tabular}
+    \quad
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{key} & \textbf{value} \\ \hline
+        \textcolor{red}{0} & \textcolor{red}{$4(0\mathrm{x}200)$} \\ \hline
+        \textcolor{red}{1} & \textcolor{red}{$4(0\mathrm{x}200)$} \\ \hline
+        \textcolor{green}{2} & \textcolor{green}{$4(0\mathrm{x}220)$} \\ \hline
+        \textcolor{blue}{3} & \textcolor{blue}{$4(0\mathrm{x}240)$} \\ \hline
+        \textcolor{blue}{4} & \textcolor{blue}{$4(0\mathrm{x}240)$} \\ \hline
+        5 & $4\mai$ \\ \hline
+        6 & $4\mai$ \\ \hline
+        7 & $4\mai$ \\ \hline
+    \end{tabular}
+    \vspace{4pt}
+\begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,label={lst:armv7},xleftmargin=.3cm]
+UBFX r0, r0, #6, #3      // r0 = h(dest)
+LSL r0, r0, #2           // r0 = h(dest) * 4
+ADD r0, r0, #table_addr  // r0 = &table[h(dest)]
+LDR r0, [r0]             // r0 = table[h(dest)]
+BX r0                    // branch to table[h(dest)]
+\end{lstlisting}
+\mxz{there isn't an instruction to add an arbitrary constant to a register, only certain constants are possible
+so there are actually 4 add instructions in this \Block to add each byte separately, but idk if it's necessary to say that here}
+\ixb{I bet it's not necessary.}
 
-% Greatly simplified treatment, does not cover the metavariables. More information on line 204 of the simplifier.v file.
-The second stage simplifies the SAST using a postorder traversal.
-The most important reduction is the elimination of modulo operations.
-This depends on propogating upper and lower bounds of expressions during a traversal, simplifying modulo operations when the upper bound of the expression is less than the modulus.
-Other simplifications include eliminating redundant update operations on stores, interpreting store lookups, and reducing arithmetic expressions, e.g., reducing $x+y-y'$ to $x$ when $y$ and $y'$ are provably equal.
-After the simplifications the third stage transforms the SAST back into a Picin\ae{} expression.
+\vspace{-12pt}
+\caption{Rewriting instruction \texttt{BX\:r0}. The tables map old addresses to new, and the listing shows the rewritten \Block code.
+\ixb{The table diagram still is not beautiful, but I think it serves us well to combine the tables and listing in the same figure.
+It makes referring to it in a leading paragraph sentence easier.}\kjee{How can we/readers associate tables and listing?}}
+\label{fig:block_rewriter_demo}
+\vspace{-10pt}
+\end{figure}
 
-Picin\ae{} facilitates modular reasoning about programs by supporting call-return semantics.
-Once proved,the partial correctness proof of a callee can be applied inside of the proof of a caller to skip re-proving the callee providing sufficient conditions are met.
-First, the callee invariants must imply any collocated caller invariants.
-Second, the callee must not exit other than by reaching the return site, i.e., it must not raise a hardware exception or jump to a non-code address.
-Third, the callee's invariants must be functions of the cpu state, i.e. they must be \emph{prefix-closed}~\cite{enforceable_security_policies}.
-Picin\ae{} provides infrastructure for defining invariant sets and exits such that these conditions are guaranteed to be met for non-overlapping code fragments.
+\ixb{
+Unlike prior enforcement strategies that require destination sets to form equivalence classes, such as those that in-line unique labels at destination addresses~\cite{abadi_cfi},
+using instruction-specific policy tables allows us to enforce policies where a destination can belong to any number of distinct sets.
+It also reduces the number of conditional instructions added to rewritten code, reducing the space of control-flow paths that must be considered during verification.
+}
 
-Picin\ae{} treats indirect calls and jumps like all other instructions.
-Specifically, as a $\texttt{jmp}\ e$ statement, with $e$ a non-constant expression.
+% \begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,caption={\texttt{BX r0} block where $a$ is the address of the table.},label={lst:armv7},captionpos=b,xleftmargin=.3cm]
+% UBFX r0, r0, #6, #3      // r0 = H(dest) (r0 is an address, so we add 2 to lsb)
+% LSL r0, r0, #2           // r0 = H(dest) * 4
+% ADD r0, r0, #a           // r0 = &table[H(dest)]
+% LDR r0, [r0]             // r0 = table[H(dest)]
+% BX r0                    // branch to table[H(dest)]
+% \end{lstlisting}
+% \begin{table}[h]
+%     \definecolor{green}{rgb}{0.0, 0.6, 0.0}
+%     \centering
+%     \begin{tabular}{|c|c|c|c|}
+%         \hline
+%         \textbf{i} & \textbf{i'} & \textbf{H(i)} & \textbf{H(i')} \\ \hline
+%         0x110 & \textcolor{red}{0x200} & \textcolor{red}{1} & \textcolor{red}{0} \\ \hline
+%         0x120 & \textcolor{green}{0x220} & \textcolor{green}{2} & \textcolor{green}{2} \\ \hline
+%         0x130 & \textcolor{blue}{0x240} & \textcolor{blue}{3} & \textcolor{blue}{4} \\ \hline
+%     \end{tabular}
+%     \quad
+%     \begin{tabular}{|c|c|}
+%         \hline
+%         \textbf{key} & \textbf{value} \\ \hline
+%         \textcolor{red}{0} & \textcolor{red}{4*0x200} \\ \hline
+%         \textcolor{red}{1} & \textcolor{red}{4*0x200} \\ \hline
+%         \textcolor{green}{2} & \textcolor{green}{4*0x220} \\ \hline
+%         \textcolor{blue}{3} & \textcolor{blue}{4*0x240} \\ \hline
+%         \textcolor{blue}{4} & \textcolor{blue}{4*0x240} \\ \hline
+%         5 & 4*ai \\ \hline
+%         6 & 4*ai \\ \hline
+%         7 & 4*ai \\ \hline
+%     \end{tabular}
+%     \caption{\kjee{anything to say here?}}
+% \end{table}
 
-but the address being an expression rather than a constant complicates how the next instruction to execute is computed.
-If the indirect call is to a function with an axiomatized partial correctness property, e.g., a function pointer to a comparator, then the function-call machinery can dispatch the function without the prover needing to define code in its section of memory.
-In other cases the prover must specify what bytes are in memory or what that memory address decodes to.
-This, in fact, is the basis for reasoning about binary transformations over arbitrary binary code.
+% \begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,caption={\texttt{BX r0} block where $a$ is the address of the table.},label={lst:armv7},captionpos=b,xleftmargin=.3cm]
+% UBFX r0, r0, #6, #3      // r0 = H(dest) (r0 is an address, so we add 2 to lsb)
+% LSL r0, r0, #2           // r0 = H(dest) * 4
+% ADD r0, r0, #a           // r0 = &table[H(dest)]
+% LDR r0, [r0]             // r0 = table[H(dest)]
+% BX r0                    // branch to table[H(dest)]
+% \end{lstlisting}
 
+{% NOTE (@jee): somewhat length, feel redudant.
+\ixb{
+    \heading{Unsupported instructions.}
+    % There are some ARM instructions that we do not support.
+    Some ARM instructions are predictable but not yet supported by our prototype (\eg Advanced SIMD).
+    These are conservatively replaced with branches to $\mai$.
+%    We describe additional instructions that the rewriter removes below.
+    \ixb{todo---fact check with Max.}
+    \mxz{floating point is not out of scope, this part was just a transition to talking about endianness/instruction mode/unpredictable}
 
-% lifter based on a decompiler such as Ghidra~\cite{ghidra2019blackhat} or BAP~\cite{bap}.
+    \heading{Endianness.}
+    ARM supports both little and big endian memory operations, determined by the value of the E bit of the \CPSR.
+    Changing the E bit at runtime could risk policy violations by loading addresses from policy tables in a different byte order than they were stored.
+    \pname therefore replaces endianness mode-switching instructions with safe aborts.
+    Future work could support mixed endianness by setting and restoring the E bit before and after table-reads.
+
+    \heading{Instruction mode.}
+    ARMv7 provides four different instruction states determined by the J and T bits of the \CPSR: ARM, Thumb, Jazelle, and ThumbEE.
+    For this work we focus exclusively on ARM mode.
+    Jazelle and ThumbEE are rare in practice, and Thumb support is reserved as a future extension that can be accommodated with more instruction encodings.
+    To disallow the other modes, \pname detects and removes mode-changing instructions, and disallows indirect control-flow transfers to odd-valued destination addresses, since such jumps change the instruction state to Thumb mode.
+    The latter is achieved by storing only even-valued addresses in tables~$T_D$.
+
+    \heading{\unpredictable{} instructions.}
+%    Certain instructions are defined to be \unpredictable{}. The manual describes this term as:
+%    \begin{displayquote}
+%        Means the behavior cannot be relied upon. \unpredictable{} behavior must not perform any function that cannot be performed at the current or a lower level of privilege using instructions that are not \unpredictable{}.
+%    \end{displayquote}
+%    \comment{Although in practice, these instructions usually just cause a hardware exception \mxz{maybe?},} This definition includes the possibility of performing unpermitted control flow.
+    The rewriter must detect and remove all \unpredictable{} instructions to guarantee safety for arbitrary ISA-conformant cpus (see \S\ref{sec:cfi_motivation}). Most instruction types include at least a few \unpredictable{} variants, such as from unsafe uses of \PC register operands or invalid instruction encodings. The rewriter statically replaces these with safe aborts. Unpredictability of some instructions depends on dynamic argument values, including indirect control-flows to destinations with low-order bits $10$. This is enforced by storing only word-aligned addresses in tables~$T_D$.
+}
+Additional information about the instructions in each category and rewritten \Blocks can be found in Appendix \ref{sec:armv7_categories}.
+}
+
+% python/ocaml extractor
+Once the CFI rewriter has generated a new code section, the \ELFPackager adds new segments to the original ELF for the rewritten instructions, the policy tables, and the abort handler with correct base addresses and permissions. The original text segment is changed to be non-executable. Finally, the entry point and symbol values are updated using the rewriter's \itoip function.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{sections/fm_friendly.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Rewriter Soundness Proof Setup}
+%As we would like to formally verify the soundness of our CFI implementation,
+%we implement the CFI rewriter as a function in Gallina,
+%Rocq's programming language, to allow us to write machine-checked proofs about its behavior.
+%The rewriter function is extracted into OCaml and compiled into an executable
+%with some additional driver code for reading/writing files and argument parsing.
+%The \ELFPackager is implemented as a Python script using the LIEF library.
+%The extraction to OCaml is formally guaranteed to preserve the rewriter's semantics~\cite{fv_ocaml_extraction}.
+%%
+%\mxz{i dont think so? e.g. we extract coq Z into ocaml int, which has a limited size and we dont prove that we never use a value that doesn't fit}
+%\cav{The extract inlined constants that we include in our setup are trusted, the actual piece of code that does extraction from Rocq to OCaml is formally verified. I think we should lean on this and maybe just include that there are trusted components to the pipeline. Also, we could just extract to a BigInt representation and then it's even more trustworthy}
+%We do not formally verify the correctness of the the \ELFPackager,
+%instead only focusing on the core rewriting logic that transforms the instruction bytes.
+
+Although mainstream \FM frameworks such as Rocq and Isabelle/\penalty0 HOL have built-in support for machine-proving properties of concrete codes implemented in their respective specification languages, they do not natively support verifying properties of codes expressed in other languages or from other tools.
+Therefore, although implementing our rewriter as a Gallina function affords Rocq the capacity to directly reason about its implementation, it does not afford the capability of proving properties of the machine code that it outputs.
+
+This presents a difficult \FM challenge:
+The rewriter soundness property we must verify is a universally quantified property of all possible executions on all possible ISA-compliant computational environments of all possible machine code programs that the rewriter might generate.
+To address this challenge, we turn to the \Picinae{} framework, described in the next section.
+
+\comment{%
+    \begin{itemize}
+        \item Redundant security checks (and masking even if it is provably a no-op, just mask and then you do not have to prove)
+        \item Hash-property independence (do not depend on deep properties of your hash function, you will need to prove them AND THEN use them to prove downstream properties)
+        \item Branch independence (do not make the soundness depend on branch conditions)
+        \item Constant security state (set it non-writable, any changes to it result in a contradiction)
+        \item existential goals NAND non-determinism (having existential goals AND non-determinism, as in semantic transparency, requires constructing a witness, which requires the unsupported task of manually interpreting symbolic instructions)
+        \item Stack shuffling (now you need to reason about stack properties and track register values)
+    \end{itemize}
+
+    3. What are the design principles for making the next binary rewriter
+        * Inductive structure of the proof/correctness specification
+        * Do not shuffle registers on/off the stack (though this is more for concrete code than rewriters, discovered the annoyance of this during mitre eCTF)
+        * Do not use writable security state, our CFI implementation sets the security state to read-only. This abdicates us from reasoning about the possibility of invalid security stats.
+        * Want all goals involving resulting states to use universal quantification. Existential quantification requires building a witness state, which requires symbolically executing a step. The infrastructure is not ready for that (ixb: but I think lifting the arm_prog+decoder+lifter all to PIL will fix this). This excludes properties such as semantic transparency in the presence of non-deterministic instructions.
+}

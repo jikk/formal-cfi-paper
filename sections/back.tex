@@ -1,0 +1,177 @@
+%! root=../main.tex
+% \section{Background and Motivation}~\label{sec:back}
+\section{Formal Verification of CFI Binary Rewriter}
+\label{sec:back}
+
+\begin{figure}[t]
+    \centering
+    % \includegraphics[width=0.9\linewidth]{verification.pdf}
+    \includegraphics[width=0.9\linewidth]{figs/CFI_Overview_Redo_shadows.drawio.pdf}
+    \vspace{-7pt}
+    \caption{Verification and extraction of the core rewriting logic\kjee{this figure can be extended to provide high-level overview/workflow.}\kjee{ELF editor -> ELF packager}}\label{fig:cfi_verif}
+    \vspace{-8pt}
+\end{figure}
+
+We first present a motivating example showing how \FM expose subtle, hard-to-detect instances of ARM’s architecturally defined \unpredictable{} behavior.
+%
+We then provide an overview of the \pname workflow and system architecture, including key components and verification targets, discussing the fundamental challenges of formally reasoning about binary-to-binary rewriting.
+%
+Finally, we describe our threat model and clarify the scope of the system, including assumptions and limitations that guide design and verification.
+
+\subsection{Motivation: ARM Unpredictable Behavior}\label{sec:cfi_motivation}
+
+\ixb{
+A CFI binary rewriter performs complex transformations on executable code. It rewrites control-flow instructions, relocates and reassembles both original and generated code, and embeds auxiliary structures such as policy tables. Producing a rewritten binary that remains compliant with the target ISA while preserving CFI safety guarantees is therefore nontrivial.
+%
+%Dynamic testing alone cannot establish this level of correctness. \ixb{I don't like introducing dynamic testing so deep into the paragraph with one sentence to go. I like it this way where testing is mentioned at the end, right where it fits, and then ``Dynamic'' testing is defined 3 paragraphs below.}
+A CFI-enforcing rewriter must ensure that all generated instruction sequences comply with the ISA, not just those exercised during testing.
+
+A key challenge arises from \unpredictable behaviors in the ARM architecture~\cite{unpredictable_behaviors}.\footnote{ARM \unpredictable behavior is analogous to \emph{undefined behavior} in high-level languages~\cite{undefined0,undefined1}, in that the specification permits multiple outcomes. However, ARM constrains these outcomes, typically without escalating privilege levels.} The ISA deliberately leaves certain execution outcomes unspecified to preserve implementation flexibility, avoid over-specifying ill-formed programs, and maintain backward compatibility. These behaviors introduce semantic nondeterminism, force conservative reasoning, and frustrate implementation independent correctness guarantees.
+
+In practice, many CPU implementations handle such cases by trapping or terminating execution, although the specification does not mandate a single outcome. As a result, compilers and toolchains avoid emitting instruction sequences that may trigger unpredictable behavior. \pname adopts the same discipline: it does not generate binaries that could enter architecturally \unpredictable regions.
+
+}
+
+This requirement motivates formal verification. Dynamic testing explores only observed execution paths and cannot rule out latent violations. For a binary CFI rewriter, testing is further hindered by a combinatorial\wc{compounding} input space spanning (1) the input binary, (2) the CFI policy defining valid control transfers, (3) runtime inputs to the program, and (4) the ISA implementation. Exercising through testing all corner cases that may trigger unpredictable behavior across these dimensions is therefore infeasible.
+
+In contrast, formal verification reasons over all possible executions, ensuring that rewriting never introduces paths that trigger unpredictable behavior. More broadly, although CFI is widely deployed with low overhead, prior work has focused on design guarantees, performance, and policy generation, largely overlooking implementation correctness. Formal verification of CFI implementations against precise safety and security specifications remains underexplored. Section~\ref{sec:case_studies} presents three concrete error cases that surfaced during verification and are difficult to detect through testing alone.\looseness=-1
+
+
+\comment{%
+  \subsection{Motivation: ISA Compliant Sound CFI}\label{sec:cfi_motivation}
+
+  %\kjee{first two paragraphs are not strictly about \unpredictable{} behavior.}
+  A CFI binary rewriter performs inherently complex transformations on executable code.
+  %
+  These include rewriting control-flow instructions (\eg branches), relocating and
+  reassembling both original and newly generated code segments, and embedding auxiliary
+  structures such as policy tables. As a result, producing a rewritten binary that is
+  both compliant with the underlying ISA specification \emph{and} faithful to CFI
+  safety requirements is nontrivial.
+
+  %In particular, establishing an assurance CFI-enforcing binary rewriter must guarantee that every generated instruction sequence remains fully compliant with the target ISA through dynamic testing alone is fundamentally limited.
+  %\kwh{The above sentence is not grammatical; I'm unable to parse it.}
+
+  \ixb{trainwreck attempt to address @KWH's comment.}\kjee{it isn't that bad.}
+  For instance, some instructions rarely produced by compilers, and other instructions in rare contexts, may exhibit \unpredictable{} behavior~\cite{unpredictable_behaviors,examiner2024asplos}: their execution outcome is deliberately unspecified and may differ between implementations.
+  Two examples for this are the BX PC instruction and unaligned PC loads, both of which were encountered and corrected through the verification process (see~\autoref{sec:case_studies}).
+  \ixb{The subtlety with the BX PC example is that it is \emph{not} \unpredictable{}, rather one would think it is unpredictable, and doing so leads to unsoundness.}
+  BX PC is an instruction that is only meaningful in ThumbEE mode, which we do not cover, but is still valid in ARM.
+  However, dynamic testing is unlikely to catch logic bugs that appear in such rare contexts without.
+
+  For example, load and store instructions are the only ones that need to use PC as an operand, for most other instructions using PC is \unpredictable{}
+  However, the BX PC instruction is a rare exception.
+  Mishandling it results in unsafe, attacker hijackable programs.
+
+  For example, the ARM ISA specification defines certain encodings of the \texttt{STR} immediate instruction and the \texttt{LDR} instruction as \unpredictable{}~\cite{unpredictable_behaviors,examiner2024asplos}: the execution outcome is deliberately unspecified and may differ between implementations.
+  Most ARM implementations execute the instruction identically, but a few raise exceptions that change the program's control-flow.
+  Dynamic testing of a CFI rewriter that preserves \texttt{STR} immediate instructions as security-irrelevant may therefore incorrectly conclude that such a rewriter is safe until tested on a rare implementation of the ISA\@.
+  Even when all current implementations behave consistently, future ARM processors might differ, making the rewriter unsafe for long-term deployment.
+
+  %Like other ISAs, the ARM architecture explicitly defines \emph{unpredictable} behaviors~\cite{unpredictable_behaviors,examiner2024asplos}: execution outcomes that are left deliberately unspecified. These arise from design choices intended to preserve implementation flexibility, to avoid over-specifying invalid or ill-formed programs, and to balance performance with backward compatibility. From a verification perspective, unpredictable behavior introduces significant challenges: it induces semantic nondeterminism, necessitates conservative over-approximation, and complicates the establishment of precise correctness guarantees.
+
+  %In practice, many CPU implementations handle such cases by trapping or terminating execution, though the specification mandates no single outcome. Accordingly, compilers and toolchains typically avoid generating instruction sequences that may trigger unpredictable behavior. \pname{} explicitly disallows any rewritten binary that could trigger such behavior.
+
+  Binary rewriter implementation errors are also difficult to detect when they manifest only for rare input binaries, such as malware crafted by an attacker to violate the policy.
+  For example, our first implementation of \pname{} generated rewritten binaries containing a jump table that included an entry for each function entry point in the input binary.
+  This unverified implementation passed all dynamic tests until our attempts to formally verify it uncovered a corner case:
+  a maliciously crafted input binary with many densely packed function entry points could overflow the available space for the jump table, causing rewritten code to reference non-table bytes as policy data and break out of the sandbox.
+  Our failed attempts to formally prove soundness of this early version uncovered the bug and allowed us to fix it.
+
+  These experiences illustrate the difficulties that dynamic testing approaches face when the input space is large and complex (\eg arbitrary binary code).
+  In contrast, FM approaches reliably detect such bugs because the proof does not rely on input testing.
+  Theorems are universally quantified over arbitrary input binaries, not merely those produced by well-behaved tools;
+  and analysis of arbitrary code within a proof environment entails abstract symbolic evaluation against an ISA specification, not any particular implementation of the ISA\@.
+  This ensures that rewriting never introduces execution paths that enter architecturally
+  \unpredictable{} regions.
+  %Achieving this guarantee is beyond the reach of conventional dynamic testing, which explores only observed paths and cannot rule out problematic sequences by construction \ixb{``by design'' maybe?}. In contrast, formal verification enables proactive identification of all such paths, allowing Cornerstone defense against control hijacking attacks, achieving widespread deployment with strong guarantees and near native overhead.
+  Moreover, the proof concerns the exact implementation of the rewriter, not a high-level design specification that the rewriter is intended implement but might not precisely match.
+  %However, the community has focused on design level guarantees, runtime overhead and policy generation largely overlooking implementation correctness and relying instead on dynamic testing. A more fundamental approach, formally verifying CFI implementations against safety and security specifications, remains largely unexplored.
+  % We need to be careful here to identify the overlook problem as developing guaranteed correct CFI implementations, not merely the problem of finding bugs in deployed CFI implementations.
+  %
+  % The latter is extensively studied in the literature, the former is not. This gap underscores a. them to be ruled out or corrected statically.
+
+  In \autoref{sec:case_studies}, we present two concrete error cases of unpredictability (branching to the PC register and unaligned PC loads) that we encountered and corrected through the formal verification process.
+  \kwh{Say more about this here at a descriptive level. Possibly replace the examples I used above with these examples. We can't wait all the way until \autoref{sec:case_studies} to give the reader real motivational examples.}
+}
+
+\subsection{\pname Overview}
+
+\autoref{fig:cfi_verif} illustrates the high-level workflow of \pname. To build a verified rewriter, we organize the system into three components.
+
+\heading{ARMv7 decoder and lifter.} The rewriter's frontend component decodes byte sequences extracted from the \texttt{.text} section of well-formed ELF binaries. Within the soundness proof, the lifter \emph{lifts} the rewritten code into \Picinae's \IL, enabling symbolic reasoning over arbitrary binary inputs.
+
+\ixb{
+We target the ARMv7 ISA because it admits a formal specification~\cite{armv7formalization}, making it amenable to rigorous reasoning.
+{% NOTE (@kjee) maybe redundant.
+    In contrast, ISAs such as Intel x86 exhibit substantial semantic complexity and irregularity, which complicate full formalization.
+}
+ARMv7 therefore provides a practical foundation for machine-checked reasoning at the binary level.
+%
+While their correctness remains critical to end-to-end soundness, we do not verify the decoder or lifter in this work. Instead, we treat them as trusted components, as they have been extensively studied in prior work~\cite{bap, liblisa, armv8semantics1, armv8semantics2, armv8semantics3, armv8semantics4} (see \autoref{sec:fm_related}).\kjee{citations needed.}
+}
+
+\heading{Binary CFI Rewriter.} \pname{} takes as input (1) a decoded ARMv7 instruction stream and (2) a user-provided policy specification \ixb{(\eg{} permitted control-flow transfers) derived from static analysis or profiling}. It instruments the program with CFI enforcement logic and produces a rewritten \texttt{.text} segment together with a policy table.
+%
+This component is the primary focus. We formally verify two properties for rewritten binaries:
+%
+\begin{itemize}[topsep=1ex,itemsep=-1ex,partopsep=1ex,parsep=1ex, leftmargin=2em]
+  \item \emph{CFI compliance} enforces the CFI policy, and
+  \item \emph{ISA compliance} preserves well-defined ARMv7 semantics and introduces no invalid or undefined behaviors.
+\end{itemize}
+
+We formalize these safety and security properties as ISA-level specifications that apply uniformly to all binaries. They do not depend on a particular input program or rewriter instance.
+
+\heading{\ELFPackager.} The final stage packages the rewritten code into an executable integrating\wc{combining} rewritten and original \texttt{.text} sections, policy tables and sundry metadata from the original binary.  We implement this step as a Python script using the LIEF library~\cite{lief} and treat its formal verification as out of scope. We discuss its limitations and potential hardening strategies in \autoref{sec:elf_packager_fm}.
+
+% In the following, we motivate the problem with a class of bugs that elude even experienced developers and resist exhaustive dynamic testing.
+
+% \subsection{Challenges of Verifying Binary Rewriting}
+\heading{Challenges of verifying binary rewriting.}
+Formal reasoning about static binary rewriting (\ie binary-to-binary transformations) presents fundamental challenges. The input space is vast and highly irregular, lacking the structural guarantees available at the source level. Verification requires precise modeling of low-level ISA semantics, including subtle architectural corner cases. At the same time, the system must preserve correctness while actively modifying executable code, rather than merely analyzing or validating it.\kjee{At least, AFAIK, We don't care about program semantic here.}
+
+These challenges distinguish \pname, and more broadly static binary rewriting, from two representative approaches to formally verifying binary programs.
+%
+Certified compilers (\eg CompCert~\cite{compcert}) prove semantic preservation from sources to binaries using machine-checked proofs, but rely on source code availability and only support binary features generated by a particular compiler,\kjee{can we say that subset compiler features?} precluding their use on legacy systems and code with unconventional instruction sequences.
+%
+Verified verifiers (\eg RockSalt~\cite{rocksalt}) prove safety of dynamic testers designed to detect runtime failures of code-generators, but do not verify the transformations that produce them or provide developers a capability to implement a verifiably correct code transformation.
+
+In contrast, \pname operates directly on existing binaries, verifying the correctness of the rewriting transformation itself and ensuring that generated binaries satisfy security properties by construction.
+%
+To achieve this, it leverages \Picinae's capability to specify theorems and write proofs about symbolic binary codes that appear in specifications as variables $c$ with constraints $P(c)$.
+For example, constraint $P(c)\equiv(\exists c_0,\ r(c_0)\,{=}\,c)$ specifies that code $c$ is an output of rewriter $r$.
+  A proof that $c$ is safe can therefore analyze rewriter $r$ to prove that executions of unknown code $c$ exclude unsafe behaviors.
+
+\subsection{Threat Model and Research Scope}
+
+\ixb{Tricky things to include ($\sim$21:30): basically attackers get to send inputs to victim programs and send malware to the CFI rewriter, out of scope is messing with the hardware, ELF metadata, and manipulating the policy input.}
+
+\heading{Threat model.}
+\ixb{
+Unlike prior work that verifies either compilers (\ie source-to-binary transformations) or validators (\ie binary-to-accept/reject decisions), \pname{} verifies a \emph{binary-to-binary transformation} that enforces security properties on arbitrary inputs.
+}
+%
+\pname targets adversaries who exploit data corruption vulnerabilities to hijack program control flow, a threat model consistent with prior code-reuse attack research. We assume the attacker can corrupt code pointers (\eg return addresses, function pointers, or vtable entries) and controls a writable memory region (\eg a heap object or auxiliary buffer). We further assume the attacker can perform limited memory disclosure sufficient to infer code and data addresses in the presence of ASLR, and supply maliciously crafted binaries.
+Under \pname's CFI enforcement, any control-flow transfer that violates the policy is redirected to the safe abort (\ie \texttt{abort()}), preventing attacker-controlled diversion of execution.
+
+\heading{Research scope.}
+We target the ARMv7 ISA for three reasons. First, ARMv7 represents one of the most
+widely deployed architectures by installed base~\cite{arm_field_growth,patterson2016computer}, particularly in low-powered embedded
+and IoT devices commonly deployed without modern security defenses, making
+binary hardening for this platform practically important. Second, formal
+specification of ARMv7 instruction decoding has been the subject of
+substantial prior work on formal verification of instruction decoding, providing a
+solid semantic foundation. Third, targeting a fixed-width instruction encoding
+avoids the variable-length decoding complexities of x86, allowing us to focus
+formal reasoning effort on the binary rewriter rather than the decoder.
+
+Although \pname strives to behaviorally preserve near-arbitrary policy-compliant binaries, it conservatively abandons the preservation goal when necessary to ensure safety.
+For example, we disallow runtime changes to the \CPSR E bit to enforce fixed endianness, as endianness changes could corrupt control-flow targets loaded from policy tables.
+%
+We also restrict execution to the ARM instruction set and exclude Thumb, Jazelle, and ThumbEE modes to avoid unintended state transitions and additional encoding complexity; all control-flow targets are aligned to prevent implicit mode switching.
+%
+Finally, we detect and replace all \unpredictable{} instructions with safe aborts, since their undefined semantics could introduce unintended or unsafe control flows.
+
+This work explores the formal verification of a rewriter that operates on binary code sections. Specifically, we focus on securing the \texttt{.text} sections of ELF binaries. Securing non-code ELF components, such as metadata, relocation entries, and dynamic linking structures, falls outside our current scope.
+%
+The current implementation targets statically linked, non-PIE ARM binaries, in which all control transfers are self-contained and symbol references use absolute addresses. Extending coverage to PIE and dynamically linked binaries is achievable with additional engineering effort, and we leave it for future work.

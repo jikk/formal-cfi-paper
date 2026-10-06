@@ -1,55 +1,143 @@
-%! root=./main.tex
+%! root=../main.tex
 \section{Related Work}
 
-CFI enforcement is a very active field of research with many new publications each year, each supporting the correctness of their work using one or more of three approaches~\cite{cracks_in_shields}: theoretical verification, experimental verification or quantitative analysis.
-% A 2020 survey~\cite{cracks_in_shields} of 50 CFI solutions found they each evaluated their methods using one of three approaches: theoretical verification, experimental verification or quantitative analysis.
-Theoretical verification comprises informal analyses of the CFI solution (e.g., \texttt{SAFEDISPATCH}~\cite{safedispatch}),
-experimental verification includes applying the CFI technique to vulnerability test-suites (e.g., RIPE~\cite{suite_ripe} or RecIPE~\cite{suite_recipe}) or other software with known vulnerabilities (e.g., CVEs),
-and quantitative analysis involves measuring a static property of programs before and after treatment, such as number of code gadgets or average indirect target reduction (AIR)~\cite{bincfi}.
-% \todo{Our review of X more CFI solutions since 2020 reveals each of their evaluations lie within one of these categories.}
-In contrast, we evaluated the security of our CFI \emph{implementation} by \emph{formally} verifying it, thus eliminating the possibility of errors in implementation, which account for 5 of 7 common causes of error in CFI~\cite{cracks_in_shields}.
-% The survey also found that 5 of 7 common mistakes that invalidate CFI security occur in the implementation stage.
-% Formal verification eliminates 4 of 5 implementation mistakes, indeed the verification aids in bug discovery.
-% The implementation error that formal verification cannot handle is unexpected optimizations in the compiler.
-% Our implementation passes through the Rocq OCaml extractor and the OCaml compiler, bugs in these processes are out of scope of the security proof.
+%We first survey CFI literature, situate it within the broader context of static binary rewriting, then overview binary \FM research.
 
-% There have been many proposed binary-rewriting solutions to CFI since it was first introduced in 2005.
-% Recent projects include Opaque CFI~\cite{opaque_cfi}, CCFIR~\cite{ccfir}, binCFI~\cite{binCFI} and CFIMon~cite{cfimon}.
+\subsection{\cfi with Static Binary Rewriting}\label{sec:cfi_related}
+% rewriting this because it's AI'd
+% CFI is a foundational security defense designed to protect against control hijacking attacks by restricting the set of valid control-flow transfers a program may execute at runtime.
+% The level at which CFI is enforced depends on the available program representation. When source code is accessible, CFI is typically implemented as a compiler pass, optionally leveraging hardware support such as Intel CET/PT for enforcement~\cite{ptcfi,ptcfi2}. When only a binary is available, CFI can be enforced via either dynamic instrumentation or static binary rewriting.
+CFI~\cite{abadi_cfi,burow2017survey} is a static defense for defending against control-flow hijacking attacks.
+Control-flow policies encode a whitelist of permitted control-flow edges.
+The policy is enforced by adding security guards that check impending jump targets against the policy.
+CFI can be applied to both source and binary code, optionally leveraging hardware support~\cite{ptcfi,ptcfi2}.
+At the binary level, CFI is applied either via static binary rewriting or dynamic instrumentation.
 
-Recent work has started to explore the problem of machine-verifying underconstrained-code properties by examining relational properties of \emph{concrete} programs with statically known code~\cite{relational_realistic}.
-\todo{Follow this with an analysis of the form, ``This accomplishes (good things) but cannot achieve (our achievements).''}
+Although dynamic instrumentation is precise, it is generally less favored due to its runtime overhead and transparency limitations.
+Lightweight, source-free CFI implementations include kBouncer~\cite{kbouncer}, ROPecker~\cite{ropecker}, and ROPGuard~\cite{ropguard}. kBouncer and ROPecker rely on the LBR to analyze chains of gadgets, with ROPecker using data from static binary analysis to project future control flows.
+Despite defending against many ROP attacks, some attacks still succeed by flushing the LBR or breaking the gadget threshold~\cite{coarse_cfi}.
 
-\todo{What other aspects of CFI do we want to cover? Do we want to go into the strategies employed by other binary rewriters? Do we want to discuss source-dependent solutions at all?}
+% "
+% Static binary rewriting is more efficient in practice, as instrumentation is limited to control-transfer instructions rather than the full instruction stream. The underlying challenge, however, lies in constructing a complete and accurate control-flow policy from the binary alone, a problem widely recognized as difficult and, in many cases, undecidable. Static binary rewriting CFIs also struggle with high overheads from instruction instrumentation. This research specifically focuses on the correct implementation of binary-only CFI enforced through static binary rewriting. Other aspects, such as the generation of control-flow policies or optimization of runtime efficiency, are outside the scope of this work.
+Static binary rewriting is typically more performant than dynamic instrumentation~\cite{static_cfi_perf,russo2010dynamic}, invoking only a small number of additional instructions per jump for CFI enforcement.
+It is substantially more challenging to generate control-flow policies for binary programs, however.
+Constructing control-flow policies is known to be undecidable in the general case~\cite{cfi2005ccs}.
+Our work assumes a trusted control-flow policy and proves the soundness of a static rewriter's enforcement of it, leaving policy-generation to related work.
 
-% CCS'20 survey on efficacy of CFI:
-% https://dl-acm-org.libproxy.utdallas.edu/doi/pdf/10.1145/3372297.3417867
-% * Real boundaries differ from claimed boundaries due to implementation or algorithmic errors
-% * Five of seven common mistakes were in the implementation stage
-%     * unexpected optimization
-%     * corner-cases: inlined assembly, dynamic shared objects (DSO)
-%     * logic bugs in implementation
-%     * mismatched specification, e.g., QEMU bug in ARM PA emulation, not setting the NX bit
-%     * adding unintended permissible jump targets (xend bytes in TSX-based CFI)
-% * Mentioned binary-compatible CFI:  Opaque CFI [ 37 ], CCFIR [ 72 ], binCFI [ 75] and CFIMon 
-% * Mentioned theoretically-only safe CFI:  SafeDispatch [ 28 ] and PARTS [ 34 ]
-% * CScan tool very limited: relies on source-level analysis, only tests each ICT guard code once
-% * Mention false positives, maybe we can mention we can analyze the implementation and prove it precludes false positives
-% * Analyzed 56 CFI solution evaluation methods, found three methods:
-%     1) theoretical evaluation
-%     2) experimental verification
-%     3) quantitative analysis
+Early CFI works implement coarse-grained policies on source-free binary code~\cite{ccfir,bincfi}.
+BinCFI places jump targets in a bitmap and adds guards to all indirect jump instructions to enable lookups.
+For every indirect jump, it checks whether target addresses are call-preceded of a part of a permissible target list.
+CCFIR works with relocation data, rerouting indirect jumps to a separate springboard section.
+While that offers an additional layer of protection from ROP attacks, both CCFIR and binCFI were shown vulnerable to advanced ROP attacks due to policy imprecision~\cite{outofcontrol}.
 
-% Bottom-up formal methods, which analyze binary and assembly level code, has received increasing attention recently.
-Formal verification of low-level code has received increasing attention recently.
-Most projects have created general purpose binary analysis frameworks, but some have tailored solutions to specific problems, such as certified decompilation~\cite{formally_verified_lifting} and binary pointer analysis~\cite{verified_pointers}.
-Islaris~\cite{islaris} reasons about concrete program traces using the Isla symbolic interpreter to create trusted traces from the target architecture's Sail specification.
-IsaBIL~\cite{isabil} translates BAP~\cite{bap} decompilations into its Isabelle/HOL embedding to reason about concrete program executions.
-Most recently, a team published a relational Hoare logic in HOL Light and used it to prove program equivalence and correctness~\cite{relational_realistic}.
-Of these, only the last is capable of quantifying over programs, as we have done, because it uses a decode function to interpret bytes from memory.
-% \cite{trabin}
+CFIs using basic blocks are a low overhead option as well~\cite{bbb_cfi}.
+Similar to our work, jumps are permitted only if the destination address is an entry point of a basic block.
+This policy is enforced with a monitor using Intel PT to gather control-flow data in real time.
+BinCC~\cite{bincc} is also similar to this implementation, dividing code into code continents instead of basic blocks.
+
+% TODO (@kjee): cite --- intel_cet,inte_bti,arm_ibt,arm_pac
+Due to its effectiveness, CFI has been widely adopted in practice. Modern processors provide hardware support for coarse-grained CFI to reduce overhead~\cite{isacfi2019hasp,liljestrand2019pac}, while enabling extensions to finer-grained, policy-driven enforcement such as that implemented by \pname. As a result, many practical aspects of CFI deployment in real-world systems have been extensively explored~\cite{becker2024woot}.
+
+\ixb{
+Recent work such as $\mu$CFI~\cite{ceesay2024mucfi}  extends CFI enforcement into the microarchitectural domain. It defines a security property over cycle-level \PC updates and formally verifies that processor microcode enforces CFI even under speculative execution and timing-based behaviors.
+%
+The proof guarantees that all indirect control transfers resolve to destinations permitted by a control-flow graph capturing correct hardware behavior. However, these guarantees are orthogonal to software-level CFI policies and do not address how such policies are constructed or enforced at the binary level.
+}
+
+\subsection{Formal Verification on Binary Programs}\label{sec:fm_related}
+\comment{% NOTE (@kjee): I can't outline/write this section; just listing out items that I expect to see from the readers perspective.
+    - Open by briefly surveying prior FM work on binary analysis and security verification, noting the use of Coq/Rocq in this space
+    - Identify the shared limitation: existing frameworks require concrete, known binaries as input and cannot generalize
+    - Introduce Picinae as addressing this limitation specifically, by providing an ISA-faithful abstraction that supports symbolic reasoning over program state
+    - Explain concretely what this enables: proofs that hold for all possible binaries, not just those known at verification time
+    - Close by positioning \pname as the first system to leverage this capability for a binary CFI rewriter, motivating the rest of the section
+}
+
+{% NOTE(@kjee): Somewhat vibed text to be modified significantly.
+ % \kjee{Current text is a place holder draft. We may want to provide high-level discussion on Picinae framework.}
+
+Recent advances in \emph{formally verified lifting} have opened new avenues for formally verified binary analysis, enabling verification of both correctness and security properties~\cite{scalable_binary_lifter_validation,formally_verified_lifting,holba_sound_transpilation,verbeek2024verifiably}.
+However, existing frameworks focus on verifying concrete binaries and have limited support for properties of binary code in which some or all instructions are symbolic unknowns. This limits their applicability for verifying binary-to-binary code rewriters.
+
+Certified compilation~\cite{compcert,jasmin,barthe2019formal} reasons about non-concrete binary programs from source code, with the goal of proving compiler correctness through semantic transparency.
+These approaches typically rely upon translating source-level typing information through \IL representations to compiled binaries.
+This yields verified code from a particular source language and compiler toolchain.
+
+\kwh{[KWH] Formal verification of binary code in any form hasn't been around for very long (only a few years).  So let's not cast it as a well-established science.  Main thing to emphasize here is that apart from Picinae, all the systems take a complete, fully known binary code as input and verify it. They can't prove any property of binary code that isn't fully known at verification time.}
+
+\ixb{
+ Careful modeling of real-world ISAs is necessary for symbolic reasoning about non-concrete binary code.
+% Overcoming this limitation requires more than a mature proof assistant. It requires an abstraction layer that faithfully models real-world ISAs while supporting symbolic reasoning.
+\Picinae{}~\cite{picinae} builds upon Rocq to model machine code execution through memory state and execution traces, and represents program state symbolically, permitting proofs to treat the code as a proof variable.
+This enables verification results to generalize from a single program to the unbounded set of binaries a rewriter may encounter.
+Recent works have applied it to formally verify fault-tolerance of binary codes~\cite{averill26bar}, and security-critical timing properties of RTOS and cryptographic binaries~\cite{averill2025src}.
+%% We could cite bardin_ft here, but I'm not sure how it fits in.
+}
+
+Many recent works have developed general-purpose frameworks for reasoning about properties of concrete binary code such as correctness, CVE-reachability, and program equivalence~\cite{islaris,isabil,myreen_hoare_rmmc,relational_hoare_logic_rmmc,trabin,forward_symb_reasoning_vmcai26}.
+% Nope. Still not buying it. :)
+%\Picinae{} contributes to this list with the verification of binary rewriter soundness, fault-tolerance~\cite{averill26bar}, and precise timing properties~\cite{averill2025src}.
+Other works provide theorem-prover supported automated analyses for specific properties, such as pointer analysis~\cite{verified_pointers} and lifting~\cite{formally_verified_lifting}.
+% Because the a program's execution time is a function of the instructions it consists of, reasoning about concrete timing is impossible for source code.
+% Many works formally reason about the timing behavior of machine code, often for the purposes of constant-time cryptography or worst-case execution time guarantees~\cite{barthe2019formal}.
+% \Picinae{} has been extended to enable users to formally describe the concrete timing behavior of programs~\cite{averill2025src}, and is therefore also able to reason about the timing effects of program transformations in a similar manner to the technique described in this work.
+% Most of these works are unable to reason about non-concrete code sections, and none have demonstrated it.
+%\Picinae{} has also been used to reason about binary-level fault tolerance~\cite{averill26bar}, and is a popular target for binary-level formal methods~\cite{bardin_ft}.
+Several projects have performed formal verification at the machine-code level for large binaries such as separation kernels~\cite{sep_kernel} and programmable logic controllers~\cite{zhang2024binary}.
+
+% This is a copy of the text that is already above
+% This capability is essential for \pname. Frameworks that operate on concrete binaries can verify individual rewritten outputs but cannot prove that the rewriter is correct for all inputs. \Picinae{} lifts reasoning from individual binaries to the rewriter’s behavior across all binaries, enabling the end-to-end correctness guarantees that \pname requires.
+}
+\comment{% old text.
+    CFI enforcement is a very active field of research with many new publications each year, each supporting the correctness of their work using one or more of three approaches~\cite{cracks_in_shields}: theoretical verification, experimental verification or quantitative analysis.
+    % A 2020 survey~\cite{cracks_in_shields} of 50 CFI solutions found they each evaluated their methods using one of three approaches: theoretical verification, experimental verification or quantitative analysis.
+    Theoretical verification comprises informal analyses of the CFI solution (e.g., \texttt{SAFEDISPATCH}~\cite{safedispatch}),
+    experimental verification includes applying the CFI technique to vulnerability test-suites (e.g., RIPE~\cite{suite_ripe} or RecIPE~\cite{suite_recipe}) or other software with known vulnerabilities (e.g., CVEs),
+    and quantitative analysis involves measuring a static property of programs before and after treatment, such as number of code gadgets or average indirect target reduction (AIR)~\cite{bincfi}.
+    % \todo{Our review of X more CFI solutions since 2020 reveals each of their evaluations lie within one of these categories.}
+    In contrast, we evaluated the security of our CFI \emph{implementation} by \emph{formally} verifying it, thus eliminating the possibility of errors in implementation, which account for 5 of 7 common causes of error in CFI~\cite{cracks_in_shields}.
+    % The survey also found that 5 of 7 common mistakes that invalidate CFI security occur in the implementation stage.
+    % Formal verification eliminates 4 of 5 implementation mistakes, indeed the verification aids in bug discovery.
+    % The implementation error that formal verification cannot handle is unexpected optimizations in the compiler.
+    % Our implementation passes through the Rocq OCaml extractor and the OCaml compiler, bugs in these processes are out of scope of the security proof.
+
+    % There have been many proposed binary-rewriting solutions to CFI since it was first introduced in 2005.
+    % Recent projects include Opaque CFI~\cite{opaque_cfi}, CCFIR~\cite{ccfir}, binCFI~\cite{binCFI} and CFIMon~cite{cfimon}.
+
+    Recent work has started to explore the problem of machine-verifying underconstrained-code properties by examining relational properties of \emph{concrete} programs with statically known code~\cite{relational_realistic}.
+    \todo{Follow this with an analysis of the form, ``This accomplishes (good things) but cannot achieve (our achievements).''}
+
+    \todo{What other aspects of CFI do we want to cover? Do we want to go into the strategies employed by other binary rewriters? Do we want to discuss source-dependent solutions at all?}
+
+    % CCS'20 survey on efficacy of CFI:
+    % https://dl-acm-org.libproxy.utdallas.edu/doi/pdf/10.1145/3372297.3417867
+    % * Real boundaries differ from claimed boundaries due to implementation or algorithmic errors
+    % * Five of seven common mistakes were in the implementation stage
+    %     * unexpected optimization
+    %     * corner-cases: inlined assembly, dynamic shared objects (DSO)
+    %     * logic bugs in implementation
+    %     * mismatched specification, e.g., QEMU bug in ARM PA emulation, not setting the NX bit
+    %     * adding unintended permissible jump targets (xend bytes in TSX-based CFI)
+    % * Mentioned binary-compatible CFI:  Opaque CFI [ 37 ], CCFIR [ 72 ], binCFI [ 75] and CFIMon
+    % * Mentioned theoretically-only safe CFI:  SafeDispatch [ 28 ] and PARTS [ 34 ]
+    % * CScan tool very limited: relies on source-level analysis, only tests each ICT guard code once
+    % * Mention false positives, maybe we can mention we can analyze the implementation and prove it precludes false positives
+    % * Analyzed 56 CFI solution evaluation methods, found three methods:
+    %     1) theoretical evaluation
+    %     2) experimental verification
+    %     3) quantitative analysis
+
+    % Bottom-up formal methods, which analyze binary and assembly level code, has received increasing attention recently.
+    Formal verification of low-level code has received increasing attention recently.
+    Most projects have created general purpose binary analysis frameworks, but some have tailored solutions to specific problems, such as certified decompilation~\cite{formally_verified_lifting} and binary pointer analysis~\cite{verified_pointers}.
+    Islaris~\cite{islaris} reasons about concrete program traces using the Isla symbolic interpreter to create trusted traces from the target architecture's Sail specification.
+    IsaBIL~\cite{isabil} translates BAP~\cite{bap} decompilations into its Isabelle/HOL embedding to reason about concrete program executions.
+    Most recently, a team published a relational Hoare logic in HOL Light and used it to prove program equivalence and correctness~\cite{relational_realistic}.
+    Of these, only the last is capable of quantifying over programs, as we have done, because it uses a decode function to interpret bytes from memory.
+    % \cite{trabin}
 
 
-% 2022: Islaris
-% 2025: IsaBIL
-% 2019: TrABin - HoL4 certified transpiler + wp generator and prover; 3k loc for model and semantics
-% 
+    % 2022: Islaris
+    % 2025: IsaBIL
+    % 2019: TrABin - HoL4 certified transpiler + wp generator and prover; 3k loc for model and semantics
+}

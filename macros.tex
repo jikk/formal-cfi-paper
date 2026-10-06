@@ -16,7 +16,6 @@
 \usepackage[most]{tcolorbox}
 \usepackage[normalem]{ulem}
 \usepackage[ruled, vlined, linesnumbered]{algorithm2e}
-% \usepackage[utf8]{inputenc}
 \usepackage{amsfonts}
 \usepackage{amsmath}
 \usepackage{arydshln}
@@ -25,9 +24,9 @@
 \usepackage{booktabs}
 \usepackage{cancel}
 \usepackage{caption}[font={footnotesize}]
-%\usepackage{caption}
 \captionsetup{font=small}
 \usepackage{color,soul}
+\usepackage{csquotes}
 \usepackage{comment}
 \usepackage{enumitem}
 \usepackage{fontawesome}
@@ -40,6 +39,7 @@
 \usepackage{mdsymbol}
 \usepackage{multirow}
 \usepackage{pifont}
+\usepackage{pgfplots}
 \usepackage{tabularx}
 \usepackage{threeparttable}
 \usepackage{tikz}
@@ -56,6 +56,15 @@
 % enable page numbers.
 \thispagestyle{plain}
 \pagestyle{plain}
+
+%%%
+%%% footnoteref
+%%%
+
+\makeatletter
+\newcommand\footnoteref[1]{\protected@xdef\@thefnmark{\ref{#1}}\@footnotemark}
+\makeatother
+
 
 %%%
 %%% Colors
@@ -107,6 +116,14 @@ urlcolor={winered},
 filecolor={winered},
 citecolor={winered},
 allcolors={winered}
+}
+
+\newcommand{\Autoref}[1]{%
+  \begingroup
+  \def\sectionautorefname{Section}%
+  \def\figureautorefname{Figure}%
+  \autoref{#1}%
+  \endgroup
 }
 
 %%%
@@ -164,7 +181,7 @@ allcolors={winered}
 \newcommand{\cmt}[1]{}
 \newcommand{\tsup}[1]{\textsuperscript{#1}}
 \newcommand{\cct}[1]{\raisebox{.5pt}{\textcircled{\raisebox{-.9pt} {#1}}}}
-\renewcommand{\homedir}{\raise.17ex\hbox{$\scriptstyle\sim$}}
+\newcommand{\homedir}{\raise.17ex\hbox{$\scriptstyle\sim$}}
 
 \newcommand{\progname}[1]{{\tt #1}\xspace}
 \newcommand{\optmap}[2]{`\code{#1}' $\mapsto$ `\code{\color{red} #2}'}
@@ -198,7 +215,6 @@ skipbelow=0pt,backgroundcolor=lightlight-gray
 \end{tcolorbox}
 }
 
-\newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\greencode}[1]{{\color{cadmiumgreen}\texttt{#1}}}
 \newcommand{\redcode}[1]{{\color{red}\texttt{#1}}}
 \newcommand{\graycode}[1]{{\color{darkgray}\texttt{#1}}}
@@ -321,6 +337,7 @@ skipbelow=0pt,backgroundcolor=lightlight-gray
 \newcommand{\eg}{{\it e.g.,~}}
 \newcommand{\ie}{{\it i.e.,~}}
 \newcommand{\etc}{{\it etc.~}}
+\newcommand{\cf}{{\it cf.,~}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

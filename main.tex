@@ -1,11 +1,23 @@
-% CAV cfp: https://conferences.i-cav.org/2026/cfp/
-% Max 18 pages.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \input{cur_header}
-\documentclass[runningheads,orivec]{llncs}
+\documentclass[sigconf, anonymous=false, natbib=false]{acmart}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+%% Rights management information.  This information is sent to you
+%% when you complete the rights form.  CCS: These commands have SAMPLE
+%% values in them; you MUST leave these commands in the CCS 2026
+%% submission version. CCS: Upon acceptance, it is your responsibility as an author to replace
+%% the commands and values with those provided to you when you
+%% complete the rights form.
+\setcopyright{acmlicensed} %% CCS: DO NOT REMOVE
+\copyrightyear{2026} %% CCS: DO NOT REMOVE
+\acmYear{2026} %% CCS: DO NOT REMOVE
+\acmDOI{XXXXXXX.XXXXXXX} %% CCS: DO NOT REMOVE
+\acmConference[CCS 26]{Make sure to enter the correct
+  conference title from your rights confirmation email}{November 15--19,
+  2026}{Hague, Netherlands}  %% CCS: DO NOT REMOVE
+\acmISBN{978-1-4503-XXXX-X/2018/06}  %% CCS: DO NOT REMOVE
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \input{macros}      % kjee boilerplates
@@ -13,34 +25,40 @@
 \input{acronyms}  % acronyms
 
 \usepackage{pygmentex}
+\usepackage{minted}
 \usepackage{codestyle}
 \usepackage{listings}
 \usepackage{float}
-\usepackage{minted}
 \usepackage{trfrac}
 \usepackage{ulem}
-\usepackage{lipsum}
 
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage[mincrossrefs=99,datamodel=acmdatamodel,style=numeric-comp,sorting=none]{biblatex}
 \setlength{\ULdepth}{1.2pt}
 
-\addbibresource{refs/kjee.bib}
+\renewcommand*{\bibfont}{\small}
+
+% \addbibresource{refs/kjee.bib}
+% \addbibresource{refs/bufm.bib}
+
+\ifsubmitready{}
+\else
+  % \addbibresource{refs/TODO.bib}
+\fi
+
 \addbibresource{refs/formalcfi.bib}
-\addbibresource{refs/bufm.bib}
 
 \usepackage{makecell}
 \usepackage{svg}
 
 \usepackage{tabularray}
 \UseTblrLibrary{booktabs}
+\usepackage{dcolumn}
 
 \usepackage{amsmath}
 
 \providecommand\texorpdfstring[2]{#1}  % Provide a backup definition in case hyperref not loaded.
-
-\newcommand\Picinae{\texorpdfstring{{\sffamily Picin\ae}}{Picinae}}
 
 \providecommand\downmapsto{\mathrel{\mathpalette\mydownmapsto\relax}}
 \makeatletter
@@ -53,46 +71,52 @@
 \makeatother
 \newcommand\fallthru{\downmapsto}
 
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+
 \newcommand\ofwidth[1]{\kern.7pt_{\fboxsep=1pt\boxed{\kern-.5pt\scalebox{.7}{$#1$}\kern-.5pt}}}
 % memwidthexp allows using a consistent expression in the boxed \ofwidth of expressions and in
 % the `: t' of typing statements.
-\newcommand\memwidthexp[1]{8(1\ll#1)} 
+\newcommand\memwidthexp[1]{8(1\ll#1)}
 \newcommand\memwidth[1]{\ofwidth{\memwidthexp{#1}}}
-
-\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
-\newcommand{\review}[1]{\textcolor{orange}{#1}}
-\newcommand{\lorem}[1]{\textcolor{orange}{\lipsum[#1]}}
 
 \graphicspath{{figs/}}
 
-\def\papertitle{Formal Verification of a Realistic Binary Rewriter}
+\def\papertitle{Machine-Verified Binary Control Flow Integrity}
 \author{}
-\institute{}
 
 \title{\papertitle}
 
 \newlength\listingnumberwidth
 \setlength\listingnumberwidth{\widthof{00} + 2em}
 
-\begin{document}
+% Page number on/off.
+\ifsubmitready{}
+  \settopmatter{printfolios=false}
+\else
+  \settopmatter{printfolios=true}
+\fi
 
-\maketitle
+\begin{document}
 
 \input{sections/abstract}
 
-\input{sections/introduction}
-\input{sections/background}
+\maketitle
+
+\input{sections/intro}
+\input{sections/back}
 \input{sections/system_overview}
-\input{sections/technical}
+\input{sections/picinae}
+\input{sections/formal}
+\input{sections/impl}
 \input{sections/eval}
 \input{sections/related}
-% \input{sections/discussion}
-\input{sections/conclusion}
+\input{sections/disc}
+\input{sections/conc}
 
 \printbibheading{}
+% TODO (@kjee): @shreya please go over ref/citations.
 \printbibliography[heading=none]
-
-\balance{}
+%\balance{}
 
 \input{sections/appendix}
 

@@ -1,6 +1,15 @@
 %! root=./main.tex
 
 \def\pname{{\textsc{ArmCFI}}\xspace}
+\newcommand\Picinae{\texorpdfstring{{\sffamily Picin\ae}}{Picinae}\xspace}
+\newcommand\itoip{\ensuremath{\mathit{rel}}\xspace}
+\newcommand\iptoi{\ensuremath{\mathit{rel}^{-1}\xspace}}
+\newcommand{\bi}{\ensuremath{i_\mathit{txt}}\xspace}
+\newcommand{\bip}{\ensuremath{i'_\mathit{txt}}\xspace}
+\newcommand{\tbi}{\ensuremath{i_\mathit{tab}}\xspace}
+\newcommand{\mai}{\ensuremath{i_\mathit{abort}}\xspace}
+\newcommand{\txt}{\ensuremath{\ell_\mathit{txt}}\xspace}
+\newcommand{\txtp}{\ensuremath{\ell'_\mathit{txt}}\xspace}
 
 \usepackage{fp}
 \usepackage{svg}
@@ -11,20 +20,73 @@
 \newif\ifbiblatex
 \biblatextrue
 
+\newif\ifsubmitready{}
+\submitreadytrue{}
+
 \newif\ifcomments{}
 \commentsfalse{}
 
 \ifcomments{}
-\usepackage{todonotes}
 	\newcommand{\kjee}[1]{\noindent\textcolor{red}{[KJEE: #1]}}
-	\newcommand{\wc}[1]{}
+    \newcommand\kwh[1]{\begingroup\color{teal}KWH: #1\endgroup}
+	\newcommand{\wc}[1]{\xspace}
 	\newcommand{\mxz}[1]{\noindent\textcolor{green}{[Max: #1]}}
+	\newcommand{\ixb}[1]{\noindent\textcolor{blue}{[IXB: #1]}}
+    \newcommand{\svs}[1]{\noindent\textcolor{pink}{[Shreya: #1]}}
+    \newcommand{\cav}[1]{\noindent\textcolor{orange}{[Charles: #1]}}
+	\newcommand{\todo}[1]{\noindent\textcolor{green}{[TODO: #1]}}
+	\newcommand{\review}[1]{\textcolor{orange}{#1}}
 \else
 	\newcommand{\kjee}[1]{}
-	\newcommand{\wc}[1]{}
+	\newcommand{\wc}[1]{\xspace}
 	\newcommand{\mxz}[1]{}
+	\newcommand{\todo}[1]{}
+	\newcommand{\review}[1]{}
+    \newcommand\kwh[1]{}
+    \newcommand{\ixb}[1]{}
+    \newcommand{\svs}[1]{}
+    \newcommand{\cav}[1]{}
 \fi
 
-\newcommand{\move}[2]{\textcolor{purple}{[{\bf MOVE: #1}:] #2}}
+\newcommand{\mayberm}[1]{\textcol or{red}{#1}}
 
-\def\fileless{fileless~\xspace}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Notations macros
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{amsmath, amsthm}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{mathtools}
+
+\newcommand{\OldText}{\ensuremath{\mathit{OldText}}}
+\newcommand{\NewText}{\ensuremath{\mathit{NewText}}}
+\newcommand{\DataSeg}{\ensuremath{\mathit{DataSeg}}}
+\newcommand{\InitMem}{\ensuremath{\mathit{InitMem}}}
+\newcommand{\flatten}{\ensuremath{\mathit{flatten}}}
+\newcommand{\block}{\ensuremath{\mathit{chunk}}}
+\newcommand\Block{chunk\xspace}
+\newcommand\Blocks{chunks\xspace}
+\newcommand{\itoi}{\ensuremath{\mathit{i2i'}}\xspace}
+\newcommand{\itoio}{\ensuremath{\mathit{i'2i}}\xspace}
+\newcommand{\Pol}{\ensuremath{\mathit{Pol}}\xspace}
+\newcommand{\Polp}{\ensuremath{\mathit{Pol'}}\xspace}
+\newcommand{\code}{\ensuremath{\mathit{code}}\xspace}
+\newcommand{\codep}{\ensuremath{\mathit{code'}}\xspace}
+\newcommand{\tables}{\ensuremath{\ell_\mathit{tab}}\xspace}
+\newcommand{\pol}{\ensuremath{\mathit{pol}}\xspace}
+\newcommand{\addrs}{\ensuremath{\mathit{addrs}}\xspace}
+\newcommand{\tbls}{\ensuremath{\mathit{tbls}}\xspace}
+
+
+\newcommand{\safe}[1]{\mathit{Safe_{#1}}}
+\newcommand{\unpredictable}{{\footnotesize UNPREDICTABLE}\xspace}
+\newcommand{\ELFPackager}{ELF Packager\xspace}
+
+% average overhead.
+\def\avgoh{19}
+
+
+\newcommand{\cd}[1]{\texttt{#1}}

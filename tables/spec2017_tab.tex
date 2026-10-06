@@ -1,0 +1,22 @@
+%! root=../main.tex
+\begin{table}[t]
+\centering
+\begin{tabular}{lr}
+\toprule
+\textbf{Benchmark} & \textbf{Overhead} \\
+\midrule
+500.perlbench\_r & 31.7204\% \\
+502.gcc\_r       & 23.1884\% \\
+505.mcf\_r       & 15.1460\% \\
+520.omnetpp\_r   & 28.5714\% \\
+523.xalancbmk\_r & 19.7260\% \\
+525.x264\_r      & 7.7399\%  \\
+531.deepsjeng\_r & 26.5152\% \\
+541.leela\_r     & 34.1421\% \\
+548.exchange2\_r & 2.0045\%  \\
+557.xz\_r        & 1.6529\%  \\
+\bottomrule
+\end{tabular}
+\caption{Runtime overhead on SPEC CPU 2017 benchmarks.\kjee{Lots of *wasted* space; we can we consider to have more columns?}}
+\label{tab:overhead}
+\end{table}

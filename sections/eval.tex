@@ -1,4 +1,74 @@
-%! root=./main.tex
+%! root=../main.tex
 \section{Evaluation}\label{sec:eval}
 
-\lorem{1-5}
+While this work focuses on the formal verification of a binary CFI rewriter’s soundness, we also evaluate \pname’s performance and soundness. We measure runtime overhead and code size growth, and assess security using representative proof-of-concept control-hijacking attacks and operational stability with real-world software.
+%
+All experiments run on a Raspberry Pi 5 Model B (rev. 1.1) with a Broadcom BCM2712 quad-core Arm Cortex-A76 @ 2.4 GHz and 16 GB memory, running PiOS (Debian 12 Bookworm).
+
+We then present case studies demonstrating how formal verification uncovers subtle implementation bugs and architectural irregularities.
+
+\subsection{Runtime Overheads}
+
+\autoref{tab:spec2017}  evaluates \pname's runtime performance on rewritten SPEC CPU 2017 benchmarks. To measure overhead, we adopt a permissive policy that allows each instruction to transfer control to any other instruction in the code section. \pname incurs an average overhead of 19\%, which is comparable to prior ARM-based CFI rewriters~\cite{walls_et_al}, although some benchmarks exhibit higher slowdowns.
+
+In particular, \cd{500.perlbench\_r} runs an interpreter-style workload with a high density of indirect control transfers, such as switch-based dispatch and function pointer invocations. Benchmark \cd{541.leela\_r} is a Go engine based on Monte Carlo Tree Search (MCTS). It exhibits highly irregular, data-dependent control flow and frequent function calls due to its recursive search structure. In both cases, the dynamic frequency of control-flow events is high, which amplifies the cost of CFI instrumentation.
+%
+These effects are exacerbated by architectural characteristics of ARMv7, including pervasive conditional execution and PC-relative addressing semantics, both of which complicate efficient instrumentation and increase the cost of enforcing control-flow checks.
+
+\pname’s runtime overhead can be further reduced by leveraging emerging hardware support. These features can be integrated with minimal changes to the existing software-only, binary-to-binary rewriter, while requiring only modest extensions to the formal verification effort.
+
+
+\input{tables/spec2017_tab2}
+
+\subsection{Code Size Growth}
+\autoref{fig:spec2017_size} reports the static code size overhead of rewritten SPEC binaries.
+\pname generates a rewritten ELF binary by augmenting the original with a new instrumented text segment and an additional section for the policy table.
+
+The rewritten text segment is, on average, $1.36\times$ larger than the original due to the insertion of security guard code.
+For the policy table, we further measure the fraction of entries that correspond to non-abort program targets.
+%
+Some benchmarks exhibit higher code size overhead due to a larger number of unfilled table entries.
+This effect stems from our design choice of using a simple hash function (\eg one without control or branch operations), which favors verification simplicity over space efficiency. On average, the policy table accounts for 71.7\% of the total size increase.
+
+Overall, the rewritten binaries grow substantially in size; however, the increase remains on the order of a few megabytes and incurs negligible runtime memory overhead.
+Modifying the rewriter to use a better hash function to reduce space overhead can be achieved with minimal changes to the proof (see Appendix \ref{sec:hash_function}).
+
+\comment{%
+    \autoref{fig:spec2017_size} measures the static size overhead of rewritten SPEC binaries.
+    \pname produces the rewritten ELF binary packaged with new text will policy table in additional all section from the original ELF.
+    Rewritten text segments results in on average  $1.36\times$ larger than the old text due to inserted security guard code.
+    For the policy table segment, we also measure how many entries contain non-abort program addresses.
+
+        - Some benchmark items resulted in larger code size than others due to unfilled table entries.
+            - In these cases, a better hash function can reduce size overhead. The table segment on average contributes 73.5\% of the added size.
+            - this is due to our design choice to have simplistic hash function (\eg no control/branch operations inside).
+        - As a result, the size of rewritten binary have grown substantial.
+        - Yet, it will be only in order of a few megabytes; incurring only negligible memory footprint at runtime.
+            - We also plan to refine/improve the hash function structure access/tranlating policy table still maintaintaining minimal formal proof requirement.
+}
+
+\input{tables/spec2017_size}
+
+\subsection{Operational Stability}\label{sec:functionality_evaluation}
+The SPEC CPU test suite includes self-tests for correct outputs,
+and all rewritten programs pass all the self-tests.
+We also tested the rewriter for functionality on the GNU Core Utilities suite, Lua, CPython, Vim, Git, and SQLite.
+\pname does not require input binaries from a specific compiler or source language.
+We tested C and C++ binaries produced from GCC and Clang,
+as well as other binaries from languages like Rust and Zig,
+and found all rewritten programs to function correctly.
+
+\subsection{Security Evaluation}
+
+\input{tables/basic_vul_tab}
+
+\autoref{tab:poc-attacks} lists classes of control-flow hijacking exploits that we implemented to experimentally confirm \pname's immunity to policy violations.
+\pname successfully instruments control-flow monitors for all binaries and blocks
+the listed attacks at runtime.
+We also instrument the programs to enforce overly permissive policies, confirming that the exploits succeed against policies that mount an inadequate defense.
+These results confirm that the rewriter implementation correctly enforces the policy it receives as input.
+
+
+%%%%%%%%%%%%%%%%%% case_studies %%%%%%%%%%%%%%%%%%%%%
+\input{sections/case_studies}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
