@@ -3,7 +3,8 @@
 
 While this work focuses on the formal verification of a binary CFI rewriter’s soundness, we also evaluate \pname’s performance and soundness. We measure runtime overhead and code size growth, and assess security using representative proof-of-concept control-hijacking attacks and operational stability with real-world software.
 %
-All experiments run on a Raspberry Pi 5 Model B (rev. 1.1) with a Broadcom BCM2712 quad-core Arm Cortex-A76 @ 2.4 GHz and 16 GB memory, running PiOS (Debian 12 Bookworm).
+Unless stated otherwise, experiments run on a Raspberry Pi 5 Model B (rev. 1.1) with a Broadcom BCM2712 quad-core Arm Cortex-A76 @ 2.4 GHz and 16 GB memory, running PiOS (Debian 12 Bookworm).
+For the ARMv8 rewriter, we additionally use an Apple M3 Max, running Debian 13 as a VMware guest on a MacBook Pro.
 
 We then present case studies demonstrating how formal verification uncovers subtle implementation bugs and architectural irregularities.
 
@@ -19,6 +20,31 @@ These effects are exacerbated by architectural characteristics of ARMv7, includi
 
 
 \input{tables/spec2017_tab2}
+
+\subsection{Runtime Overheads on ARMv8}
+
+\autoref{tab:spec2026_armv8} reports the runtime overhead of the ARMv8 rewriter on SPEC CPU 2026, using the same permissive policy.
+% TODO: confirm the policy matches the ARMv7 setup and add the number of runs per benchmark.
+With the final rewriter, \pname incurs an average overhead of 26.5\% on the Raspberry Pi 5 and 19.6\% on the M3 Max (geometric means of 24.2\% and 18.7\%), in line with the ARMv7 results.
+The rewritten \cd{723.llvm} could not be produced because the rewriter runs out of memory on this binary.
+
+As on ARMv7, the overhead follows the dynamic frequency of indirect control transfers.
+Across benchmarks, the rate of indirect branches ranges from 18 million per second (\cd{777.zstd}) to 890 million per second (\cd{710.omnetpp}), and on the M3 Max it is strongly correlated with the final overhead (Pearson $r = 0.92$).
+Object-oriented and interpreter workloads such as \cd{710.omnetpp}, \cd{753.ns3}, \cd{735.gem5}, and \cd{714.cpython} dominate due to virtual calls and dispatch, whereas compute-bound kernels such as \cd{777.zstd} and \cd{706.stockfish} incur negligible overhead.
+
+\heading{Call emulation and return prediction.}
+To preserve the original program's return addresses, the rewriter emulates each call: it sets the link register to the original return address rather than to the rewritten one.
+A naive emulation replaces \cd{bl dest} with \cd{mov lr, oldpc+4; b dest}.
+Because no \cd{bl} executes, the processor's return address predictor is never populated, and every subsequent return mispredicts.
+This incurs average overheads of 44.8\% on the Raspberry Pi 5 and 134.3\% on the M3 Max, whose wide, deeply speculative core is especially sensitive to mispredicted returns.
+The final rewriter instead branches over a short trampoline and calls into it:
+\cd{b L2; L1: mov lr, oldpc+4; b dest; L2: bl L1}.
+The \cd{bl} pushes the rewritten return site onto the hardware return stack, while the trampoline still sets \cd{lr} to the original return address, so returns are predicted correctly despite the two extra branches.
+% TODO: confirm the guarded return dispatches with a return-hinted branch (ret xN), which is what makes the hardware prediction apply.
+This reduces the average overhead from 134.3\% to 19.6\% on the M3 Max and from 44.8\% to 26.5\% on the Raspberry Pi 5.
+The narrower Cortex-A76 benefits less from restored prediction and pays more for the added instructions, which likely explains its higher final overhead.
+
+\input{tables/spec2026_armv8}
 
 \subsection{Code Size Growth}
 \autoref{fig:spec2017_size} reports the static code size overhead of rewritten SPEC binaries.

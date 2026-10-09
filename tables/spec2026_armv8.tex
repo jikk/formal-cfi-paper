@@ -1,0 +1,31 @@
+%! root=../main.tex
+\begin{table}[]
+    \caption{Runtime overhead of the ARMv8 rewriter on SPEC CPU 2026 benchmarks, with naive (Naive) and return-predictor-preserving (Final) call emulation.}
+    \vspace{-10pt}
+    \centering
+    \resizebox{.95\linewidth}{!}{
+        \begin{tabular}{ld{3.2}d{3.2}d{3.2}d{3.2}}
+        \toprule
+            & \multicolumn{2}{c}{\textbf{Raspberry Pi 5}} & \multicolumn{2}{c}{\textbf{Apple M3 Max}} \\
+            \cmidrule(lr){2-3} \cmidrule(lr){4-5}
+            \textbf{Benchmark} & \multicolumn{1}{c}{\textbf{Naive}} & \multicolumn{1}{c}{\textbf{Final}} & \multicolumn{1}{c}{\textbf{Naive}} & \multicolumn{1}{c}{\textbf{Final}} \\ \midrule
+            706.stockfish  &  10.19\% &  5.36\% &  17.92\% &  2.31\% \\
+            707.ntest      &  39.29\% & 18.11\% & 123.48\% & 18.94\% \\
+            708.sqlite     &  21.14\% & 15.99\% &  77.34\% & 11.72\% \\
+            710.omnetpp    & 109.26\% & 70.68\% & 354.33\% & 53.02\% \\
+            714.cpython    &  71.21\% & 44.70\% & 231.59\% & 30.55\% \\
+            721.gcc        &  30.22\% & 14.91\% &  92.11\% & 14.91\% \\
+            723.llvm       & \multicolumn{4}{c}{rewriting runs out of memory} \\
+            727.cppcheck   &  42.58\% & 17.58\% & 141.73\% & 16.31\% \\
+            729.abc        &   6.99\% &  4.55\% &  28.71\% & 11.88\% \\
+            734.vpr        &  35.90\% & 16.81\% & 133.09\% & 14.46\% \\
+            735.gem5       &  67.42\% & 45.08\% & 186.23\% & 29.34\% \\
+            750.sealcrypto &  31.35\% &  6.22\% &  74.00\% &  6.00\% \\
+            753.ns3        & 113.98\% & 84.80\% & 277.66\% & 42.55\% \\
+            777.zstd       &   3.33\% & -0.63\% &   8.11\% &  2.70\% \\ \midrule
+            \textbf{Average} & 44.84\% & 26.47\% & 134.33\% & 19.59\% \\ \bottomrule
+        \end{tabular}
+    }
+    \label{tab:spec2026_armv8}
+    \vspace{-8pt}
+\end{table}
