@@ -1,7 +1,6 @@
 %! root=../main.tex
 \begin{table}[]
     \caption{Runtime overhead of the ARMv8 rewriter on SPEC CPU 2026 benchmarks, with naive (Naive) and return-predictor-preserving (Final) call emulation.}
-    \vspace{-10pt}
     \centering
     \resizebox{.95\linewidth}{!}{
         \begin{tabular}{ld{3.2}d{3.2}d{3.2}d{3.2}}
@@ -15,7 +14,7 @@
             710.omnetpp    & 109.26\% & 70.68\% & 354.33\% & 53.02\% \\
             714.cpython    &  71.21\% & 44.70\% & 231.59\% & 30.55\% \\
             721.gcc        &  30.22\% & 14.91\% &  92.11\% & 14.91\% \\
-            723.llvm       & \multicolumn{4}{c}{rewriting runs out of memory} \\
+            % 723.llvm       & \multicolumn{4}{c}{rewriting runs out of memory} \\
             727.cppcheck   &  42.58\% & 17.58\% & 141.73\% & 16.31\% \\
             729.abc        &   6.99\% &  4.55\% &  28.71\% & 11.88\% \\
             734.vpr        &  35.90\% & 16.81\% & 133.09\% & 14.46\% \\
