@@ -1,80 +1,13 @@
 %! root=../main.tex
 % NOTE (@kjee): 1/3 of a column.
 \begin{abstract}
-Binary \cfi has emerged as a cornerstone of software defense, with trusted implementations within VMs, OSes, hypervisors, web browsers, and many other security-critical products.
-However, no full-scale binary CFI rewriter \emph{implementation} is yet proven secure against the hijacking attacks it purports to thwart.
-Formal methods (FM) offer peak assurance for production software in a variety of domains, such as certified compilers, OS kernels, and networking stacks; but verifying binary-to-binary code rewriting software raises unique challenges that frustrate traditional FM\@.
+  Binary \cfi has emerged as a cornerstone of software defense, with trusted implementations within VMs, OSes, hypervisors, web browsers, and many other security-critical products.
+  However, no full-scale binary CFI rewriter \emph{implementation} is yet proven secure against the hijacking attacks it purports to thwart.
+  Formal methods (FM) offer peak assurance for production software in a variety of domains, such as certified compilers, OS kernels, and networking stacks; but verifying binary-to-binary code rewriting software raises unique challenges that frustrate traditional FM\@.
 
-\cav{Name suggestion: VFCFI? (VeriFied) Catchy}
-\pname bridges this gap by implementing the first fully verified binary-to-binary CFI system for a mainstream microarchitecture.
-A machine-checked proof in Rocq guarantees that rewriting generates policy-compliant binaries from near-arbitrary binary code inputs,
-and the program-proof co-development process fixes subtle yet dangerous logic bugs that evade dynamic testing and only become exposed by exhaustive proof.
-Verification is facilitated by a new approach to formalizing proofs that universally quantify over arbitrary (non-concrete) binary code inputs, leading to design principles for provably secure binary hardening implementations.
-%[We should end with a sentence about experimental evaluation (to help reinforce that this is very practical --- important for CCS).]
-Evaluation on SPEC CPU benchmarks, software libraries, and malicious exploits demonstrates that \pname exhibits performance, compatibility, and security suitable for production deployments.
+  \pname bridges this gap by implementing the first fully verified binary-to-binary CFI system for a mainstream microarchitecture.
+  A machine-checked proof in Rocq guarantees that rewriting generates policy-compliant binaries from near-arbitrary binary code inputs,
+  and the program-proof co-development process fixes subtle yet dangerous logic bugs that evade dynamic testing and only become exposed by exhaustive proof.
+  Verification is facilitated by a new approach to formalizing proofs that universally quantify over arbitrary (non-concrete) binary code inputs, leading to design principles for provably secure binary hardening implementations.
+  Evaluation on SPEC CPU benchmarks, software libraries, and malicious exploits demonstrates that \pname exhibits performance, compatibility, and security suitable for production deployments.
 \end{abstract}
-
-%KWH: I think I like this version.  Should see what Dr. Jee thinks.
-
-\comment{
-  @KWH, these are the notes from my and Max's meeting with Dr. Jee. I meant to get another draft done with his feedback before you started editing at 4pm.
-
-  @IXB, okay I'll let you edit before I change anything more here.  Some comments from me: I don't think we should mention Picinae, Compcert, or RockSalt explicitly in the abstract.  In general, I don't think we should try to mention prior work in the abstract unless we want to attract reviewers who are from that line of work and the work is so hugely important that it cannot be feasibly delayed even to the intro.  Second, we need to be very careful not to overstate.  There are CFI implementations that have been machine-proved safe (but they are all proved at the compiler level, so they're for top-down FM, which is what nearly all FM reviewers will assume this paper is about until we start really emphasizing the binary-CFI aspect).  There are also binary-CFI implementations that many authors will consider to be "proved" (because some abstract, idealized model of the algorithm was verified, not the actual, binary-level implementation for a real ISA).  Somehow we have to tell this story in a way that grabs the attention of reviewers without insulting them or using lots of qualifiers and long sentences.  Very tricky. (Clarification: I'm fine with mentioning general lines of work --- e.g., "certifying compilers".  I just don't like the idea of mentioning specific papers.)  (End of my comments).
-
-
-# armcfi: abstract scratch pad
-
----
-1. list the core ideas that I want to sell.
-2. connect each point to build a narrative.
-    - make sure important points are not missing.
-    - try to (internally) prioritize each item.
-
-3. word-out to make sentences and paragraph.
-4. check out the produced text to tighten the text and remove any redundancies
-  - go back to 1. or 2. and iterate for a few times.
-6. work on style.
----
-
-(problem)
-
-- **Control-Flow Integrity (CFI)** has become one of the most advanced and widely deployed defenses for protecting real-world production systems.
-  - However, despite its prominence, a critical aspect --- *the correctness of its binary-level implementation and its impact on real-world effectiveness* --- remains underexplored.
-
-(research)
-
-- In this work, we present the *first formally verified CFI binary rewriter*, ArmCFI, establishing its safety and security by **machine-checked proofs of compliance** for both:
-  - the real-world ISA (ARMv7), and
-      - // realistic/practical representation of ARMv7?
-  - a rigorously defined *fine-grained* CFI security specification.
-
-- By doing so, our research eliminates reliance on *costly and inherently incomplete post-instrumentation validation via dynamic testing*.
-
-- Our research is enabled by **Picinae**, which provides a principled ISA abstraction that supports **symbolic reasoning over arbitrary binary inputs**.
-  - (optional) This capability allows us to **verify the rewriter once and guarantee soundness for all output binaries**, ensuring both ISA conformity and adherence to CFI security requirements.
-
-(impact/result)
-
-- Beyond the system itself, the paper contributes broader insights that **bridge formal methods and binary-level security engineering**:
-  - (contribution 1) We derive **design principles for building formally verifiable binary-level security mechanisms**, and
-  - (contribution 2) We showcase how formal verification exposes **subtle, implementation-level bugs** that are difficult to detect through testing alone.
-
-  - (optional) Despite full formal verification, **ArmCFI achieves runtime overhead comparable to state-of-the-art CFI systems (on average XX\% for SPEC 2017)**.
-  - (optional) we open-sourced/publicized the ArmCFI source base.
-
-(vision/promise)
-- More broadly, our research opens a new research avenue for *general methodology* for formally verified static binary rewriting exploring beyond CFI binary writer to a wider class of *inlined reference monitor (IRM)-based security mechanisms*.
-
-}
-
-\comment{
-    Track justification draft:
-
-    Our work on implementing a binary CFI-enforcing rewriter with a machine-checked proof of soundness belongs in Formal Methods and Programming Languages.
-    Evaluating it requires a nuanced understanding of the difficulty of modeling binary execution traces of real ISAs in interactive theorem provers and an appreciation of the reduction in the trusted-computing base that comes as a result.
-
-    This work marks a paradigm shift in the way binary rewriters are secured.
-    Whereas the SotA uses a small trusted checker to verify the outputs of inherently complicated rewriters adhere to a safe format,
-    this work paves the way for verifying the rewriters themselves.
-    Not only does this eliminate a computation step in the deployed product, it prevents the product from being deployed with logic errors that unnecessarily reduce the covered input space (e.g., binaries whose CFI could be enforced) and confound developers as to their origin.
-}
