@@ -152,41 +152,42 @@ New destination $4(0\mathrm{x}220)$ has only one entry in the table, whereas the
 This is because it shares the same hash as its original destination, which is safe because jumps to the new and old destinations should both be routed to the new \Block.
 
 \begin{figure}[t]
-    \definecolor{green}{rgb}{0.0, 0.6, 0.0}
-    \centering\small
-    \begin{tabular}{|c|c|c|c|}
-        \hline
-        $i$ & $\itoip(i)$ & $h(i)$ & $h(\itoip(i))$ \\ \hline
-        0x110 & \textcolor{red}{0x200} & \textcolor{red}{1} & \textcolor{red}{0} \\ \hline
-        0x120 & \textcolor{green}{0x220} & \textcolor{green}{2} & \textcolor{green}{2} \\ \hline
-        0x130 & \textcolor{blue}{0x240} & \textcolor{blue}{3} & \textcolor{blue}{4} \\ \hline
-    \end{tabular}
-    \quad
-    \begin{tabular}{|c|c|}
-        \hline
-        \textbf{key} & \textbf{value} \\ \hline
-        \textcolor{red}{0} & \textcolor{red}{$4(0\mathrm{x}200)$} \\ \hline
-        \textcolor{red}{1} & \textcolor{red}{$4(0\mathrm{x}200)$} \\ \hline
-        \textcolor{green}{2} & \textcolor{green}{$4(0\mathrm{x}220)$} \\ \hline
-        \textcolor{blue}{3} & \textcolor{blue}{$4(0\mathrm{x}240)$} \\ \hline
-        \textcolor{blue}{4} & \textcolor{blue}{$4(0\mathrm{x}240)$} \\ \hline
-        5 & $4\mai$ \\ \hline
-        6 & $4\mai$ \\ \hline
-        7 & $4\mai$ \\ \hline
-    \end{tabular}
-    \vspace{4pt}
-\begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,label={lst:armv7},xleftmargin=.3cm]
-UBFX r0, r0, #6, #3      // r0 = h(dest)
-LSL r0, r0, #2           // r0 = h(dest) * 4
-ADD r0, r0, #table_addr  // r0 = &table[h(dest)]
-LDR r0, [r0]             // r0 = table[h(dest)]
-BX r0                    // branch to table[h(dest)]
-\end{lstlisting}
-\mxz{there isn't an instruction to add an arbitrary constant to a register, only certain constants are possible
+%     \definecolor{green}{rgb}{0.0, 0.6, 0.0}
+%     \centering\small
+%     \begin{tabular}{|c|c|c|c|}
+%         \hline
+%         $i$ & $\itoip(i)$ & $h(i)$ & $h(\itoip(i))$ \\ \hline
+%         0x110 & \textcolor{red}{0x200} & \textcolor{red}{1} & \textcolor{red}{0} \\ \hline
+%         0x120 & \textcolor{green}{0x220} & \textcolor{green}{2} & \textcolor{green}{2} \\ \hline
+%         0x130 & \textcolor{blue}{0x240} & \textcolor{blue}{3} & \textcolor{blue}{4} \\ \hline
+%     \end{tabular}
+%     \quad
+%     \begin{tabular}{|c|c|}
+%         \hline
+%         \textbf{key} & \textbf{value} \\ \hline
+%         \textcolor{red}{0} & \textcolor{red}{$4(0\mathrm{x}200)$} \\ \hline
+%         \textcolor{red}{1} & \textcolor{red}{$4(0\mathrm{x}200)$} \\ \hline
+%         \textcolor{green}{2} & \textcolor{green}{$4(0\mathrm{x}220)$} \\ \hline
+%         \textcolor{blue}{3} & \textcolor{blue}{$4(0\mathrm{x}240)$} \\ \hline
+%         \textcolor{blue}{4} & \textcolor{blue}{$4(0\mathrm{x}240)$} \\ \hline
+%         5 & $4\mai$ \\ \hline
+%         6 & $4\mai$ \\ \hline
+%         7 & $4\mai$ \\ \hline
+%     \end{tabular}
+%     \vspace{4pt}
+% \begin{lstlisting}[language=c, morekeywords={UBFX,LSL,ADD,LDR,BX,r0}, linewidth=\linewidth,label={lst:armv7},xleftmargin=.3cm]
+% UBFX r0, r0, #6, #3      // r0 = h(dest)
+% LSL r0, r0, #2           // r0 = h(dest) * 4
+% ADD r0, r0, #table_addr  // r0 = &table[h(dest)]
+% LDR r0, [r0]             // r0 = table[h(dest)]
+% BX r0                    // branch to table[h(dest)]
+% \end{lstlisting}
+\centering
+\includegraphics[width=0.8\linewidth]{figs/RelocationTables.pdf}\mxz{there isn't an instruction to add an arbitrary constant to a register, only certain constants are possible
 so there are actually 4 add instructions in this \Block to add each byte separately, but idk if it's necessary to say that here}
 \ixb{I bet it's not necessary.}
 
-\vspace{-12pt}
+\vspace{-3pt}
 \caption{Rewriting instruction \texttt{BX\:r0}. The tables map old addresses to new, and the listing shows the rewritten \Block code.
 \ixb{The table diagram still is not beautiful, but I think it serves us well to combine the tables and listing in the same figure.
 It makes referring to it in a leading paragraph sentence easier.}\kjee{How can we/readers associate tables and listing?}}
