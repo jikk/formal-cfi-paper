@@ -1,0 +1,195 @@
+ACM CCS 2026 B Paper #1729 Reviews and Comments
+===========================================================================
+Paper #1729 Machine-Verified Binary Control Flow Integrity
+
+
+Review #1729A
+===========================================================================
+
+Paper summary
+-------------
+The paper describes an approach to verify a rewriter for ARMv7 binaries that
+enforces control flow integrity (CFI), called ARMCFI. The rewriter takes ARMv7
+binaries (decoded instructions) and a user-provided policy specification that
+prescribes permitted control-flow transfers. It produces a binary that includes
+a new code section in which targets of indirect flow instructions are provably
+permitted target. Non-compliant flow or unpredictable behaviour is re-directed to
+a safe abort instruction. The rewriter is generated/extracted from a Rocq
+specification within Picinae, a framework for instruction level analysis of
+binaries. Soundness of the rewriter is proven within Picinae for arbitrary
+input binaries and policies.
+
+Strengths / Reasons to accept
+-----------------------------
+- The work is well motivated and presents an interesting solution to the problem
+  (in particular the use of Rocq to enable a generic proof over an abstract
+  input program).
+
+- It provides a detailed explanation of the design decision for the rewriter as
+  well as the assumptions made. The boundaries of what is covered by the
+  verification, and which components are trusted, are made clear.
+
+- Some evaluation is discussed.
+
+- Generally, the work is very readable.
+
+Weaknesses / Reasons to reject
+------------------------------
+- Despite its readability the text could be improved by providing some
+  clarification (see below) and potentially some examples.
+
+- The related work section appears to be incomplete.
+
+Constructive comments for author
+--------------------------------
+I enjoyed this paper and found the approach quite interesting, however, some
+questions arose while reading it.
+
+1. The policies - although they are somewhat outside the scope and we just
+   have to assume some set of acceptable jump targets - could be explained better:
+  - we have permitted destinations for each instruction, or only for indirect jumps?
+  - a permissive policy is adopted (Sec.7.1) which allows a transfer to "other
+    instruction within the code section", does that mean "any other instruction"?
+    are these policies over-approximating the actual control flow? 
+
+2. The handling of conditional instructions (Sec. 3.1) was unclear to me:
+   - what is meant by "opposite-condition"? the negation of the branch condition?
+   - it would be nice to see a simple example of the rewriting of a conditional
+     instruction;
+
+3. Where are the static memory access permissions come in? Is this an
+   additional/auxiliary specification, or retrievable from the binary? (Sec.3.2)
+   Do you only consider policy data as security-critical?
+
+4. Your approach to lifting omits the control flow recovery (Sec.4), but you are
+   checking control-flow safety, and have an interpretation along all potential
+   control-flow paths.  Where is the control flow coming from, from the
+   policies, is it an overapproximation?  It would be nice to have an
+   explanation of how the control-flow recovery works.
+
+5. Picinae IL can describe bounded loops; how can loop bounds be inferred? can the IL
+   describe unbounded loops - in your description you refer to handling those.
+
+6. Invariants at a chunk entry, are they preserved over the chunk, is this
+   checked, or is that even of interest? (Sec.5.2)
+
+7. Maybe remind the reader that an (assembly) instruction is represented by a
+   chunk (Sec.5.2).
+
+8. Where does the lifter get the ARMv7 semantics from, is it derived from an ASL
+   specification or another validated Rocq encoding?
+   
+9. What are the "unfilled" table entries (Sec.7.2)?
+
+
+Some typos:
+===========
+
+p.5: "We discuss ... and explains"
+
+p.9: "dynamic frequency of control-flow events" --> frequency of dynamic
+                                                          control-flow events ?
+
+p.12: "ours we implement"
+
+Areas to address in authors’ response
+-------------------------------------
+Questions raised above, in particular, re policies, permissions,
+and control-flow generation.
+
+Does the paper raise ethical concerns?
+--------------------------------------
+1. No
+
+Reviewer expertise in this domain
+---------------------------------
+3. Knowledgeable (I don't necessarily work in this topic domain, but I work
+   on related topics or I am cognizant of the work in this domain in recent
+   years)
+
+Reviewer confidence
+-------------------
+2. Somewhat confident
+
+Overall merit
+-------------
+3. Neutral
+
+Open Science Compliance
+-----------------------
+1. Yes
+
+Open Science Comments
+---------------------
+The Picinae artifacts, and examples.
+
+
+
+Review #1729B
+===========================================================================
+
+Paper summary
+-------------
+The paper proposes a formally-verified binary-level static CFI rewriter, name ArmCFI. The paper presents the whole approach, the main points of the formalization, some experimental evaluation (overhead, security) and some lessons learned.
+
+Strengths / Reasons to accept
+-----------------------------
++ the paper is well motivated and easy to follow
+
++ the experimental evaluation considers both overhead (runtime, code size) and security
+
++ the "lessons learned" section is interesting
+
+Weaknesses / Reasons to reject
+------------------------------
+- While the paper looks very impressive at first, the discussion of the limits (at the end) changes drastically the perspective. Somehow, it seems that most of the complex things in static binary rewriting are simply left out of the proof. For example: lifting, CFG recovery, exact policy inference, recompilation, etc. In the end we are left with what seems to be a much simpler verification of a IR to IR translation. While this is certainly interesting, the scope is much more narrow and the effort much less groundbreaking. Moreover, the writing should be clear from the start on which parts are exactly proven (we are typically very far from a Compcert-like effort).   
+
+- Closely related, the paper misses a clear view of the main components and features of modern static binary CFI rewriting, and which ones are supported and proven in ArmCFI, in order to understand the exact scope of the work, and how representative it is. For example, the way the policy is supported seems naive and costly, and I am wondering how far it is from current best practices.  
+
+- The paper is also unclear about the limits on its policies. Especially what is expressible or typically out of scope (backward edges? shadow stack?), and how reasonable it is to assume the user will provide the policy with expected very low level formalism (basically, a map from address to set of addresses).  
+
+- The experimental overhead looks significant (up to +30%), for a policy that seems simple. Evaluation against other similar tools as baselines is missing. Also, the evaluation does not consider how the approach works for more demanding policies.  
+	
+- The paper does not provide any statistic on the ROCQ development itself (number and size of proofs, how many were discharged, etc.)
+
+- Finally, the paper misses a discussion on some prior efforts to formally verify security rewriters / compilers. For example: 
+
+Matthieu Baty, Pierre Wilke, Guillaume Hiet, Arnaud Fontaine, Alix Trieu:A Generic Framework to Develop and Verify Security Mechanisms at the Microarchitectural Level: Application to Control-Flow Integrity. CSF 2023
+
+Basile Pesin, Sylvain Boulmé, David Monniaux, Marie-Laure Potet:
+Formally Verified Hardening of C Programs against Hardware Fault Injection. CPP 2025
+
+Constructive comments for author
+--------------------------------
+
+
+--- edit, comments, suggestions 
+
+p12: typo: "our we implement"
+
+Areas to address in authors’ response
+-------------------------------------
+Q1. Clarify the limits of your choice of policy formalization, what is in scope or not, and how complex it is for the user to come up with such a low-level specification
+
+Q2. Clarify how close ArmCFI is from a real static CFI rewriter (supported features, missing components, optimizations, etc.), and which ratio of a typical CFI rewriter represents your formally-verified part
+
+Does the paper raise ethical concerns?
+--------------------------------------
+1. No
+
+Reviewer expertise in this domain
+---------------------------------
+4. Expert (I've worked on this topic domain or a closely related topic
+   domain)
+
+Reviewer confidence
+-------------------
+4. Confident
+
+Overall merit
+-------------
+1. Reject
+
+Open Science Compliance
+-----------------------
+1. Yes
