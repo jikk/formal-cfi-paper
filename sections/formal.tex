@@ -94,7 +94,10 @@ These initial assumptions are properties of the \ELFPackager and OS process load
 \heading{Soundness of a CFI implementation.}
 For a CFI rewriter implementation $r$ to be sound, all executions of all rewritten programs it produces must be safe.
 \begin{equation}
-  \safe{CFI}(r) \equiv \forall \txt, \Pol,\ \langle r(\txt,\Pol),\sigma_0\rangle\,{\leadsto}\,\tau\ \Rightarrow\ \safe{trace}(\Pol\kern1pt',\tau)
+  \begin{aligned}
+    \safe{CFI}(r) \equiv & \forall \txt, \Pol,\ \langle r(\txt,\Pol),\sigma_0\rangle\,{\leadsto}\,\tau\ \\
+    & \Rightarrow\ \safe{trace}(\Pol\kern1pt',\tau)
+  \end{aligned}
 \end{equation}
 
 \subsection{Safety Proof}
